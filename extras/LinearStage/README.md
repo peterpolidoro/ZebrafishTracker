@@ -46,6 +46,17 @@ Connect from step_dir_controller to VIX X4
 
 #### Power Supply
 
+Parker XLPSU
+
+| Power Supply | VIX X1 |
+|--------------|--------|
+| +DC(80V)     | +HV    |
+| -DC          | -HV    |
+| +24V         | +24    |
+| GND          | -24    |
+| EARTH GND    | PE     |
+
+Wire power cord to N, L, and EARTH GROUND
 
 
 #### Motor/Encoder Cable
@@ -65,7 +76,31 @@ Parker Cable: 006-2690-01
 
 Plug Encoder Connector (DB15 Male Pins) to VIX X2
 
+Remove Parker cable DB15 Female Sockets limits connector if necessary.
 
+Digikey: 277-1163-ND
+TERM BLOCK PLUG 4POS STR 3.81MM
+FEMALE SOCKETS
+
+| Parker Cable Limits| 277-1163-ND |
+|--------------------|-------------|
+| GREEN              | 1           |
+| WHITE              | 2           |
+| BROWN              | 3           |
+
+Digikey: 277-5781-ND
+TERM BLOCK PLUG 4POS STR 3.81MM
+MALE PINS
+
+Digikey: 277-5811-ND
+TERM BLOCK PLUG 4POS 90DEG 3.5MM
+FEMALE SOCKETS
+
+| 277-5781-ND | 277-5811-ND |
+|-------------|-------------|
+| 1           | 1           |
+| 2           | 2,4         |
+| 3           | 3           |
 
 ### EASI-V Software
 
