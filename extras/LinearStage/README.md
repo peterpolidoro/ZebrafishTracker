@@ -138,3 +138,64 @@ At the end:
 1SV
 1Z
 ```
+
+### step_dir_controller
+
+```json
+{
+  "id":"getPropertyValues",
+  "result":{
+    "serialNumber":0,
+    "ledsEnabled":true,
+    "channelCount":2,
+    "stepsPerPositionUnits":[
+      1,
+      1
+    ],
+    "velocityMax":[
+      999999,
+      999999
+    ],
+    "velocityMin":[
+      20000,
+      20000
+    ],
+    "accelerationMax":[
+      1000000,
+      1000000
+    ],
+    "enablePolarity":[
+      "HIGH",
+      "HIGH"
+    ],
+    "stepPolarityInverted":false,
+    "dirPolarityInverted":false,
+    "switchActivePolarity":"HIGH",
+    "leftSwitchStopEnabled":[
+      true,
+      true
+    ],
+    "rightSwitchesEnabled":true,
+    "rightSwitchStopEnabled":[
+      true,
+      true
+    ],
+    "switchSoftStopEnabled":[
+      false,
+      false
+    ],
+    "homeVelocity":[
+      -50000,
+      -50000
+    ],
+    "stagePositionMin":[
+      0,
+      0
+    ],
+    "stagePositionMax":[
+      100000,
+      100000
+    ]
+  }
+}
+```
