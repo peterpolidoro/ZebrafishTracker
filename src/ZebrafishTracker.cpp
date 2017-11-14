@@ -21,7 +21,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "FlyCapture2.h"
+#include <FlyCapture2.h>
+#include "Cameras.h"
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
@@ -202,6 +203,8 @@ int RunSingleCamera(FlyCapture2::PGRGuid guid)
 
 int main(int /*argc*/, char ** /*argv*/)
 {
+  Cameras cameras;
+
   PrintBuildInfo();
 
   FlyCapture2::Error error;

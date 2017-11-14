@@ -21,6 +21,7 @@ include_directories( ${LIBSERIAL_INCLUDE_DIRS} )
 
 add_executable(ZebrafishTracker
   ${PROJECT_SOURCE_DIR}/src/ZebrafishTracker.cpp
+  ${PROJECT_SOURCE_DIR}/src/Cameras.cpp
   ${PROJECT_SOURCE_DIR}/src/FrameRateCounter.cpp)
 
 target_link_libraries( ZebrafishTracker ${FLYCAPTURE_LIBRARIES})
