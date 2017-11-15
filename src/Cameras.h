@@ -9,9 +9,15 @@
 #define _CAMERAS_H_
 #include <iostream>
 #include <sstream>
-#include <FlyCapture2.h>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include <boost/timer/timer.hpp>
+#include <boost/thread.hpp>
+#include "FrameRateCounter.h"
+
+#include <FlyCapture2.h>
 
 
 class Cameras
@@ -27,6 +33,7 @@ public:
   bool retrieveImage(cv::Mat & image);
   bool stopCameraCapture();
   bool disconnectCamera();
+  double getFrameRate();
 private:
   FlyCapture2::Error error_;
   FlyCapture2::BusManager bus_mgr_;
@@ -36,6 +43,8 @@ private:
   static const size_t buffer_count_=300;
   FlyCapture2::Image raw_image_;
   FlyCapture2::Image rgb_image_;
+  static const size_t queue_length_=100;
+  FrameRateCounter frame_rate_counter_;
 
   bool error();
   void printError();

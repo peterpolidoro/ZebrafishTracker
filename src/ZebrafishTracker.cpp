@@ -12,15 +12,24 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <FlyCapture2.h>
-#include "Cameras.h"
-
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
 #include "FrameRateCounter.h"
 
+#include <FlyCapture2.h>
+#include "Cameras.h"
+
 #include <SerialStream.h>
 
+#include <signal.h>
+
+
+volatile sig_atomic_t run = 1;
+
+void interruptSignalFunction(int sig)
+{
+  run = 0;
+}
 
 int main(int /*argc*/, char ** /*argv*/)
 {
@@ -52,20 +61,17 @@ int main(int /*argc*/, char ** /*argv*/)
     return -1;
   }
 
-  const size_t image_count = 100;
-
-  FrameRateCounter frame_rate_counter(image_count);
-  frame_rate_counter.Reset();
-  std::cout << "Capturing " << image_count << " images." << std::endl;
+  std::cout << "Running! Press ctrl-c to stop." << std::endl << std::endl;
 
   cv::Mat image;
-  for (int image_n = 0; image_n < image_count; ++image_n)
+
+  signal(SIGINT,interruptSignalFunction);
+  while (run)
   {
     cameras.retrieveImage(image);
-    frame_rate_counter.NewFrame();
   }
 
-  std::cout << "Frame rate: " << frame_rate_counter.GetFrameRate() << std::endl;
+  std::cout << "Frame rate: " << cameras.getFrameRate() << std::endl;
 
   success = cameras.stopCameraCapture();
   if (!success)
@@ -79,20 +85,20 @@ int main(int /*argc*/, char ** /*argv*/)
     return -1;
   }
 
-
-  LibSerial::SerialStream dev;
-  dev.Open("/dev/ttyACM0");
-  dev.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_115200);
-  dev << "playTone 4000 ALL\n";
-
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.ignore();
-
-  dev << "stop\n";
-  dev.Close();
-
   return 0;
 }
+
+
+  // LibSerial::SerialStream dev;
+  // dev.Open("/dev/ttyACM0");
+  // dev.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_115200);
+  // dev << "playTone 4000 ALL\n";
+
+  // std::cout << "Press Enter to exit..." << std::endl;
+  // std::cin.ignore();
+
+  // dev << "stop\n";
+  // dev.Close();
 
 // int RunSingleCamera(FlyCapture2::PGRGuid guid)
 // {
