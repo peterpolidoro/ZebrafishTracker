@@ -21,6 +21,10 @@
 #include <iostream>
 #include <sstream>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include <FlyCapture2.h>
 #include "Cameras.h"
 
@@ -28,43 +32,8 @@
 #include <boost/thread.hpp>
 #include "FrameRateCounter.h"
 
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
 #include <SerialStream.h>
 
-
-void PrintBuildInfo()
-{
-  FlyCapture2::FC2Version fc2Version;
-  FlyCapture2::Utilities::GetLibraryVersion(&fc2Version);
-
-  std::ostringstream version;
-  version << "FlyCapture2 library version: " << fc2Version.major << "."
-          << fc2Version.minor << "." << fc2Version.type << "."
-          << fc2Version.build;
-  std::cout << version.str() << std::endl;
-
-  std::ostringstream timeStamp;
-  timeStamp << "Application build date: " << __DATE__ << " " << __TIME__;
-  std::cout << timeStamp.str() << std::endl << std::endl;
-}
-
-void PrintCameraInfo(FlyCapture2::CameraInfo *pCamInfo)
-{
-  std::cout << std::endl;
-  std::cout << "*** CAMERA INFORMATION ***" << std::endl;
-  std::cout << "Serial number - " << pCamInfo->serialNumber << std::endl;
-  std::cout << "Camera model - " << pCamInfo->modelName << std::endl;
-  std::cout << "Camera vendor - " << pCamInfo->vendorName << std::endl;
-  std::cout << "Sensor - " << pCamInfo->sensorInfo << std::endl;
-  std::cout << "Resolution - " << pCamInfo->sensorResolution << std::endl;
-  std::cout << "Firmware version - " << pCamInfo->firmwareVersion << std::endl;
-  std::cout << "Firmware build time - " << pCamInfo->firmwareBuildTime << std::endl
-       << std::endl;
-}
 
 void PrintError(FlyCapture2::Error error) { error.PrintErrorTrace(); }
 
@@ -72,131 +41,64 @@ void processImage(cv::Mat frame);
 
 int RunSingleCamera(FlyCapture2::PGRGuid guid)
 {
-  const int k_numImages = 100;
+//   const int k_numImages = 100;
 
-  FlyCapture2::Error error;
+//   FlyCapture2::Error error;
 
-  // Connect to a camera
-  FlyCapture2::Camera cam;
-  error = cam.Connect(&guid);
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
+//   FrameRateCounter frame_rate_counter(k_numImages);
+//   frame_rate_counter.Reset();
 
-  // Get the camera information
-  FlyCapture2::CameraInfo camInfo;
-  error = cam.GetCameraInfo(&camInfo);
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
+//   FlyCapture2::Image rawImage;
+//   FlyCapture2::Image rgbImage;
 
-  PrintCameraInfo(&camInfo);
+//   std::cout << "Capturing " << k_numImages << " images." << std::endl;
+//   for (int imageCnt = 0; imageCnt < k_numImages; imageCnt++)
+//   {
+//     // Retrieve an image
+//     error = cam.RetrieveBuffer(&rawImage);
+//     if (error != FlyCapture2::PGRERROR_OK)
+//     {
+//       PrintError(error);
+//       continue;
+//     }
 
-  // Get the camera configuration
-  FlyCapture2::FC2Config config;
-  error = cam.GetConfiguration(&config);
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
+//     // std::cout << "Grabbed image " << imageCnt << std::endl;
+//     frame_rate_counter.NewFrame();
 
-  // Set the number of driver buffers used to 10.
-  // config.numBuffers = 10;
-  config.numBuffers = 300;
-  config.grabMode = FlyCapture2::BUFFER_FRAMES;
-  config.highPerformanceRetrieveBuffer = true;
+//     // Convert the raw image
+//     // error = rawImage.Convert(PIXEL_FORMAT_MONO8, &rgbImage);
+//     error = rawImage.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage);
+//     if (error != FlyCapture2::PGRERROR_OK)
+//     {
+//         PrintError(error);
+//         return -1;
+//     }
 
-  // Set the camera configuration
-  error = cam.SetConfiguration(&config);
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
+//     // convert to OpenCV Mat
+//     unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
+//     cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
 
-  FrameRateCounter frame_rate_counter(k_numImages);
-  frame_rate_counter.Reset();
+//     // convert to greyscale
+//     cv::Mat greyMat;
+//     cv::cvtColor(image, greyMat, CV_BGR2GRAY);
 
-  // Start capturing images
-  error = cam.StartCapture();
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
+// // // Create a unique filename
 
-  FlyCapture2::Image rawImage;
-  FlyCapture2::Image rgbImage;
+//     // std::ostringstream filename;
+//     // filename << "FlyCapture2Test-" << camInfo.serialNumber << "-"
+//     //          << imageCnt << ".pgm";
 
-  std::cout << "Capturing " << k_numImages << " images." << std::endl;
-  for (int imageCnt = 0; imageCnt < k_numImages; imageCnt++)
-  {
-    // Retrieve an image
-    error = cam.RetrieveBuffer(&rawImage);
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-      PrintError(error);
-      continue;
-    }
+//     // // Save the image. If a file format is not passed in, then the file
+//     // // extension is parsed to attempt to determine the file format.
+//     // error = rgbImage.Save(filename.str().c_str());
+//     // if (error != PGRERROR_OK)
+//     // {
+//     //     PrintError(error);
+//     //     return -1;
+//     // }
+  // }
 
-    // std::cout << "Grabbed image " << imageCnt << std::endl;
-    frame_rate_counter.NewFrame();
-
-    // Convert the raw image
-    // error = rawImage.Convert(PIXEL_FORMAT_MONO8, &rgbImage);
-    error = rawImage.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage);
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        PrintError(error);
-        return -1;
-    }
-
-    // convert to OpenCV Mat
-    unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
-    cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
-
-    // convert to greyscale
-    cv::Mat greyMat;
-    cv::cvtColor(image, greyMat, CV_BGR2GRAY);
-
-// // Create a unique filename
-
-    // std::ostringstream filename;
-    // filename << "FlyCapture2Test-" << camInfo.serialNumber << "-"
-    //          << imageCnt << ".pgm";
-
-    // // Save the image. If a file format is not passed in, then the file
-    // // extension is parsed to attempt to determine the file format.
-    // error = rgbImage.Save(filename.str().c_str());
-    // if (error != PGRERROR_OK)
-    // {
-    //     PrintError(error);
-    //     return -1;
-    // }
-  }
-
-  // Stop capturing images
-  error = cam.StopCapture();
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
-
-  // Disconnect the camera
-  error = cam.Disconnect();
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
-    return -1;
-  }
-
-  std::cout << "Frame rate: " << frame_rate_counter.GetFrameRate() << std::endl;
+  // std::cout << "Frame rate: " << frame_rate_counter.GetFrameRate() << std::endl;
 
   return 0;
 }
@@ -205,47 +107,46 @@ int main(int /*argc*/, char ** /*argv*/)
 {
   Cameras cameras;
 
-  PrintBuildInfo();
+  cameras.printLibraryInfo();
 
-  FlyCapture2::Error error;
+  size_t camera_count = cameras.countCameras();
+  std::cout << "Number of cameras detected: " << camera_count << std::endl;
 
-  // Since this application saves images in the current folder
-  // we must ensure that we have permission to write to this folder.
-  // If we do not have permission, fail right away.
-  FILE *tempFile = fopen("test.txt", "w+");
-  if (tempFile == NULL)
+  if (camera_count != 1)
   {
-    std::cout << "Failed to create file in current folder.  Please check "
-      "permissions."
-         << std::endl;
-    return -1;
-  }
-  fclose(tempFile);
-  remove("test.txt");
-
-  FlyCapture2::BusManager busMgr;
-  unsigned int numCameras;
-  error = busMgr.GetNumOfCameras(&numCameras);
-  if (error != FlyCapture2::PGRERROR_OK)
-  {
-    PrintError(error);
     return -1;
   }
 
-  std::cout << "Number of cameras detected: " << numCameras << std::endl;
-
-  for (unsigned int i = 0; i < numCameras; i++)
+  size_t camera_index = 0;
+  bool connected = cameras.connectToCamera(camera_index);
+  if (!connected)
   {
-    FlyCapture2::PGRGuid guid;
-    error = busMgr.GetCameraFromIndex(i, &guid);
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-      PrintError(error);
-      return -1;
-    }
-
-    RunSingleCamera(guid);
+    return -1;
   }
+
+  cameras.printCameraInfo();
+
+  bool success;
+  success = cameras.startCameraCapture();
+  if (!success)
+  {
+    return -1;
+  }
+
+  // RunSingleCamera(guid);
+
+  success = cameras.stopCameraCapture();
+  if (!success)
+  {
+    return -1;
+  }
+
+  success = cameras.disconnectCamera();
+  if (!success)
+  {
+    return -1;
+  }
+
 
   LibSerial::SerialStream dev;
   dev.Open("/dev/ttyACM0");
@@ -260,6 +161,20 @@ int main(int /*argc*/, char ** /*argv*/)
 
   return 0;
 }
+
+  // Since this application saves images in the current folder
+  // we must ensure that we have permission to write to this folder.
+  // If we do not have permission, fail right away.
+  // FILE *tempFile = fopen("test.txt", "w+");
+  // if (tempFile == NULL)
+  // {
+  //   std::cout << "Failed to create file in current folder.  Please check "
+  //     "permissions."
+  //        << std::endl;
+  //   return -1;
+  // }
+  // fclose(tempFile);
+  // remove("test.txt");
 
 void processImage(cv::Mat frame)
 {
