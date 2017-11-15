@@ -17,9 +17,6 @@ Cameras::Cameras()
   FlyCapture2::CameraInfo camera_info_;
   FlyCapture2::Image raw_image_;
   FlyCapture2::Image rgb_image_;
-
-  FrameRateCounter frame_rate_counter_(queue_length_);
-  frame_rate_counter_.Reset();
 }
 
 void Cameras::printLibraryInfo()
@@ -130,7 +127,6 @@ bool Cameras::retrieveImage(cv::Mat & image)
   size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
   cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
   cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
-  frame_rate_counter_.NewFrame();
   return success;
 }
 
@@ -154,11 +150,6 @@ bool Cameras::disconnectCamera()
     return !success;
   }
   return success;
-}
-
-double Cameras::getFrameRate()
-{
-  return frame_rate_counter_.GetFrameRate();
 }
 
 // private

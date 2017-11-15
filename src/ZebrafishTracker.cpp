@@ -7,33 +7,37 @@
 // ----------------------------------------------------------------------------
 #include <iostream>
 #include <sstream>
+#include <signal.h>
 
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#include <FlyCapture2.h>
+#include "Cameras.h"
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
 #include "FrameRateCounter.h"
 
-#include <FlyCapture2.h>
-#include "Cameras.h"
+#include "ImageProcessor.h"
 
 #include <SerialStream.h>
 
-#include <signal.h>
 
-
-volatile sig_atomic_t run = 1;
+volatile sig_atomic_t run_global = 1;
 
 void interruptSignalFunction(int sig)
 {
-  run = 0;
+  run_global = 0;
 }
 
 int main(int /*argc*/, char ** /*argv*/)
 {
+  signal(SIGINT,interruptSignalFunction);
+
   Cameras cameras;
+  ImageProcessor image_processor;
 
   cameras.printLibraryInfo();
 
@@ -64,14 +68,13 @@ int main(int /*argc*/, char ** /*argv*/)
   std::cout << "Running! Press ctrl-c to stop." << std::endl << std::endl;
 
   cv::Mat image;
-
-  signal(SIGINT,interruptSignalFunction);
-  while (run)
+  while (run_global)
   {
     cameras.retrieveImage(image);
+    image_processor.processImage(image);
   }
 
-  std::cout << "Frame rate: " << cameras.getFrameRate() << std::endl;
+  std::cout << "Frame rate: " << image_processor.getFrameRate() << std::endl;
 
   success = cameras.stopCameraCapture();
   if (!success)
