@@ -1,23 +1,10 @@
-//=============================================================================
-// Copyright © 2017 FLIR Integrated Imaging Solutions, Inc. All Rights Reserved.
+// ----------------------------------------------------------------------------
+// ZebrafishTracker
 //
-// This software is the confidential and proprietary information of FLIR
-// Integrated Imaging Solutions, Inc. ("Confidential Information"). You
-// shall not disclose such Confidential Information and shall use it only in
-// accordance with the terms of the license agreement you entered into
-// with FLIR Integrated Imaging Solutions, Inc. (FLIR).
 //
-// FLIR MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
-// SOFTWARE, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-// PURPOSE, OR NON-INFRINGEMENT. FLIR SHALL NOT BE LIABLE FOR ANY DAMAGES
-// SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
-// THIS SOFTWARE OR ITS DERIVATIVES.
-//=============================================================================
-//=============================================================================
-// $Id: FlyCapture2Test.cpp 316528 2017-02-22 00:03:53Z alin $
-//=============================================================================
-
+// Authors:
+// Peter Polidoro polidorop@janelia.hhmi.org
+// ----------------------------------------------------------------------------
 #include <iostream>
 #include <sstream>
 
@@ -34,74 +21,6 @@
 
 #include <SerialStream.h>
 
-
-void PrintError(FlyCapture2::Error error) { error.PrintErrorTrace(); }
-
-void processImage(cv::Mat frame);
-
-int RunSingleCamera(FlyCapture2::PGRGuid guid)
-{
-//   const int k_numImages = 100;
-
-//   FlyCapture2::Error error;
-
-//   FrameRateCounter frame_rate_counter(k_numImages);
-//   frame_rate_counter.Reset();
-
-//   FlyCapture2::Image rawImage;
-//   FlyCapture2::Image rgbImage;
-
-//   std::cout << "Capturing " << k_numImages << " images." << std::endl;
-//   for (int imageCnt = 0; imageCnt < k_numImages; imageCnt++)
-//   {
-//     // Retrieve an image
-//     error = cam.RetrieveBuffer(&rawImage);
-//     if (error != FlyCapture2::PGRERROR_OK)
-//     {
-//       PrintError(error);
-//       continue;
-//     }
-
-//     // std::cout << "Grabbed image " << imageCnt << std::endl;
-//     frame_rate_counter.NewFrame();
-
-//     // Convert the raw image
-//     // error = rawImage.Convert(PIXEL_FORMAT_MONO8, &rgbImage);
-//     error = rawImage.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage);
-//     if (error != FlyCapture2::PGRERROR_OK)
-//     {
-//         PrintError(error);
-//         return -1;
-//     }
-
-//     // convert to OpenCV Mat
-//     unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
-//     cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
-
-//     // convert to greyscale
-//     cv::Mat greyMat;
-//     cv::cvtColor(image, greyMat, CV_BGR2GRAY);
-
-// // // Create a unique filename
-
-//     // std::ostringstream filename;
-//     // filename << "FlyCapture2Test-" << camInfo.serialNumber << "-"
-//     //          << imageCnt << ".pgm";
-
-//     // // Save the image. If a file format is not passed in, then the file
-//     // // extension is parsed to attempt to determine the file format.
-//     // error = rgbImage.Save(filename.str().c_str());
-//     // if (error != PGRERROR_OK)
-//     // {
-//     //     PrintError(error);
-//     //     return -1;
-//     // }
-  // }
-
-  // std::cout << "Frame rate: " << frame_rate_counter.GetFrameRate() << std::endl;
-
-  return 0;
-}
 
 int main(int /*argc*/, char ** /*argv*/)
 {
@@ -133,7 +52,20 @@ int main(int /*argc*/, char ** /*argv*/)
     return -1;
   }
 
-  // RunSingleCamera(guid);
+  const size_t image_count = 100;
+
+  FrameRateCounter frame_rate_counter(image_count);
+  frame_rate_counter.Reset();
+  std::cout << "Capturing " << image_count << " images." << std::endl;
+
+  cv::Mat image;
+  for (int image_n = 0; image_n < image_count; ++image_n)
+  {
+    cameras.retrieveImage(image);
+    frame_rate_counter.NewFrame();
+  }
+
+  std::cout << "Frame rate: " << frame_rate_counter.GetFrameRate() << std::endl;
 
   success = cameras.stopCameraCapture();
   if (!success)
@@ -162,6 +94,27 @@ int main(int /*argc*/, char ** /*argv*/)
   return 0;
 }
 
+// int RunSingleCamera(FlyCapture2::PGRGuid guid)
+// {
+// // // // Create a unique filename
+
+// //     // std::ostringstream filename;
+// //     // filename << "FlyCapture2Test-" << camInfo.serialNumber << "-"
+// //     //          << imageCnt << ".pgm";
+
+// //     // // Save the image. If a file format is not passed in, then the file
+// //     // // extension is parsed to attempt to determine the file format.
+// //     // error = rgbImage.Save(filename.str().c_str());
+// //     // if (error != PGRERROR_OK)
+// //     // {
+// //     //     PrintError(error);
+// //     //     return -1;
+// //     // }
+//   // }
+
+//   return 0;
+// }
+
   // Since this application saves images in the current folder
   // we must ensure that we have permission to write to this folder.
   // If we do not have permission, fail right away.
@@ -176,8 +129,8 @@ int main(int /*argc*/, char ** /*argv*/)
   // fclose(tempFile);
   // remove("test.txt");
 
-void processImage(cv::Mat frame)
-{
+// void processImage(cv::Mat frame)
+// {
   //show the current frame and the fg masks
   // imshow("Frame", frame);
 
@@ -212,4 +165,4 @@ void processImage(cv::Mat frame)
 
   //get the input from the keyboard
   // keyboard = waitKey(1);
-}
+// }

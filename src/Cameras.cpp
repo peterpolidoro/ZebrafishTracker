@@ -15,6 +15,8 @@ Cameras::Cameras()
   FlyCapture2::BusManager bus_mgr_;
   FlyCapture2::Camera camera_;
   FlyCapture2::CameraInfo camera_info_;
+  FlyCapture2::Image raw_image_;
+  FlyCapture2::Image rgb_image_;
 }
 
 void Cameras::printLibraryInfo()
@@ -104,6 +106,25 @@ bool Cameras::startCameraCapture()
   {
     return !success;
   }
+  return success;
+}
+
+bool Cameras::retrieveImage(cv::Mat & image)
+{
+  bool success = true;
+  error_ = camera_.RetrieveBuffer(&raw_image_);
+  if (error())
+  {
+    return !success;
+  }
+  error_ = raw_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
+  if (error())
+  {
+    return !success;
+  }
+  size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
+  cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
+  cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
   return success;
 }
 
