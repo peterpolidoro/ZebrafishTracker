@@ -69,16 +69,17 @@ int main(int /*argc*/, char ** /*argv*/)
   std::cout << "Running! Press ctrl-c to stop." << std::endl << std::endl;
 
   cv::Mat image;
+  cv::Point blob_center;
   while (run_global)
   {
     success = cameras.retrieveImage(image);
     if (success)
     {
-      blob_tracker.processImage(image);
+      blob_center = blob_tracker.findBlobCenter(image);
     }
   }
 
-  std::cout << std::endl << "Stopping camera capture." << std::endl << std::endl;
+  std::cout << std::endl << std::endl << "Stopping camera capture." << std::endl << std::endl;
 
   success = cameras.stopCameraCapture();
   if (!success)
