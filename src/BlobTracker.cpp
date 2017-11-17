@@ -1,15 +1,15 @@
 // ----------------------------------------------------------------------------
-// ImageProcessor.cpp
+// BlobTracker.cpp
 //
 //
 // Authors:
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
-#include "ImageProcessor.h"
+#include "BlobTracker.h"
 
 
 // public
-ImageProcessor::ImageProcessor()
+BlobTracker::BlobTracker()
 {
   image_n_ = 0;
   frame_rate_position_ = cv::Point(50,50);
@@ -25,7 +25,7 @@ ImageProcessor::ImageProcessor()
   frame_rate_counter_.Reset();
 }
 
-void ImageProcessor::processImage(cv::Mat & image)
+void BlobTracker::processImage(cv::Mat & image)
 {
   frame_rate_counter_.NewFrame();
 
@@ -34,10 +34,11 @@ void ImageProcessor::processImage(cv::Mat & image)
     mog2_ptr_->operator()(image,
                           foreground_,
                           background_learing_rate_);
+    mog2_ptr_->getBackgroundImage(background_);
   }
   if ((image_n_ % display_divisor_) == 0)
   {
-    cv::cvtColor(foreground_,display_image_,CV_GRAY2BGR);
+    cv::cvtColor(background_,display_image_,CV_GRAY2BGR);
     std::stringstream frame_rate_ss;
     frame_rate_ss << getFrameRate();
     std::string frame_rate_string = std::string("Frame rate: ") + std::string(frame_rate_ss.str());
@@ -54,7 +55,7 @@ void ImageProcessor::processImage(cv::Mat & image)
   ++image_n_;
 }
 
-double ImageProcessor::getFrameRate()
+double BlobTracker::getFrameRate()
 {
   return frame_rate_counter_.GetFrameRate();
 }

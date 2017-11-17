@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// ImageProcessor.h
+// BlobTracker.h
 //
 //
 // Authors:
@@ -20,10 +20,10 @@
 #include <sstream>
 
 
-class ImageProcessor
+class BlobTracker
 {
 public:
-  ImageProcessor();
+  BlobTracker();
 
   void processImage(cv::Mat & image);
   double getFrameRate();
@@ -33,6 +33,7 @@ private:
   cv::Point frame_rate_position_;
   cv::Ptr<cv::BackgroundSubtractor> mog2_ptr_;
   cv::Mat foreground_;
+  cv::Mat background_;
   static const size_t background_divisor_=10;
   static const int background_history_=100;
   static const float background_var_threshold_=16;

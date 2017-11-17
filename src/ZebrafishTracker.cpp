@@ -21,7 +21,7 @@
 #include <boost/thread.hpp>
 #include "FrameRateCounter.h"
 
-#include "ImageProcessor.h"
+#include "BlobTracker.h"
 
 #include <SerialStream.h>
 
@@ -38,7 +38,7 @@ int main(int /*argc*/, char ** /*argv*/)
   signal(SIGINT,interruptSignalFunction);
 
   Cameras cameras;
-  ImageProcessor image_processor;
+  BlobTracker blob_tracker;
 
   cameras.printLibraryInfo();
 
@@ -74,7 +74,7 @@ int main(int /*argc*/, char ** /*argv*/)
     success = cameras.retrieveImage(image);
     if (success)
     {
-      image_processor.processImage(image);
+      blob_tracker.processImage(image);
     }
   }
 
