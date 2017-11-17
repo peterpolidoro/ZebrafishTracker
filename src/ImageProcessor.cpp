@@ -12,10 +12,14 @@
 ImageProcessor::ImageProcessor()
 {
   image_n_ = 0;
-  cv::Point frame_rate_position_(50,500);
+  frame_rate_position_ = cv::Point(50,50);
+
+  mog2_ptr_ = new cv::BackgroundSubtractorMOG2(background_history_,
+                                               background_var_threshold_,
+                                               background_shadow_detection_);
 
   // Create Window
-  cv::namedWindow("Processed Images", 1);
+  cv::namedWindow("Processed Images",cv::WINDOW_NORMAL);
 
   FrameRateCounter frame_rate_counter_(queue_length_);
   frame_rate_counter_.Reset();
@@ -24,19 +28,30 @@ ImageProcessor::ImageProcessor()
 void ImageProcessor::processImage(cv::Mat & image)
 {
   frame_rate_counter_.NewFrame();
-  image_n_ = (image_n_ + 1) % display_divisor_;
-  if (image_n_ == 0)
+
+  if ((image_n_ % background_divisor_) == 0)
   {
+    mog2_ptr_->operator()(image,
+                          foreground_,
+                          background_learing_rate_);
+  }
+  if ((image_n_ % display_divisor_) == 0)
+  {
+    cv::cvtColor(foreground_,display_image_,CV_GRAY2BGR);
     std::stringstream frame_rate_ss;
     frame_rate_ss << getFrameRate();
     std::string frame_rate_string = std::string("Frame rate: ") + std::string(frame_rate_ss.str());
-    // cv::putText(image,frame_rate_string,frame_rate_position_,cv::FONT_HERSHEY_SIMPLEX,1,cv::Scalar(0,200,200),4);
-    // std::cout << "Frame rate: " << getFrameRate() << std::endl;
-    std::cout << frame_rate_string << std::endl;
-    std::cout << std::endl;
-    cv::imshow("Processed Images",image);
+    cv::putText(display_image_,
+                frame_rate_string,
+                frame_rate_position_,
+                cv::FONT_HERSHEY_SIMPLEX,
+                1,
+                cv::Scalar(0,200,200),
+                4);
+    cv::imshow("Processed Images",display_image_);
     cv::waitKey(1);
   }
+  ++image_n_;
 }
 
 double ImageProcessor::getFrameRate()

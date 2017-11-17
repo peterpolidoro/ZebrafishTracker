@@ -12,6 +12,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/video/background_segm.hpp>
 
 #include <FlyCapture2.h>
 #include "Cameras.h"
@@ -70,11 +71,14 @@ int main(int /*argc*/, char ** /*argv*/)
   cv::Mat image;
   while (run_global)
   {
-    cameras.retrieveImage(image);
-    image_processor.processImage(image);
+    success = cameras.retrieveImage(image);
+    if (success)
+    {
+      image_processor.processImage(image);
+    }
   }
 
-  std::cout << "Frame rate: " << image_processor.getFrameRate() << std::endl;
+  std::cout << std::endl << "Stopping camera capture." << std::endl << std::endl;
 
   success = cameras.stopCameraCapture();
   if (!success)
@@ -82,11 +86,15 @@ int main(int /*argc*/, char ** /*argv*/)
     return -1;
   }
 
+  std::cout << "Disconnecting camera." << std::endl << std::endl;
+
   success = cameras.disconnectCamera();
   if (!success)
   {
     return -1;
   }
+
+  std::cout << "Goodbye!" << std::endl << std::endl;
 
   return 0;
 }
