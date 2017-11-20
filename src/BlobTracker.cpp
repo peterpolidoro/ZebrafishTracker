@@ -25,8 +25,10 @@ BlobTracker::BlobTracker()
   frame_rate_counter_.Reset();
 }
 
-cv::Point BlobTracker::findBlobCenter(cv::Mat & image)
+bool BlobTracker::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
 {
+  bool success = true;
+
   // Update frame rate measurement
   frame_rate_counter_.NewFrame();
 
@@ -40,7 +42,7 @@ cv::Point BlobTracker::findBlobCenter(cv::Mat & image)
   }
 
   // Find blob center
-  cv::Point blob_center = cv::Point(0,0);
+  blob_center = cv::Point(0,0);
   cv::subtract(image,background_,foreground_);
   cv::threshold(foreground_,threshold_,threshold_value_,max_value_,cv::THRESH_BINARY_INV);
 
@@ -64,7 +66,7 @@ cv::Point BlobTracker::findBlobCenter(cv::Mat & image)
 
   ++image_n_;
 
-  return blob_center;
+  return success;
 }
 
 double BlobTracker::getFrameRate()

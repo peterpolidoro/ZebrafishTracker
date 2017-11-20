@@ -25,7 +25,7 @@ class BlobTracker
 public:
   BlobTracker();
 
-  cv::Point findBlobCenter(cv::Mat & image);
+  bool findBlobCenter(cv::Mat & image, cv::Point & blob_center);
   double getFrameRate();
 private:
   static const size_t display_divisor_=10;

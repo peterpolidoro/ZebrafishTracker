@@ -75,7 +75,7 @@ int main(int /*argc*/, char ** /*argv*/)
     success = cameras.retrieveImage(image);
     if (success)
     {
-      blob_center = blob_tracker.findBlobCenter(image);
+      success = blob_tracker.findBlobCenter(image,blob_center);
     }
   }
 
