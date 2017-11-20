@@ -15,7 +15,7 @@
 #include <opencv2/video/background_segm.hpp>
 
 #include <FlyCapture2.h>
-#include "Cameras.h"
+#include "Camera.h"
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
@@ -37,12 +37,12 @@ int main(int /*argc*/, char ** /*argv*/)
 {
   signal(SIGINT,interruptSignalFunction);
 
-  Cameras cameras;
+  Camera camera;
   BlobTracker blob_tracker;
 
-  cameras.printLibraryInfo();
+  camera.printLibraryInfo();
 
-  size_t camera_count = cameras.countCameras();
+  size_t camera_count = camera.countCameras();
   std::cout << "Number of cameras detected: " << camera_count << std::endl;
 
   if (camera_count != 1)
@@ -51,16 +51,16 @@ int main(int /*argc*/, char ** /*argv*/)
   }
 
   size_t camera_index = 0;
-  bool connected = cameras.connectToCamera(camera_index);
+  bool connected = camera.connectToCamera(camera_index);
   if (!connected)
   {
     return -1;
   }
 
-  cameras.printCameraInfo();
+  camera.printCameraInfo();
 
   bool success;
-  success = cameras.startCameraCapture();
+  success = camera.startCameraCapture();
   if (!success)
   {
     return -1;
@@ -72,7 +72,7 @@ int main(int /*argc*/, char ** /*argv*/)
   cv::Point blob_center;
   while (run_global)
   {
-    success = cameras.retrieveImage(image);
+    success = camera.retrieveImage(image);
     if (success)
     {
       success = blob_tracker.findBlobCenter(image,blob_center);
@@ -81,7 +81,7 @@ int main(int /*argc*/, char ** /*argv*/)
 
   std::cout << std::endl << std::endl << "Stopping camera capture." << std::endl << std::endl;
 
-  success = cameras.stopCameraCapture();
+  success = camera.stopCameraCapture();
   if (!success)
   {
     return -1;
@@ -89,7 +89,7 @@ int main(int /*argc*/, char ** /*argv*/)
 
   std::cout << "Disconnecting camera." << std::endl << std::endl;
 
-  success = cameras.disconnectCamera();
+  success = camera.disconnectCamera();
   if (!success)
   {
     return -1;

@@ -1,15 +1,15 @@
 // ----------------------------------------------------------------------------
-// Cameras.cpp
+// Camera.cpp
 //
 //
 // Authors:
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
-#include "Cameras.h"
+#include "Camera.h"
 
 
 // public
-Cameras::Cameras()
+Camera::Camera()
 {
   FlyCapture2::Error error_;
   FlyCapture2::BusManager bus_mgr_;
@@ -19,7 +19,7 @@ Cameras::Cameras()
   FlyCapture2::Image rgb_image_;
 }
 
-void Cameras::printLibraryInfo()
+void Camera::printLibraryInfo()
 {
   std::cout << std::endl;
 
@@ -37,7 +37,7 @@ void Cameras::printLibraryInfo()
   std::cout << timeStamp.str() << std::endl << std::endl;
 }
 
-size_t Cameras::countCameras()
+size_t Camera::countCameras()
 {
   unsigned int camera_count;
   error_ = bus_mgr_.GetNumOfCameras(&camera_count);
@@ -48,7 +48,7 @@ size_t Cameras::countCameras()
   return camera_count;
 }
 
-bool Cameras::connectToCamera(size_t camera_index)
+bool Camera::connectToCamera(size_t camera_index)
 {
   bool connected = false;
   FlyCapture2::PGRGuid guid;
@@ -85,7 +85,7 @@ bool Cameras::connectToCamera(size_t camera_index)
   return connected;
 }
 
-void Cameras::printCameraInfo()
+void Camera::printCameraInfo()
 {
   std::cout << std::endl;
   std::cout << "*** CAMERA INFORMATION ***" << std::endl;
@@ -100,7 +100,7 @@ void Cameras::printCameraInfo()
 
 }
 
-bool Cameras::startCameraCapture()
+bool Camera::startCameraCapture()
 {
   bool success = true;
   error_ = camera_.StartCapture();
@@ -111,7 +111,7 @@ bool Cameras::startCameraCapture()
   return success;
 }
 
-bool Cameras::retrieveImage(cv::Mat & image)
+bool Camera::retrieveImage(cv::Mat & image)
 {
   bool success = true;
   error_ = camera_.RetrieveBuffer(&raw_image_);
@@ -130,7 +130,7 @@ bool Cameras::retrieveImage(cv::Mat & image)
   return success;
 }
 
-bool Cameras::stopCameraCapture()
+bool Camera::stopCameraCapture()
 {
   bool success = true;
   error_ = camera_.StopCapture();
@@ -141,7 +141,7 @@ bool Cameras::stopCameraCapture()
   return success;
 }
 
-bool Cameras::disconnectCamera()
+bool Camera::disconnectCamera()
 {
   bool success = true;
   error_ = camera_.Disconnect();
@@ -153,7 +153,7 @@ bool Cameras::disconnectCamera()
 }
 
 // private
-bool Cameras::error()
+bool Camera::error()
 {
   bool error = (error_ != FlyCapture2::PGRERROR_OK);
   if (error)
@@ -163,7 +163,7 @@ bool Cameras::error()
   return error;
 }
 
-void Cameras::printError()
+void Camera::printError()
 {
   error_.PrintErrorTrace();
 }

@@ -1,12 +1,12 @@
 // ----------------------------------------------------------------------------
-// Cameras.h
+// Camera.h
 //
 //
 // Authors:
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
-#ifndef _CAMERAS_H_
-#define _CAMERAS_H_
+#ifndef _CAMERA_H_
+#define _CAMERA_H_
 #include <iostream>
 #include <sstream>
 
@@ -16,10 +16,10 @@
 #include <FlyCapture2.h>
 
 
-class Cameras
+class Camera
 {
 public:
-  Cameras();
+  Camera();
 
   void printLibraryInfo();
   size_t countCameras();
