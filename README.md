@@ -12,6 +12,12 @@ License:
 
 ## Installation
 
+### Setup Jetson
+
+<https://github.com/janelia-experimental-technology/nvidia_jetson_setup>
+
+### Compile Software
+
 ```shell
 sudo apt-get install cmake
 sudo apt-get install libboost-all-dev
