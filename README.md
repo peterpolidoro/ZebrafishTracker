@@ -16,11 +16,15 @@ License:
 
 ## Installation
 
+### Setup Linear Motors
+
+<https://github.com/janelia-experimental-technology/linear_motor_setup>
+
 ### Setup Jetson
 
 <https://github.com/janelia-experimental-technology/nvidia_jetson_setup>
 
-### Compile Software
+### Compile Software on Jetson
 
 ```shell
 sudo apt-get install cmake
