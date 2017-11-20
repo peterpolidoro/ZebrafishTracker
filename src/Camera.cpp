@@ -37,7 +37,7 @@ void Camera::printLibraryInfo()
   std::cout << timeStamp.str() << std::endl << std::endl;
 }
 
-size_t Camera::countCameras()
+size_t Camera::count()
 {
   unsigned int camera_count;
   error_ = bus_mgr_.GetNumOfCameras(&camera_count);
@@ -48,30 +48,36 @@ size_t Camera::countCameras()
   return camera_count;
 }
 
-bool Camera::connectToCamera(size_t camera_index)
+bool Camera::setDesiredCamera(const size_t camera_index)
 {
-  bool connected = false;
-  FlyCapture2::PGRGuid guid;
-  error_ = bus_mgr_.GetCameraFromIndex(camera_index, &guid);
+  bool success = true;
+  camera_index_ = camera_index;
+  error_ = bus_mgr_.GetCameraFromIndex(camera_index_, &guid_);
   if (error())
   {
-    return connected;
+    return !success;
   }
-  error_ = camera_.Connect(&guid);
+  return success;
+}
+
+bool Camera::connect()
+{
+  bool success = true;
+  error_ = camera_.Connect(&guid_);
   if (error())
   {
-    return connected;
+    return !success;
   }
   error_ = camera_.GetCameraInfo(&camera_info_);
   if (error())
   {
-    return connected;
+    return !success;
   }
   FlyCapture2::FC2Config camera_config;
   error_ = camera_.GetConfiguration(&camera_config);
   if (error())
   {
-    return connected;
+    return !success;
   }
   camera_config.numBuffers = buffer_count_;
   camera_config.grabMode = FlyCapture2::BUFFER_FRAMES;
@@ -79,10 +85,9 @@ bool Camera::connectToCamera(size_t camera_index)
   error_ = camera_.SetConfiguration(&camera_config);
   if (error())
   {
-    return connected;
+    return !success;
   }
-  connected = true;
-  return connected;
+  return success;
 }
 
 void Camera::printCameraInfo()
@@ -100,7 +105,7 @@ void Camera::printCameraInfo()
 
 }
 
-bool Camera::startCameraCapture()
+bool Camera::start()
 {
   bool success = true;
   error_ = camera_.StartCapture();
@@ -111,7 +116,7 @@ bool Camera::startCameraCapture()
   return success;
 }
 
-bool Camera::retrieveImage(cv::Mat & image)
+bool Camera::grabImage(cv::Mat & image)
 {
   bool success = true;
   error_ = camera_.RetrieveBuffer(&raw_image_);
@@ -130,7 +135,7 @@ bool Camera::retrieveImage(cv::Mat & image)
   return success;
 }
 
-bool Camera::stopCameraCapture()
+bool Camera::stop()
 {
   bool success = true;
   error_ = camera_.StopCapture();
@@ -141,7 +146,7 @@ bool Camera::stopCameraCapture()
   return success;
 }
 
-bool Camera::disconnectCamera()
+bool Camera::disconnect()
 {
   bool success = true;
   error_ = camera_.Disconnect();

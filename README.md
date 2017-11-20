@@ -10,6 +10,10 @@ License:
 
 ## Example Usage
 
+```shell
+./bin/ZebrafishTracker
+```
+
 ## Installation
 
 ### Setup Jetson

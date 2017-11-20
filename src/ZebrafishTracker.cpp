@@ -42,7 +42,7 @@ int main(int /*argc*/, char ** /*argv*/)
 
   camera.printLibraryInfo();
 
-  size_t camera_count = camera.countCameras();
+  size_t camera_count = camera.count();
   std::cout << "Number of cameras detected: " << camera_count << std::endl;
 
   if (camera_count != 1)
@@ -51,16 +51,21 @@ int main(int /*argc*/, char ** /*argv*/)
   }
 
   size_t camera_index = 0;
-  bool connected = camera.connectToCamera(camera_index);
-  if (!connected)
+  bool success = camera.setDesiredCamera(camera_index);
+  if (!success)
+  {
+    return -1;
+  }
+
+  success = camera.connect();
+  if (!success)
   {
     return -1;
   }
 
   camera.printCameraInfo();
 
-  bool success;
-  success = camera.startCameraCapture();
+  success = camera.start();
   if (!success)
   {
     return -1;
@@ -72,7 +77,7 @@ int main(int /*argc*/, char ** /*argv*/)
   cv::Point blob_center;
   while (run_global)
   {
-    success = camera.retrieveImage(image);
+    success = camera.grabImage(image);
     if (success)
     {
       success = blob_tracker.findBlobCenter(image,blob_center);
@@ -81,7 +86,7 @@ int main(int /*argc*/, char ** /*argv*/)
 
   std::cout << std::endl << std::endl << "Stopping camera capture." << std::endl << std::endl;
 
-  success = camera.stopCameraCapture();
+  success = camera.stop();
   if (!success)
   {
     return -1;
@@ -89,7 +94,7 @@ int main(int /*argc*/, char ** /*argv*/)
 
   std::cout << "Disconnecting camera." << std::endl << std::endl;
 
-  success = camera.disconnectCamera();
+  success = camera.disconnect();
   if (!success)
   {
     return -1;
