@@ -13,6 +13,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/video/background_segm.hpp>
+#include <opencv2/features2d.hpp>
 
 #include <FlyCapture2.h>
 #include "Camera.h"
