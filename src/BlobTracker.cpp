@@ -49,7 +49,8 @@ bool BlobTracker::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
   // Update display
   if ((image_n_ % display_divisor_) == 0)
   {
-    cv::cvtColor(threshold_,display_image_,CV_GRAY2BGR);
+    cv::cvtColor(image,display_image_,CV_GRAY2BGR);
+    // cv::cvtColor(threshold_,display_image_,CV_GRAY2BGR);
     std::stringstream frame_rate_ss;
     frame_rate_ss << getFrameRate();
     std::string frame_rate_string = std::string("Frame rate: ") + std::string(frame_rate_ss.str());
