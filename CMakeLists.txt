@@ -13,7 +13,7 @@ include_directories( ${FLYCAPTURE_INCLUDE_DIRS} )
 find_package( Boost COMPONENTS timer thread REQUIRED )
 include_directories( ${Boost_INCLUDE_DIRS} )
 
-find_package( OpenCV REQUIRED )
+find_package( OpenCV 2 REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 find_package( LibSerial REQUIRED )

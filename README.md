@@ -24,12 +24,17 @@ License:
 
 <https://github.com/janelia-experimental-technology/nvidia_jetson_setup>
 
-### Compile Software on Jetson
+### Install Dependencies
 
 ```shell
 sudo apt-get install cmake
 sudo apt-get install libboost-all-dev
 sudo apt-get install libserial-dev
+```
+
+### Compile
+
+```shell
 mkdir build
 cd build
 cmake ..
