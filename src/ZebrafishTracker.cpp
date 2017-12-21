@@ -13,6 +13,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/video/background_segm.hpp>
+#include <opencv2/features2d.hpp>
 
 #include <FlyCapture2.h>
 #include "Camera.h"
@@ -51,7 +52,7 @@ int main(int /*argc*/, char ** /*argv*/)
   }
 
   size_t camera_index = 0;
-  bool success = camera.setDesiredCamera(camera_index);
+  bool success = camera.setDesiredCameraIndex(camera_index);
   if (!success)
   {
     return -1;
