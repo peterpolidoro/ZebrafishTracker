@@ -26,6 +26,8 @@
 
 #include <SerialStream.h>
 
+#include <boost/filesystem.hpp>
+
 
 volatile sig_atomic_t run_global = 1;
 
@@ -34,8 +36,40 @@ void interruptSignalFunction(int sig)
   run_global = 0;
 }
 
-int main(int /*argc*/, char ** /*argv*/)
+int main(int argc, char * argv[])
 {
+  std::cout << std::endl;
+
+  std::stringstream usage_ss;
+  usage_ss << "Usage: " << argv[0] << " ZEBRAFISH_TRACKER_CONFIG_PATH" << std::endl;
+
+  if (argc < 2)
+  {
+    std::cerr << usage_ss.str();
+    return 1;
+  }
+
+  boost::filesystem::path config_path(argv[1]);
+
+  try
+  {
+    if (boost::filesystem::exists(config_path) &&
+        boost::filesystem::is_directory(config_path))
+    {
+      std::cout << "zebrafish_tracker_config_path = " << config_path << std::endl;
+    }
+    else
+    {
+      std::cerr << usage_ss.str();
+      std::cerr << "ZEBRAFISH_TRACKER_CONFIG_PATH: " << config_path << " does not exist!" << std::endl;
+      return 1;
+    }
+  }
+  catch (const boost::filesystem::filesystem_error& ex)
+  {
+    std::cout << ex.what() << std::endl;
+  }
+
   signal(SIGINT,interruptSignalFunction);
 
   Camera camera;
@@ -107,16 +141,16 @@ int main(int /*argc*/, char ** /*argv*/)
 }
 
 
-  // LibSerial::SerialStream dev;
-  // dev.Open("/dev/ttyACM0");
-  // dev.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_115200);
-  // dev << "playTone 4000 ALL\n";
+// LibSerial::SerialStream dev;
+// dev.Open("/dev/ttyACM0");
+// dev.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_115200);
+// dev << "playTone 4000 ALL\n";
 
-  // std::cout << "Press Enter to exit..." << std::endl;
-  // std::cin.ignore();
+// std::cout << "Press Enter to exit..." << std::endl;
+// std::cin.ignore();
 
-  // dev << "stop\n";
-  // dev.Close();
+// dev << "stop\n";
+// dev.Close();
 
 // int RunSingleCamera(FlyCapture2::PGRGuid guid)
 // {
@@ -139,54 +173,54 @@ int main(int /*argc*/, char ** /*argv*/)
 //   return 0;
 // }
 
-  // Since this application saves images in the current folder
-  // we must ensure that we have permission to write to this folder.
-  // If we do not have permission, fail right away.
-  // FILE *tempFile = fopen("test.txt", "w+");
-  // if (tempFile == NULL)
-  // {
-  //   std::cout << "Failed to create file in current folder.  Please check "
-  //     "permissions."
-  //        << std::endl;
-  //   return -1;
-  // }
-  // fclose(tempFile);
-  // remove("test.txt");
+// Since this application saves images in the current folder
+// we must ensure that we have permission to write to this folder.
+// If we do not have permission, fail right away.
+// FILE *tempFile = fopen("test.txt", "w+");
+// if (tempFile == NULL)
+// {
+//   std::cout << "Failed to create file in current folder.  Please check "
+//     "permissions."
+//        << std::endl;
+//   return -1;
+// }
+// fclose(tempFile);
+// remove("test.txt");
 
 // void processImage(cv::Mat frame)
 // {
-  //show the current frame and the fg masks
-  // imshow("Frame", frame);
+//show the current frame and the fg masks
+// imshow("Frame", frame);
 
-  // imshow("FG Mask MOG 2", fg_mask_mog_2);
+// imshow("FG Mask MOG 2", fg_mask_mog_2);
 
-  //update the background model
-  // mog_2_ptr->apply(frame, fg_mask_mog_2);
+//update the background model
+// mog_2_ptr->apply(frame, fg_mask_mog_2);
 
-  // if (fg_mask_sum_initialized)
-  // {
-  //   add(fg_mask_sum,fg_mask_mog_2,fg_mask_sum,noArray(),CV_64F);
-  // }
-  // else
-  // {
-  //   fg_mask_sum = fg_mask_mog_2;
-  //   fg_mask_sum.convertTo(fg_mask_sum,CV_64F);
-  //   fg_mask_sum_initialized = true;
-  // }
-  //get the frame number and write it on the current frame
-  // stringstream ss;
-  // rectangle(frame, cv::Point(10, 2), cv::Point(100,20),
-  //           cv::Scalar(255,255,255), -1);
-  // ss << capture.get(CAP_PROP_POS_FRAMES);
-  // string frameNumberString = ss.str();
-  // putText(frame, frameNumberString.c_str(), cv::Point(15, 15),
-  //         FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
-  //show the current frame and the fg masks
-  // imshow("Frame", frame);
-  // imshow("FG Mask MOG 2", fg_mask_mog_2);
-  // normalize(fg_mask_sum,fg_mask_sum_normalized,0,255,NORM_MINMAX,CV_8U);
-  // applyColorMap(fg_mask_sum_normalized,fg_mask_sum_colored,COLORMAP_JET);
+// if (fg_mask_sum_initialized)
+// {
+//   add(fg_mask_sum,fg_mask_mog_2,fg_mask_sum,noArray(),CV_64F);
+// }
+// else
+// {
+//   fg_mask_sum = fg_mask_mog_2;
+//   fg_mask_sum.convertTo(fg_mask_sum,CV_64F);
+//   fg_mask_sum_initialized = true;
+// }
+//get the frame number and write it on the current frame
+// stringstream ss;
+// rectangle(frame, cv::Point(10, 2), cv::Point(100,20),
+//           cv::Scalar(255,255,255), -1);
+// ss << capture.get(CAP_PROP_POS_FRAMES);
+// string frameNumberString = ss.str();
+// putText(frame, frameNumberString.c_str(), cv::Point(15, 15),
+//         FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
+//show the current frame and the fg masks
+// imshow("Frame", frame);
+// imshow("FG Mask MOG 2", fg_mask_mog_2);
+// normalize(fg_mask_sum,fg_mask_sum_normalized,0,255,NORM_MINMAX,CV_8U);
+// applyColorMap(fg_mask_sum_normalized,fg_mask_sum_colored,COLORMAP_JET);
 
-  //get the input from the keyboard
-  // keyboard = waitKey(1);
+//get the input from the keyboard
+// keyboard = waitKey(1);
 // }

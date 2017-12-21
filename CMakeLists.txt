@@ -10,7 +10,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 find_package( FlyCapture REQUIRED )
 include_directories( ${FLYCAPTURE_INCLUDE_DIRS} )
 
-find_package( Boost COMPONENTS timer thread REQUIRED )
+find_package( Boost COMPONENTS timer thread filesystem REQUIRED )
 include_directories( ${Boost_INCLUDE_DIRS} )
 
 find_package( OpenCV 2 REQUIRED )

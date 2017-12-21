@@ -11,7 +11,8 @@ License:
 ## Example Usage
 
 ```shell
-./bin/ZebrafishTracker
+cd ~/git/ZebrafishTracker
+./bin/ZebrafishTracker ../ZebrafishTrackerConfig
 ```
 
 ## Installation
@@ -32,9 +33,19 @@ sudo apt-get install libboost-all-dev
 sudo apt-get install libserial-dev
 ```
 
+# Checkout Git Repositories
+
+```shell
+mkdir ~/git
+cd ~/git
+git clone https://github.com/janelia-experimental-technology/ZebrafishTracker.git
+git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerConfig.git
+```
+
 ### Compile
 
 ```shell
+cd ~/git/ZebrafishTracker
 mkdir build
 cd build
 cmake ..
