@@ -12,7 +12,7 @@ License:
 
 ```shell
 cd ~/git/ZebrafishTracker
-./bin/ZebrafishTracker ../ZebrafishTrackerConfig
+./bin/ZebrafishTracker ../ZebrafishTrackerCalibration
 ```
 
 ## Installation
@@ -39,7 +39,7 @@ sudo apt-get install libserial-dev
 mkdir ~/git
 cd ~/git
 git clone https://github.com/janelia-experimental-technology/ZebrafishTracker.git
-git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerConfig.git
+git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerCalibration.git
 ```
 
 ### Compile

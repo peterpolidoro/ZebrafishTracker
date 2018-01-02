@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
   std::cout << std::endl;
 
   std::stringstream usage_ss;
-  usage_ss << "Usage: " << argv[0] << " ZEBRAFISH_TRACKER_CONFIG_PATH" << std::endl;
+  usage_ss << "Usage: " << argv[0] << " ZEBRAFISH_TRACKER_CALIBRATION_PATH" << std::endl;
 
   if (argc < 2)
   {
@@ -49,19 +49,19 @@ int main(int argc, char * argv[])
     return 1;
   }
 
-  boost::filesystem::path config_path(argv[1]);
+  boost::filesystem::path calibration_path(argv[1]);
 
   try
   {
-    if (boost::filesystem::exists(config_path) &&
-        boost::filesystem::is_directory(config_path))
+    if (boost::filesystem::exists(calibration_path) &&
+        boost::filesystem::is_directory(calibration_path))
     {
-      std::cout << "zebrafish_tracker_config_path = " << config_path << std::endl;
+      std::cout << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
     }
     else
     {
       std::cerr << usage_ss.str();
-      std::cerr << "ZEBRAFISH_TRACKER_CONFIG_PATH: " << config_path << " does not exist!" << std::endl;
+      std::cerr << "ZEBRAFISH_TRACKER_CALIBRATION_PATH: " << calibration_path << " does not exist!" << std::endl;
       return 1;
     }
   }
