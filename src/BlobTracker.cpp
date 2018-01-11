@@ -50,7 +50,7 @@ bool BlobTracker::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
   // Find blob center
   blob_center = cv::Point(0,0);
   cv::subtract(image,background_,foreground_);
-  cv::threshold(foreground_,threshold_,threshold_value_,max_value_,cv::THRESH_BINARY_INV);
+  cv::threshold(foreground_,threshold_,threshold_value_,max_value_,cv::THRESH_BINARY);
 
   // Setup SimpleBlobDetector parameters.
   cv::SimpleBlobDetector::Params params;
