@@ -26,9 +26,12 @@ class BlobTracker
 public:
   BlobTracker();
 
+  void setHomographyImageToStage(cv::Mat homography_image_to_stage);
   bool findBlobCenter(cv::Mat & image, cv::Point & blob_center);
   double getFrameRate();
+
 private:
+  cv::Mat homography_image_to_stage_;
   static const size_t display_divisor_=10;
   unsigned long image_n_;
   cv::Point frame_rate_position_;

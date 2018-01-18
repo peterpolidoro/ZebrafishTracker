@@ -12,7 +12,7 @@ License:
 
 ```shell
 cd ~/git/ZebrafishTracker
-./bin/ZebrafishTracker ../ZebrafishTrackerCalibration
+./bin/ZebrafishTracker
 ```
 
 ## Installation

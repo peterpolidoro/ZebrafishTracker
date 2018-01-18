@@ -36,44 +36,38 @@ void interruptSignalFunction(int sig)
   run_global = 0;
 }
 
+bool getCalibrationData(cv::Mat & homography_image_to_stage);
+
 int main(int argc, char * argv[])
 {
   std::cout << std::endl;
 
   std::stringstream usage_ss;
-  usage_ss << "Usage: " << argv[0] << " ZEBRAFISH_TRACKER_CALIBRATION_PATH" << std::endl;
+  usage_ss << "Usage: " << argv[0] << std::endl;
 
-  if (argc < 2)
+  // std::stringstream usage_ss;
+  // usage_ss << "Usage: " << argv[0] << " ZEBRAFISH_TRACKER_CALIBRATION_PATH" << std::endl;
+
+  // if (argc < 2)
+  // {
+  //   std::cerr << usage_ss.str();
+  //   return 1;
+  // }
+
+  // boost::filesystem::path calibration_path(argv[1]);
+
+  cv::Mat homography_image_to_stage;
+  bool got_calibration = getCalibrationData(homography_image_to_stage);
+
+  if (!got_calibration)
   {
-    std::cerr << usage_ss.str();
+    std::cerr << "unable to read homography_image_to_stage in calibration.yml" << std::endl;
     return 1;
-  }
-
-  boost::filesystem::path calibration_path(argv[1]);
-
-  try
-  {
-    if (boost::filesystem::exists(calibration_path) &&
-        boost::filesystem::is_directory(calibration_path))
-    {
-      std::cout << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
-    }
-    else
-    {
-      std::cerr << usage_ss.str();
-      std::cerr << "ZEBRAFISH_TRACKER_CALIBRATION_PATH: " << calibration_path << " does not exist!" << std::endl;
-      return 1;
-    }
-  }
-  catch (const boost::filesystem::filesystem_error& ex)
-  {
-    std::cout << ex.what() << std::endl;
   }
 
   signal(SIGINT,interruptSignalFunction);
 
   Camera camera;
-  BlobTracker blob_tracker;
 
   camera.printLibraryInfo();
 
@@ -105,6 +99,9 @@ int main(int argc, char * argv[])
   {
     return -1;
   }
+
+  BlobTracker blob_tracker;
+  blob_tracker.setHomographyImageToStage(homography_image_to_stage);
 
   std::cout << "Running! Press ctrl-c to stop." << std::endl << std::endl;
 
@@ -140,6 +137,44 @@ int main(int argc, char * argv[])
   return 0;
 }
 
+bool getCalibrationData(cv::Mat & homography_image_to_stage)
+{
+  boost::filesystem::path calibration_path("../ZebrafishTrackerCalibration/calibration/calibration.yml");
+
+  try
+  {
+    if (boost::filesystem::exists(calibration_path))
+    {
+      std::cout << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
+    }
+    else
+    {
+      std::cerr << "ZEBRAFISH_TRACKER_CALIBRATION_PATH: " << calibration_path << " does not exist!" << std::endl;
+      return 1;
+    }
+  }
+  catch (const boost::filesystem::filesystem_error& ex)
+  {
+    std::cout << ex.what() << std::endl;
+  }
+
+  cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
+  calibration_fs["homography_image_to_stage"] >> homography_image_to_stage;
+  calibration_fs.release();
+
+  bool got_calibration = true;
+  if ((homography_image_to_stage.rows != 3) || (homography_image_to_stage.cols != 3))
+  {
+    got_calibration = false;
+  }
+
+  if (got_calibration)
+  {
+    std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage << std::endl;
+  }
+
+  return got_calibration;
+}
 
 // LibSerial::SerialStream dev;
 // dev.Open("/dev/ttyACM0");

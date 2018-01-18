@@ -31,6 +31,11 @@ BlobTracker::BlobTracker()
   frame_rate_counter_.Reset();
 }
 
+void BlobTracker::setHomographyImageToStage(cv::Mat homography_image_to_stage)
+{
+  homography_image_to_stage_ = homography_image_to_stage;
+}
+
 bool BlobTracker::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
 {
   bool success = true;
