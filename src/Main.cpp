@@ -28,6 +28,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include "StageController.h"
+
 #include "ZebrafishTracker.h"
 
 
@@ -40,23 +42,35 @@ int main(int argc, char * argv[])
   success = zebrafish_tracker.processCommandLineArgs(argc,argv);
   if (!success)
   {
-    std::cerr << std::endl << "Unable to process command line arguments." << std::endl;
-    return 1;
+    std::cerr << std::endl << "Unable to process command line arguments." << std::endl << std::endl;
+    return -1;
   }
 
   success = zebrafish_tracker.importCalibrationData();
   if (!success)
   {
-    std::cerr << std::endl << "Unable to import calibration data." << std::endl;
-    return 1;
+    std::cerr << std::endl << "Unable to import calibration data." << std::endl << std::endl;
+    return -1;
   }
 
-  success = zebrafish_tracker.connectToCamera();
+  success = zebrafish_tracker.connectHardware();
   if (!success)
   {
-    std::cerr << std::endl << "Unable to connect to camera." << std::endl;
-    return 1;
+    std::cerr << std::endl << "Unable to connect hardware." << std::endl << std::endl;
+    return -1;
   }
+
+  // blocks until user presses ctrl-c
+  zebrafish_tracker.run();
+
+  success = zebrafish_tracker.disconnectHardware();
+  if (!success)
+  {
+    std::cerr << std::endl << "Unable to disconnect hardware." << std::endl << std::endl;
+    return -1;
+  }
+
+  std::cout << std::endl << "Goodbye!" << std::endl << std::endl;
 
   return 0;
 }

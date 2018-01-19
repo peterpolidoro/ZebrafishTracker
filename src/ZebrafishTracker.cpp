@@ -44,7 +44,7 @@ bool ZebrafishTracker::importCalibrationData()
   }
   catch (const boost::filesystem::filesystem_error& ex)
   {
-    std::cout << ex.what() << std::endl;
+    std::cout << std::endl << ex.what() << std::endl;
   }
 
   cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
@@ -60,17 +60,72 @@ bool ZebrafishTracker::importCalibrationData()
   if (got_calibration)
   {
     std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage_ << std::endl;
+    blob_tracker_.setHomographyImageToStage(homography_image_to_stage_);
   }
 
   return got_calibration;
 }
 
-bool ZebrafishTracker::connectToCamera()
+bool ZebrafishTracker::connectHardware()
+{
+  bool success;
+  success = connectStageController();
+  if (!success)
+  {
+    std::cerr << std::endl << "Unable to connect stage controller." << std::endl;
+    return !SUCCESS;
+  }
+
+  success = connectCamera();
+  if (!success)
+  {
+    std::cerr << std::endl << "Unable to connect camera." << std::endl;
+    return !SUCCESS;
+  }
+}
+
+bool ZebrafishTracker::disconnectHardware()
+{
+  bool success;
+  success = disconnectCamera();
+  if (!success)
+  {
+    std::cerr << std::endl << "Unable to disconnect camera." << std::endl;
+    return !SUCCESS;
+  }
+
+  success = disconnectStageController();
+  if (!success)
+  {
+    std::cerr << std::endl << "Unable to disconnect stage controller." << std::endl;
+    return !SUCCESS;
+  }
+}
+
+void ZebrafishTracker::run()
+{
+  std::cout << std::endl << "Running! Press ctrl-c to stop." << std::endl << std::endl;
+
+  cv::Mat image;
+  cv::Point blob_center;
+  bool success;
+  while(enabled_)
+  {
+    success = camera_.grabImage(image);
+    if (success)
+    {
+      success = blob_tracker_.findBlobCenter(image,blob_center);
+    }
+  }
+}
+
+// private
+bool ZebrafishTracker::connectCamera()
 {
   camera_.printLibraryInfo();
 
   size_t camera_count = camera_.count();
-  std::cout << "Number of cameras detected: " << camera_count << std::endl;
+  std::cout << std::endl << "Number of cameras detected: " << camera_count << std::endl;
 
   if (camera_count != 1)
   {
@@ -100,4 +155,40 @@ bool ZebrafishTracker::connectToCamera()
 
 }
 
-// private
+bool ZebrafishTracker::disconnectCamera()
+{
+  std::cout << std::endl << "Stopping camera capture." << std::endl;
+
+  bool success;
+  success = camera_.stop();
+  if (!success)
+  {
+    return !SUCCESS;
+  }
+
+  std::cout << std::endl << "Disconnecting camera." << std::endl;
+
+  success = camera_.disconnect();
+  if (!success)
+  {
+    return !SUCCESS;
+  }
+}
+
+bool ZebrafishTracker::connectStageController()
+{
+  std::cout << std::endl << "Connecting stage controller." << std::endl;
+
+  bool success;
+  success = stage_controller_.connect();
+  return success;
+}
+
+bool ZebrafishTracker::disconnectStageController()
+{
+  std::cout << std::endl << "Disconnecting stage controller." << std::endl;
+
+  bool success;
+  success = stage_controller_.disconnect();
+  return success;
+}
