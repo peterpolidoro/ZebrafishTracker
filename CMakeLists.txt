@@ -20,6 +20,7 @@ find_package( LibSerial REQUIRED )
 include_directories( ${LIBSERIAL_INCLUDE_DIRS} )
 
 add_executable(ZebrafishTracker
+  ${PROJECT_SOURCE_DIR}/src/Main.cpp
   ${PROJECT_SOURCE_DIR}/src/ZebrafishTracker.cpp
   ${PROJECT_SOURCE_DIR}/src/Camera.cpp
   ${PROJECT_SOURCE_DIR}/src/BlobTracker.cpp
