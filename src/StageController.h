@@ -9,7 +9,8 @@
 #define _STAGE_CONTROLLER_H_
 #include <boost/asio.hpp>
 #include <iostream>
-#include <opencv2/core/core.hpp>
+#include <boost/filesystem.hpp>
+#include <sstream>
 
 
 class StageController
@@ -21,6 +22,10 @@ public:
   bool connect();
   bool disconnect();
 
+  bool homeStage();
+  bool stageHomed();
+  bool moveStageTo(const long x, const long y);
+
 private:
   const static std::string END_OF_LINE_STRING;
   const static long BAUD = 115200;
@@ -30,9 +35,10 @@ private:
   boost::asio::serial_port serial_port_;
 
   bool isOpen();
-	int write(const char * string);
-	int write(const std::string & string);
-  std::string read();
+	int writeRequest(const char * string);
+	int writeRequest(const std::string & string);
+  std::string readResponse();
+  bool readBoolResponse();
 };
 
 #endif

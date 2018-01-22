@@ -70,6 +70,8 @@ bool ZebrafishTracker::connectHardware()
 {
   bool success;
   success = connectStageController();
+  // bool test = stage_controller_.moveStageTo(1234,56789);
+  // std::cout << "test = " << test << std::endl;
   if (!success)
   {
     std::cerr << std::endl << "Unable to connect stage controller." << std::endl;

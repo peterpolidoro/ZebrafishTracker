@@ -24,10 +24,10 @@
 
 #include "BlobTracker.h"
 
+#include <boost/filesystem.hpp>
+
 #include <boost/asio.hpp>
 #include "StageController.h"
-
-#include <boost/filesystem.hpp>
 
 #include "ZebrafishTracker.h"
 
@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
   success = zebrafish_tracker.connectHardware();
   if (!success)
   {
-    std::cerr << std::endl << "Unable to connect hardware." << std::endl << std::endl;
+    std::cerr << std::endl << "Unable to connect all hardware." << std::endl << std::endl;
     return -1;
   }
 
@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
   success = zebrafish_tracker.disconnectHardware();
   if (!success)
   {
-    std::cerr << std::endl << "Unable to disconnect hardware." << std::endl << std::endl;
+    std::cerr << std::endl << "Unable to disconnect all hardware." << std::endl << std::endl;
     return -1;
   }
 
