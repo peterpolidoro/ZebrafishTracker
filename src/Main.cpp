@@ -24,11 +24,10 @@
 
 #include "BlobTracker.h"
 
-#include <SerialStream.h>
+#include <boost/asio.hpp>
+#include "StageController.h"
 
 #include <boost/filesystem.hpp>
-
-#include "StageController.h"
 
 #include "ZebrafishTracker.h"
 

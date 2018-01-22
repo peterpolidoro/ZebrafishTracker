@@ -30,7 +30,6 @@ cd ~/git/ZebrafishTracker
 ```shell
 sudo apt-get install cmake
 sudo apt-get install libboost-all-dev
-sudo apt-get install libserial-dev
 ```
 
 # Checkout Git Repositories
