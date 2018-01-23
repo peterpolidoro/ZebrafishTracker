@@ -13,7 +13,7 @@
 #include <opencv2/core/core.hpp>
 
 #include "Camera.h"
-#include "BlobTracker.h"
+#include "ImageProcessor.h"
 #include "StageController.h"
 
 
@@ -32,7 +32,7 @@ private:
   const static bool SUCCESS = true;
   cv::Mat homography_image_to_stage_;
   Camera camera_;
-  BlobTracker blob_tracker_;
+  ImageProcessor image_processor_;
   StageController stage_controller_;
 
   volatile static sig_atomic_t enabled_;

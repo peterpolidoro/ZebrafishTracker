@@ -1,12 +1,12 @@
 // ----------------------------------------------------------------------------
-// BlobTracker.h
+// ImageProcessor.h
 //
 //
 // Authors:
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
-#ifndef _BLOB_TRACKER_H_
-#define _BLOB_TRACKER_H_
+#ifndef _IMAGE_PROCESSOR_H_
+#define _IMAGE_PROCESSOR_H_
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -21,13 +21,13 @@
 #include <sstream>
 
 
-class BlobTracker
+class ImageProcessor
 {
 public:
-  BlobTracker();
+  ImageProcessor();
 
   void setHomographyImageToStage(cv::Mat homography_image_to_stage);
-  bool findBlobCenter(cv::Mat & image, cv::Point & blob_center);
+  bool findStageTargetPosition(cv::Mat & image, cv::Point & blob_center);
   double getFrameRate();
 
 private:
