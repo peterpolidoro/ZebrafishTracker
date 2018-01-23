@@ -19,10 +19,11 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_executable(ZebrafishTracker
   ${PROJECT_SOURCE_DIR}/src/Main.cpp
   ${PROJECT_SOURCE_DIR}/src/ZebrafishTracker.cpp
+  ${PROJECT_SOURCE_DIR}/src/FrameRateCounter.cpp
   ${PROJECT_SOURCE_DIR}/src/Camera.cpp
   ${PROJECT_SOURCE_DIR}/src/BlobTracker.cpp
   ${PROJECT_SOURCE_DIR}/src/StageController.cpp
-  ${PROJECT_SOURCE_DIR}/src/FrameRateCounter.cpp)
+)
 
 target_link_libraries( ZebrafishTracker ${FLYCAPTURE_LIBRARIES})
 target_link_libraries( ZebrafishTracker ${Boost_LIBRARIES} )

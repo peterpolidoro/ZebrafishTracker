@@ -6,28 +6,6 @@
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
 #include <iostream>
-#include <sstream>
-#include <signal.h>
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/video/background_segm.hpp>
-#include <opencv2/features2d.hpp>
-
-#include <FlyCapture2.h>
-#include "Camera.h"
-
-#include <boost/timer/timer.hpp>
-#include <boost/thread.hpp>
-#include "FrameRateCounter.h"
-
-#include "BlobTracker.h"
-
-#include <boost/filesystem.hpp>
-
-#include <boost/asio.hpp>
-#include "StageController.h"
 
 #include "ZebrafishTracker.h"
 
