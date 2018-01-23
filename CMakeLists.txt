@@ -10,7 +10,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 find_package( FlyCapture REQUIRED )
 include_directories( ${FLYCAPTURE_INCLUDE_DIRS} )
 
-find_package( Boost COMPONENTS timer thread filesystem REQUIRED )
+find_package( Boost COMPONENTS timer thread filesystem date_time system REQUIRED )
 include_directories( ${Boost_INCLUDE_DIRS} )
 
 find_package( OpenCV 2 REQUIRED )
@@ -22,6 +22,7 @@ add_executable(ZebrafishTracker
   ${PROJECT_SOURCE_DIR}/src/FrameRateCounter.cpp
   ${PROJECT_SOURCE_DIR}/src/Camera.cpp
   ${PROJECT_SOURCE_DIR}/src/BlobTracker.cpp
+  ${PROJECT_SOURCE_DIR}/src/TimeoutSerial.cpp
   ${PROJECT_SOURCE_DIR}/src/StageController.cpp
 )
 

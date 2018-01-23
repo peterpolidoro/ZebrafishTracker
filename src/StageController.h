@@ -7,10 +7,11 @@
 // ----------------------------------------------------------------------------
 #ifndef _STAGE_CONTROLLER_H_
 #define _STAGE_CONTROLLER_H_
-#include <boost/asio.hpp>
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <sstream>
+
+#include "TimeoutSerial.h"
 
 
 class StageController
@@ -27,16 +28,16 @@ public:
   bool moveStageTo(const long x, const long y);
 
 private:
-  const static std::string END_OF_LINE_STRING;
+  const static std::string DEVICE_NAME;
   const static long BAUD = 115200;
-  const static size_t CHARACTER_SIZE = 8;
+  const static std::string END_OF_LINE_STRING;
+  const static long TIMEOUT = 1;
 
-  boost::asio::io_service io_service_;
-  boost::asio::serial_port serial_port_;
+  TimeoutSerial serial_;
 
   bool isOpen();
-	int writeRequest(const char * string);
-	int writeRequest(const std::string & string);
+	void writeRequest(const char * request);
+	void writeRequest(const std::string & request);
   std::string readResponse();
   bool readBoolResponse();
 };
