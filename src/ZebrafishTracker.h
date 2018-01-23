@@ -14,6 +14,7 @@
 
 #include "Camera.h"
 #include "ImageProcessor.h"
+#include "CoordinateConverter.h"
 #include "StageController.h"
 
 
@@ -33,6 +34,7 @@ private:
   cv::Mat homography_image_to_stage_;
   Camera camera_;
   ImageProcessor image_processor_;
+  CoordinateConverter coordinate_converter_;
   StageController stage_controller_;
 
   volatile static sig_atomic_t enabled_;

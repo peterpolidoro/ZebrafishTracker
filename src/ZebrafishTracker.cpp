@@ -60,7 +60,7 @@ bool ZebrafishTracker::importCalibrationData()
   if (got_calibration)
   {
     std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage_ << std::endl;
-    image_processor_.setHomographyImageToStage(homography_image_to_stage_);
+    coordinate_converter_.setHomographyImageToStage(homography_image_to_stage_);
   }
 
   return got_calibration;
@@ -107,6 +107,7 @@ void ZebrafishTracker::run()
   std::cout << std::endl << "Running! Press ctrl-c to stop." << std::endl << std::endl;
 
   cv::Mat image;
+  cv::Point tracked_image_point;
   cv::Point stage_target_position;
   bool success;
   while(enabled_)
@@ -114,7 +115,11 @@ void ZebrafishTracker::run()
     success = camera_.grabImage(image);
     if (success)
     {
-      success = image_processor_.findStageTargetPosition(image,stage_target_position);
+      success = image_processor_.updateTrackedImagePoint(image,tracked_image_point);
+    }
+    if (success)
+    {
+      success = coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
     }
     if (success)
     {

@@ -11,7 +11,7 @@
 // public
 ImageProcessor::ImageProcessor()
 {
-  image_n_ = 0;
+  image_count_ = 0;
   frame_rate_position_ = cv::Point(50,50);
   keypoints_position_ = cv::Point(50,100);
 
@@ -31,27 +31,50 @@ ImageProcessor::ImageProcessor()
   frame_rate_counter_.Reset();
 }
 
-void ImageProcessor::setHomographyImageToStage(cv::Mat homography_image_to_stage)
+bool ImageProcessor::updateTrackedImagePoint(cv::Mat & image, cv::Point & tracked_image_point)
 {
-  homography_image_to_stage_ = homography_image_to_stage;
+  updateFrameRateMeasurement();
+
+  updateBackground(image);
+
+  cv::Point blob_center;
+  bool success = findBlobCenter(image,blob_center);
+
+  if (success)
+  {
+
+  }
+
+  ++image_count_;
+
+  return SUCCESS;
 }
 
-bool ImageProcessor::findStageTargetPosition(cv::Mat & image, cv::Point & blob_center)
+// private
+
+void ImageProcessor::updateFrameRateMeasurement()
 {
-  bool success = true;
-
-  // Update frame rate measurement
   frame_rate_counter_.NewFrame();
+}
 
-  // Update background
-  if ((image_n_ % background_divisor_) == 0)
+void ImageProcessor::updateBackground(cv::Mat & image)
+{
+  if ((image_count_ % background_divisor_) == 0)
   {
     mog2_ptr_->operator()(image,
                           foreground_,
                           background_learing_rate_);
     mog2_ptr_->getBackgroundImage(background_);
   }
+}
 
+double ImageProcessor::getFrameRate()
+{
+  return frame_rate_counter_.GetFrameRate();
+}
+
+bool ImageProcessor::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
+{
   // Find blob center
   blob_center = cv::Point(0,0);
   cv::subtract(image,background_,foreground_);
@@ -116,7 +139,7 @@ bool ImageProcessor::findStageTargetPosition(cv::Mat & image, cv::Point & blob_c
   // }
 
   // Update display
-  if ((image_n_ % display_divisor_) == 0)
+  if ((image_count_ % display_divisor_) == 0)
   {
     cv::cvtColor(image,display_image_,CV_GRAY2BGR);
     // cv::cvtColor(threshold_,display_image_,CV_GRAY2BGR);
@@ -160,14 +183,5 @@ bool ImageProcessor::findStageTargetPosition(cv::Mat & image, cv::Point & blob_c
     cv::waitKey(1);
   }
 
-  ++image_n_;
-
-  return success;
+  return SUCCESS;
 }
-
-double ImageProcessor::getFrameRate()
-{
-  return frame_rate_counter_.GetFrameRate();
-}
-
-// private

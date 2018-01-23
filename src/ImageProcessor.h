@@ -26,14 +26,12 @@ class ImageProcessor
 public:
   ImageProcessor();
 
-  void setHomographyImageToStage(cv::Mat homography_image_to_stage);
-  bool findStageTargetPosition(cv::Mat & image, cv::Point & blob_center);
-  double getFrameRate();
+  bool updateTrackedImagePoint(cv::Mat & image, cv::Point & tracked_image_point);
 
 private:
-  cv::Mat homography_image_to_stage_;
+  const static bool SUCCESS = true;
   static const size_t display_divisor_=10;
-  unsigned long image_n_;
+  unsigned long image_count_;
   cv::Point frame_rate_position_;
   cv::Point keypoints_position_;
   cv::Ptr<cv::BackgroundSubtractor> mog2_ptr_;
@@ -56,6 +54,11 @@ private:
 
   static const size_t queue_length_=10;
   FrameRateCounter frame_rate_counter_;
+
+  void updateFrameRateMeasurement();
+  void updateBackground(cv::Mat & image);
+  double getFrameRate();
+  bool findBlobCenter(cv::Mat & image, cv::Point & blob_center);
 };
 
 #endif
