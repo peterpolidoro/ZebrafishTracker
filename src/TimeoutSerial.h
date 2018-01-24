@@ -92,6 +92,8 @@ public:
    */
   void setTimeout(const boost::posix_time::time_duration& t);
 
+  void flush();
+
   /**
    * Write data
    * \param data array of char to be sent through the serial device
@@ -211,12 +213,12 @@ private:
    * Possible outcome of a read. Set by callbacks, read from main code
    */
   enum ReadResult
-    {
-     resultInProgress,
-     resultSuccess,
-     resultError,
-     resultTimeoutExpired
-    };
+  {
+    resultInProgress,
+    resultSuccess,
+    resultError,
+    resultTimeoutExpired
+  };
 
   boost::asio::io_service io; ///< Io service object
   boost::asio::serial_port port; ///< Serial port object

@@ -29,15 +29,21 @@ bool StageController::connect()
     std::cout << std::endl << DEVICE_NAME << " does not exist! Is the stage_controller attached?" << std::endl;
     return false;
   }
+  std::cout << std::endl << DEVICE_NAME << " exists." << std::endl;
 
   serial_.open(DEVICE_NAME,BAUD);
   serial_.setTimeout(boost::posix_time::seconds(TIMEOUT));
+  serial_.flush();
 
   bool is_open = isOpen();
 
   if (is_open)
   {
+    std::cout << DEVICE_NAME << " is open." << std::endl;
+
     writeRequest("[getDeviceId]");
+
+    std::cout << "Wrote: [getDeviceId] to " << DEVICE_NAME  << std::endl;
 
     std::string response = readResponse();
 
@@ -118,7 +124,20 @@ void StageController::writeRequest(const std::string & request)
 
 std::string StageController::readResponse()
 {
-  return serial_.readStringUntil(END_OF_LINE_STRING);
+  std::string response;
+  size_t read_attempts = 0;
+  while (read_attempts++ < READ_ATTEMPTS_MAX)
+  {
+    try
+    {
+      response = serial_.readStringUntil(END_OF_LINE_STRING);
+    }
+    catch (const std::exception & e)
+    {
+      std::cerr << e.what() << std::endl;
+    }
+  }
+  return response;
 }
 
 bool StageController::readBoolResponse()

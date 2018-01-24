@@ -70,6 +70,12 @@ void TimeoutSerial::setTimeout(const posix_time::time_duration& t)
   timeout=t;
 }
 
+void TimeoutSerial::flush()
+{
+  // https://stackoverflow.com/questions/22581315/how-to-discard-data-as-it-is-sent-with-boostasio/22598329#22598329
+  ::tcflush(port.lowest_layer().native_handle(), TCIOFLUSH);
+}
+
 void TimeoutSerial::write(const char *data, size_t size)
 {
   asio::write(port,asio::buffer(data,size));

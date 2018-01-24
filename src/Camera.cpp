@@ -230,7 +230,7 @@ bool Camera::configure()
   // Set gamma
   success &= setProperty(FlyCapture2::GAMMA, false, config_.gamma);
 
- return success;
+  return success;
 }
 
 bool Camera::setProperty(const FlyCapture2::PropertyType &type,

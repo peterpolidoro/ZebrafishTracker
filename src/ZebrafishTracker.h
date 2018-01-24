@@ -12,6 +12,7 @@
 #include <boost/filesystem.hpp>
 #include <opencv2/core/core.hpp>
 
+#include "optionparser.h"
 #include "Camera.h"
 #include "ImageProcessor.h"
 #include "CoordinateConverter.h"

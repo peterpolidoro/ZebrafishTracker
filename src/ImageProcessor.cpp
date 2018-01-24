@@ -29,6 +29,8 @@ ImageProcessor::ImageProcessor()
 
   FrameRateCounter frame_rate_counter_(queue_length_);
   frame_rate_counter_.Reset();
+
+  mode_ = BLOB;
 }
 
 bool ImageProcessor::updateTrackedImagePoint(cv::Mat & image, cv::Point & tracked_image_point)
@@ -48,6 +50,11 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat & image, cv::Point & tracke
   ++image_count_;
 
   return SUCCESS;
+}
+
+void ImageProcessor::setMode(ImageProcessor::Mode mode)
+{
+  mode_ = mode;
 }
 
 // private

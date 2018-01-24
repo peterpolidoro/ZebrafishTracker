@@ -22,16 +22,16 @@
 
 FrameRateCounter::FrameRateCounter( unsigned long queueLength )
 {
-	timer_.start();
+  timer_.start();
 
-	double seconds = timer_.elapsed().wall;
+  double seconds = timer_.elapsed().wall;
 
-	for( unsigned int i = 0; i < queueLength; i++ )
-	{
-		frame_time_.push_back( seconds );
-	}
+  for( unsigned int i = 0; i < queueLength; i++ )
+  {
+    frame_time_.push_back( seconds );
+  }
 
-	timer_.start();
+  timer_.start();
 }
 
 FrameRateCounter::~FrameRateCounter()
@@ -41,47 +41,47 @@ FrameRateCounter::~FrameRateCounter()
 
 double FrameRateCounter::GetFrameRate()
 {
-	const unsigned int size = frame_time_.size();
+  const unsigned int size = frame_time_.size();
 
-	boost::lock_guard<boost::mutex> lock(mutex_);
+  boost::lock_guard<boost::mutex> lock(mutex_);
 
-	const double start = frame_time_[0];
-	const double end = frame_time_[size-1];
-	const double diff = end - start;
+  const double start = frame_time_[0];
+  const double end = frame_time_[size-1];
+  const double diff = end - start;
 
-	double frameRate = 1.0e9 / (diff / static_cast<double>(size-1));
+  double frameRate = 1.0e9 / (diff / static_cast<double>(size-1));
 
-	return frameRate;
+  return frameRate;
 }
 
 
 void FrameRateCounter::SetFrameRate( double /*frameRate*/ )
 {
-	// Nothing to do here
+  // Nothing to do here
 }
 
 
 void FrameRateCounter::Reset()
 {
-	const double seconds = timer_.elapsed().wall;
+  const double seconds = timer_.elapsed().wall;
 
-	boost::lock_guard<boost::mutex> lock(mutex_);
+  boost::lock_guard<boost::mutex> lock(mutex_);
 
-	const unsigned int queueSize = frame_time_.size();
-	frame_time_.clear();
+  const unsigned int queueSize = frame_time_.size();
+  frame_time_.clear();
 
-	for( unsigned int i = 0; i < queueSize; i++ )
-	{
-		frame_time_.push_back( seconds );
-	}
+  for( unsigned int i = 0; i < queueSize; i++ )
+  {
+    frame_time_.push_back( seconds );
+  }
 }
 
 void FrameRateCounter::NewFrame()
 {
-	const double seconds = timer_.elapsed().wall;
+  const double seconds = timer_.elapsed().wall;
 
-	boost::lock_guard<boost::mutex> lock(mutex_);
+  boost::lock_guard<boost::mutex> lock(mutex_);
 
-	frame_time_.pop_front();
-	frame_time_.push_back( seconds );
+  frame_time_.pop_front();
+  frame_time_.push_back( seconds );
 }

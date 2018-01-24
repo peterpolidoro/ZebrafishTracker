@@ -27,6 +27,12 @@ public:
   ImageProcessor();
 
   bool updateTrackedImagePoint(cv::Mat & image, cv::Point & tracked_image_point);
+  enum Mode
+  {
+    BLOB,
+    MOUSE,
+  };
+  void setMode(Mode mode);
 
 private:
   const static bool SUCCESS = true;
@@ -54,6 +60,8 @@ private:
 
   static const size_t queue_length_=10;
   FrameRateCounter frame_rate_counter_;
+
+  Mode mode_;
 
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat & image);

@@ -32,12 +32,13 @@ private:
   const static long BAUD = 115200;
   const static std::string END_OF_LINE_STRING;
   const static long TIMEOUT = 1;
+  const static size_t READ_ATTEMPTS_MAX = 10;
 
   TimeoutSerial serial_;
 
   bool isOpen();
-	void writeRequest(const char * request);
-	void writeRequest(const std::string & request);
+  void writeRequest(const char * request);
+  void writeRequest(const std::string & request);
   std::string readResponse();
   bool readBoolResponse();
 };

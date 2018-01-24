@@ -19,7 +19,6 @@ int main(int argc, char * argv[])
   success = zebrafish_tracker.processCommandLineArgs(argc,argv);
   if (!success)
   {
-    std::cerr << std::endl << "Unable to process command line arguments." << std::endl << std::endl;
     return -1;
   }
 
