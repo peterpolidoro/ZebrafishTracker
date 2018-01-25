@@ -20,7 +20,7 @@ ImageProcessor::ImageProcessor()
                                                background_shadow_detection_);
 
   // Create Window
-  cv::namedWindow("Processed Images",cv::WINDOW_NORMAL);
+  cv::namedWindow("Image",cv::WINDOW_NORMAL);
 
   blue_ = cv::Scalar(255,0,0);
   yellow_ = cv::Scalar(0,255,255);
@@ -33,23 +33,40 @@ ImageProcessor::ImageProcessor()
   mode_ = BLOB;
 }
 
-bool ImageProcessor::updateTrackedImagePoint(cv::Mat & image, cv::Point & tracked_image_point)
+bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_image_point_ptr)
 {
   updateFrameRateMeasurement();
-
-  updateBackground(image);
-
-  cv::Point blob_center;
-  bool success = findBlobCenter(image,blob_center);
-
-  if (success)
+  bool success = false;
+  switch (mode_)
   {
+    case BLOB:
+    {
+      updateBackground(image);
 
+      cv::Point blob_center;
+      success = findBlobCenter(image,blob_center);
+
+      if (success)
+      {
+        *tracked_image_point_ptr = blob_center;
+      }
+      break;
+    }
+    case MOUSE:
+    {
+      MouseParams mp;
+      mp.image = image;
+      mp.tracked_image_point_ptr = tracked_image_point_ptr;
+      cv::setMouseCallback("Image",onMouse,&mp);
+      cv::imshow("Image",image);
+      cv::waitKey(1);
+      success = mp.success;
+      break;
+    }
   }
-
   ++image_count_;
 
-  return SUCCESS;
+  return success;
 }
 
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
@@ -186,9 +203,52 @@ bool ImageProcessor::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
                 yellow_,
                 4);
 
-    cv::imshow("Processed Images",display_image_);
+    cv::imshow("Image",display_image_);
     cv::waitKey(1);
   }
 
   return SUCCESS;
+}
+
+void ImageProcessor::onMouse(int event, int x, int y, int flags, void * userdata)
+{
+  MouseParams * mp_ptr = (MouseParams *)userdata;
+  if(event != cv::EVENT_LBUTTONDOWN)
+  {
+    mp_ptr->success = false;
+    return;
+  }
+  mp_ptr->tracked_image_point_ptr->x = x;
+  mp_ptr->tracked_image_point_ptr->y = y;
+  mp_ptr-> success = true;
+
+  // Point seed = Point(x,y);
+  // int lo = ffillMode == 0 ? 0 : loDiff;
+  // int up = ffillMode == 0 ? 0 : upDiff;
+  // int flags = connectivity + (newMaskVal << 8) +
+  //   (ffillMode == 1 ? FLOODFILL_FIXED_RANGE : 0);
+  // int b = (unsigned)theRNG() & 255;
+  // int g = (unsigned)theRNG() & 255;
+  // int r = (unsigned)theRNG() & 255;
+  // Rect ccomp;
+
+  // Scalar newVal = isColor ? Scalar(b, g, r) : Scalar(r*0.299 + g*0.587 + b*0.114);
+  // Mat dst = isColor ? image : gray;
+  // int area;
+
+  // if( useMask )
+  // {
+  //   threshold(mask, mask, 1, 128, THRESH_BINARY);
+  //   area = floodFill(dst, mask, seed, newVal, &ccomp, Scalar(lo, lo, lo),
+  //                    Scalar(up, up, up), flags);
+  //   imshow( "mask", mask );
+  // }
+  // else
+  // {
+  //   area = floodFill(dst, seed, newVal, &ccomp, Scalar(lo, lo, lo),
+  //                    Scalar(up, up, up), flags);
+  // }
+
+  // imshow("image", dst);
+  // cout << area << " pixels were repainted\n";
 }

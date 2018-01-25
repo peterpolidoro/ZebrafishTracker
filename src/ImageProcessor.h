@@ -15,10 +15,11 @@
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
-#include "FrameRateCounter.h"
 
 #include <iostream>
 #include <sstream>
+
+#include "FrameRateCounter.h"
 
 
 class ImageProcessor
@@ -26,7 +27,7 @@ class ImageProcessor
 public:
   ImageProcessor();
 
-  bool updateTrackedImagePoint(cv::Mat & image, cv::Point & tracked_image_point);
+  bool updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_image_point_ptr);
   enum Mode
   {
     BLOB,
@@ -62,11 +63,18 @@ private:
   FrameRateCounter frame_rate_counter_;
 
   Mode mode_;
+  struct MouseParams
+  {
+    cv::Mat image;
+    cv::Point * tracked_image_point_ptr;
+    bool success;
+  };
 
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat & image);
   double getFrameRate();
   bool findBlobCenter(cv::Mat & image, cv::Point & blob_center);
+  static void onMouse(int event, int x, int y, int flags, void * userdata);
 };
 
 #endif

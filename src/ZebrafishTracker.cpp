@@ -142,7 +142,7 @@ void ZebrafishTracker::run()
     success = camera_.grabImage(image);
     if (success)
     {
-      success = image_processor_.updateTrackedImagePoint(image,tracked_image_point);
+      success = image_processor_.updateTrackedImagePoint(image,&tracked_image_point);
     }
     if (success)
     {
