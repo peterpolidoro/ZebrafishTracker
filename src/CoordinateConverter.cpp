@@ -20,7 +20,7 @@ void CoordinateConverter::setHomographyImageToStage(cv::Mat homography_image_to_
   homography_image_to_stage_set_ = true;
 }
 
-bool CoordinateConverter::convertImagePointToStagePoint(cv::Point image_point, cv::Point stage_point)
+bool CoordinateConverter::convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point)
 {
   if (homography_image_to_stage_set_)
   {

@@ -18,7 +18,7 @@ public:
   CoordinateConverter();
 
   void setHomographyImageToStage(cv::Mat homography_image_to_stage);
-  bool convertImagePointToStagePoint(cv::Point image_point, cv::Point stage_point);
+  bool convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point);
 
 private:
   const static bool SUCCESS = true;

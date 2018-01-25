@@ -76,6 +76,18 @@ bool ZebrafishTracker::importCalibrationData()
 
   cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
   calibration_fs["homography_image_to_stage"] >> homography_image_to_stage_;
+  std::vector<cv::Point2f> stage_pts;
+  calibration_fs["stage_pts"] >> stage_pts;
+  std::cout << "stage_pts:" << std::endl;
+  std::cout << stage_pts;
+  std::vector<cv::Point2f> image_pts;
+  calibration_fs["image_pts"] >> image_pts;
+  std::cout << "image_pts:" << std::endl;
+  std::cout << image_pts;
+  std::vector<cv::Point2f> stage_pts_calculated;
+  cv::perspectiveTransform(image_pts,stage_pts_calculated,homography_image_to_stage_);
+  std::cout << "stage_pts_calculated:" << std::endl;
+  std::cout << stage_pts_calculated;
   calibration_fs.release();
 
   bool got_calibration = true;
@@ -109,6 +121,8 @@ bool ZebrafishTracker::connectHardware()
     std::cerr << std::endl << "Unable to connect camera." << std::endl;
     return !SUCCESS;
   }
+
+  return success;
 }
 
 bool ZebrafishTracker::disconnectHardware()
@@ -127,6 +141,8 @@ bool ZebrafishTracker::disconnectHardware()
     std::cerr << std::endl << "Unable to disconnect stage controller." << std::endl;
     return !SUCCESS;
   }
+
+  return success;
 }
 
 void ZebrafishTracker::run()
@@ -147,6 +163,7 @@ void ZebrafishTracker::run()
     if (success)
     {
       success = coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
+      std::cout << "stage_target_position x: " << stage_target_position.x << ", y: " << stage_target_position.y << std::endl;
     }
     if (success)
     {
@@ -184,11 +201,8 @@ bool ZebrafishTracker::connectCamera()
   camera_.printCameraInfo();
 
   success = camera_.start();
-  if (!success)
-  {
-    return !SUCCESS;
-  }
 
+  return success;
 }
 
 bool ZebrafishTracker::disconnectCamera()
@@ -205,10 +219,8 @@ bool ZebrafishTracker::disconnectCamera()
   std::cout << std::endl << "Disconnecting camera." << std::endl;
 
   success = camera_.disconnect();
-  if (!success)
-  {
-    return !SUCCESS;
-  }
+
+  return success;
 }
 
 bool ZebrafishTracker::connectStageController()
@@ -217,6 +229,11 @@ bool ZebrafishTracker::connectStageController()
 
   bool success;
   success = stage_controller_.connect();
+  if (success)
+  {
+    stage_controller_.homeStage();
+  }
+
   return success;
 }
 
@@ -226,5 +243,6 @@ bool ZebrafishTracker::disconnectStageController()
 
   bool success;
   success = stage_controller_.disconnect();
+
   return success;
 }

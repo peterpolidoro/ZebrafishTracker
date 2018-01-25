@@ -57,6 +57,7 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_
       MouseParams mp;
       mp.image = image;
       mp.tracked_image_point_ptr = tracked_image_point_ptr;
+      mp.success = false;
       cv::setMouseCallback("Image",onMouse,&mp);
       cv::imshow("Image",image);
       cv::waitKey(1);
@@ -221,6 +222,8 @@ void ImageProcessor::onMouse(int event, int x, int y, int flags, void * userdata
   mp_ptr->tracked_image_point_ptr->x = x;
   mp_ptr->tracked_image_point_ptr->y = y;
   mp_ptr-> success = true;
+
+  std::cout << "Clicked point x: " << x << ", y: " << y << std::endl;
 
   // Point seed = Point(x,y);
   // int lo = ffillMode == 0 ? 0 : loDiff;
