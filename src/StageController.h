@@ -10,6 +10,8 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <sstream>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread/thread.hpp>
 
 #include "TimeoutSerial.h"
 
@@ -33,6 +35,7 @@ private:
   const static std::string END_OF_LINE_STRING;
   const static long TIMEOUT = 1;
   const static size_t READ_ATTEMPTS_MAX = 10;
+  const static size_t WRITE_READ_DELAY = 5;
 
   TimeoutSerial serial_;
 
@@ -41,6 +44,8 @@ private:
   void writeRequest(const std::string & request);
   std::string readResponse();
   bool readBoolResponse();
+  std::string writeRequestReadResponse(const std::string & request);
+  bool writeRequestReadBoolResponse(const std::string & request);
 };
 
 #endif

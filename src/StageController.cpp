@@ -41,11 +41,7 @@ bool StageController::connect()
   {
     std::cout << DEVICE_NAME << " is open." << std::endl;
 
-    writeRequest("[getDeviceId]");
-
-    std::cout << "Wrote: [getDeviceId] to " << DEVICE_NAME  << std::endl;
-
-    std::string response = readResponse();
+    std::string response = writeRequestReadResponse("[getDeviceId]");
 
     const char * device_name = "zebrafish_tracker_controller";
     size_t position = response.find(device_name);
@@ -77,25 +73,19 @@ bool StageController::disconnect()
 
 bool StageController::homeStage()
 {
-  writeRequest("[homeStage]");
-
-  return readBoolResponse();
+  return writeRequestReadBoolResponse("[homeStage]");
 }
 
 bool StageController::stageHomed()
 {
-  writeRequest("[stageHomed]");
-
-  return readBoolResponse();
+  writeRequestReadBoolResponse("[stageHomed]");
 }
 
 bool StageController::moveStageTo(const long x, const long y)
 {
   std::stringstream request;
   request << "[moveStageTo [" << x << "," << y << "]";
-  writeRequest(request.str());
-
-  return readBoolResponse();
+  return writeRequestReadBoolResponse(request.str());
 }
 
 // private
@@ -131,12 +121,13 @@ std::string StageController::readResponse()
     try
     {
       response = serial_.readStringUntil(END_OF_LINE_STRING);
+      return response;
     }
     catch (const std::exception & e)
     {
-      std::cerr << e.what() << std::endl;
     }
   }
+  std::cerr << "Error while attempting to read response. read_attempts: " << read_attempts << std::endl;
   return response;
 }
 
@@ -152,4 +143,18 @@ bool StageController::readBoolResponse()
   }
 
   return false;
+}
+
+std::string StageController::writeRequestReadResponse(const std::string & request)
+{
+  writeRequest(request);
+  boost::this_thread::sleep(boost::posix_time::milliseconds(WRITE_READ_DELAY));
+  return readResponse();
+}
+
+bool StageController::writeRequestReadBoolResponse(const std::string & request)
+{
+  writeRequest(request);
+  boost::this_thread::sleep(boost::posix_time::milliseconds(WRITE_READ_DELAY));
+  return readBoolResponse();
 }
