@@ -14,6 +14,7 @@ const std::string StageController::END_OF_LINE_STRING = std::string("\n");
 // public
 StageController::StageController()
 {
+  debug_ = false;
 }
 
 StageController::~StageController()
@@ -48,7 +49,6 @@ bool StageController::connect()
 
     if (position == std::string::npos)
     {
-      std::cout << "device_id response = " << std::endl;
       std::cout << response << std::endl;
       std::cout << std::endl << device_name << " not found in device_id response!" << std::endl;
       std::cout << "Is the stage_controller attached to " << DEVICE_NAME << "?" << std::endl;
@@ -69,6 +69,11 @@ bool StageController::disconnect()
   }
 
   return !isOpen();
+}
+
+void StageController::setDebug(const bool debug)
+{
+  debug_ = debug;
 }
 
 bool StageController::homeStage()
@@ -110,6 +115,10 @@ void StageController::writeRequest(const std::string & request)
 
   const std::string string = request + END_OF_LINE_STRING;
 
+  if (debug_)
+  {
+    std::cout << request << std::endl;
+  }
   serial_.writeString(string);
 }
 
@@ -122,6 +131,10 @@ std::string StageController::readResponse()
     try
     {
       response = serial_.readStringUntil(END_OF_LINE_STRING);
+      if (debug_)
+      {
+        std::cout << response << std::endl;
+      }
       return response;
     }
     catch (const std::exception & e)

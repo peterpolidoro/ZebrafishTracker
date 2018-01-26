@@ -25,10 +25,16 @@ ZebrafishTracker::ZebrafishTracker()
 
 bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
 {
-  enum optionIndex { HELP, MOUSE };
+  enum optionIndex
+    {
+      HELP,
+      DEBUG,
+      MOUSE,
+    };
   const option::Descriptor usage[] =
     {
       {HELP, 0,"", "help", option::Arg::None, "  --help  \tPrint usage and exit." },
+      {DEBUG, 0,"", "debug", option::Arg::None, "  --debug  \tPrint debug." },
       {MOUSE, 0,"", "mouse", option::Arg::None, "  --mouse  \tTrack mouse click location instead of blob." },
       {0, 0, 0, 0, 0, 0}
     };
@@ -42,6 +48,12 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   {
     option::printUsage(std::cout, usage);
     return !SUCCESS;
+  }
+
+  if (options[DEBUG])
+  {
+    stage_controller_.setDebug(true);
+    std::cout << "Debug mode!" << std::endl;
   }
 
   if (options[MOUSE])
@@ -76,18 +88,6 @@ bool ZebrafishTracker::importCalibrationData()
 
   cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
   calibration_fs["homography_image_to_stage"] >> homography_image_to_stage_;
-  std::vector<cv::Point2f> stage_pts;
-  calibration_fs["stage_pts"] >> stage_pts;
-  std::cout << "stage_pts:" << std::endl;
-  std::cout << stage_pts;
-  std::vector<cv::Point2f> image_pts;
-  calibration_fs["image_pts"] >> image_pts;
-  std::cout << "image_pts:" << std::endl;
-  std::cout << image_pts;
-  std::vector<cv::Point2f> stage_pts_calculated;
-  cv::perspectiveTransform(image_pts,stage_pts_calculated,homography_image_to_stage_);
-  std::cout << "stage_pts_calculated:" << std::endl;
-  std::cout << stage_pts_calculated;
   calibration_fs.release();
 
   bool got_calibration = true;

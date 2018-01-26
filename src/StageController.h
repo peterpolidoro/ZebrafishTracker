@@ -25,6 +25,8 @@ public:
   bool connect();
   bool disconnect();
 
+  void setDebug(const bool debug);
+
   bool homeStage();
   bool stageHomed();
   bool moveStageTo(const long x, const long y);
@@ -38,6 +40,7 @@ private:
   const static size_t WRITE_READ_DELAY = 5;
 
   TimeoutSerial serial_;
+  bool debug_;
 
   bool isOpen();
   void writeRequest(const char * request);
