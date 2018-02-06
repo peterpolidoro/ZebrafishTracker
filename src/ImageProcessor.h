@@ -7,11 +7,11 @@
 // ----------------------------------------------------------------------------
 #ifndef _IMAGE_PROCESSOR_H_
 #define _IMAGE_PROCESSOR_H_
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/video/background_segm.hpp>
-#include <opencv2/features2d.hpp>
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/videoio.hpp"
+#include <opencv2/highgui.hpp>
+#include <opencv2/video.hpp>
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
@@ -42,16 +42,12 @@ private:
   cv::Point frame_rate_position_;
   cv::Point keypoints_position_;
   cv::Ptr<cv::BackgroundSubtractor> mog2_ptr_;
-  cv::Mat foreground_;
-  cv::Mat background_;
-  cv::Mat threshold_;
+  cv::Mat foreground_mask_;
   static const size_t background_divisor_=10;
   static const int background_history_=100;
   static const float background_var_threshold_=16;
   static const double background_learing_rate_=0.01;
   static const bool background_shadow_detection_=false;
-  static const double threshold_value_=25;
-  static const double max_value_=255;
   cv::Scalar blue_;
   cv::Scalar yellow_;
   cv::Scalar green_;

@@ -10,8 +10,7 @@
 #include <iostream>
 #include <signal.h>
 #include <boost/filesystem.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/features2d.hpp>
+#include <opencv2/core.hpp>
 
 #include "optionparser.h"
 #include "Camera.h"

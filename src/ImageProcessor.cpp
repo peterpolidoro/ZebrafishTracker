@@ -15,9 +15,9 @@ ImageProcessor::ImageProcessor()
   frame_rate_position_ = cv::Point(50,50);
   keypoints_position_ = cv::Point(50,100);
 
-  mog2_ptr_ = new cv::BackgroundSubtractorMOG2(background_history_,
-                                               background_var_threshold_,
-                                               background_shadow_detection_);
+  mog2_ptr_ = cv::createBackgroundSubtractorMOG2(background_history_,
+                                                 background_var_threshold_,
+                                                 background_shadow_detection_);
 
   // Create Window
   cv::namedWindow("Image",cv::WINDOW_NORMAL);
@@ -86,10 +86,9 @@ void ImageProcessor::updateBackground(cv::Mat & image)
 {
   if ((image_count_ % background_divisor_) == 0)
   {
-    mog2_ptr_->operator()(image,
-                          foreground_,
-                          background_learing_rate_);
-    mog2_ptr_->getBackgroundImage(background_);
+    mog2_ptr_->apply(image,
+                     foreground_mask_,
+                     background_learing_rate_);
   }
 }
 
@@ -102,44 +101,42 @@ bool ImageProcessor::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
 {
   // Find blob center
   blob_center = cv::Point(0,0);
-  cv::subtract(image,background_,foreground_);
-  cv::threshold(foreground_,threshold_,threshold_value_,max_value_,cv::THRESH_BINARY);
 
-  // Setup SimpleBlobDetector parameters.
-  cv::SimpleBlobDetector::Params params;
+  // // Setup SimpleBlobDetector parameters.
+  // cv::SimpleBlobDetector::Params params;
 
-  // Change thresholds
-  params.minThreshold = 25;
-  // params.maxThreshold = 200;
-  params.maxThreshold = 30;
+  // // Change thresholds
+  // params.minThreshold = 25;
+  // // params.maxThreshold = 200;
+  // params.maxThreshold = 30;
 
-  // Filter by Area.
-  // params.filterByArea = true;
-  params.filterByArea = false;
-  params.minArea = 1500;
+  // // Filter by Area.
+  // // params.filterByArea = true;
+  // params.filterByArea = false;
+  // params.minArea = 1500;
 
-  // Filter by Circularity
-  // params.filterByCircularity = true;
-  params.filterByCircularity = false;
-  params.minCircularity = 0.1;
+  // // Filter by Circularity
+  // // params.filterByCircularity = true;
+  // params.filterByCircularity = false;
+  // params.minCircularity = 0.1;
 
-  // Filter by Convexity
-  // params.filterByConvexity = true;
-  params.filterByConvexity = false;
-  params.minConvexity = 0.87;
+  // // Filter by Convexity
+  // // params.filterByConvexity = true;
+  // params.filterByConvexity = false;
+  // params.minConvexity = 0.87;
 
-  // Filter by Inertia
-  // params.filterByInertia = true;
-  params.filterByInertia = false;
-  params.minInertiaRatio = 0.01;
+  // // Filter by Inertia
+  // // params.filterByInertia = true;
+  // params.filterByInertia = false;
+  // params.minInertiaRatio = 0.01;
 
-  // Set up the detector with default parameters.
-  cv::SimpleBlobDetector detector(params);
+  // // Set up the detector with default parameters.
+  // cv::SimpleBlobDetector detector(params);
 
-  // Detect blobs.
-  std::vector<cv::KeyPoint> keypoints;
-  // detector.detect(threshold_,keypoints);
-  detector.detect(image,keypoints);
+  // // Detect blobs.
+  // std::vector<cv::KeyPoint> keypoints;
+  // // detector.detect(threshold_,keypoints);
+  // detector.detect(image,keypoints);
 
   // std::vector<std::vector<cv::Point> > contours;
   // cv::findContours(threshold_,contours,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
