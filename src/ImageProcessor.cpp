@@ -161,49 +161,49 @@ bool ImageProcessor::findBlobCenter(cv::Mat & image, cv::Point & blob_center)
   // }
 
   // Update display
-  if ((image_count_ % display_divisor_) == 0)
-  {
-    cv::cvtColor(image,display_image_,CV_GRAY2BGR);
-    // cv::cvtColor(threshold_,display_image_,CV_GRAY2BGR);
+  // if ((image_count_ % display_divisor_) == 0)
+  // {
+  //   cv::cvtColor(image,display_image_,CV_GRAY2BGR);
+  //   // cv::cvtColor(threshold_,display_image_,CV_GRAY2BGR);
 
-    // Draw detected blobs as red circles.
-    // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
-    cv::drawKeypoints(image,
-                      keypoints,
-                      display_image_,
-                      cv::Scalar(0,0,255),
-                      cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+  //   // Draw detected blobs as red circles.
+  //   // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
+  //   // cv::drawKeypoints(image,
+  //   //                   keypoints,
+  //   //                   display_image_,
+  //   //                   cv::Scalar(0,0,255),
+  //   //                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
-    // // Draw Contour on Output Image
-    // std::vector<std::vector<cv::Point> > contours_to_draw;
-    // contours_to_draw.push_back(contours[max_ind]);
-    // cv::drawContours(display_image_,contours_to_draw,-1,blue_,2);
+  //   // // Draw Contour on Output Image
+  //   // std::vector<std::vector<cv::Point> > contours_to_draw;
+  //   // contours_to_draw.push_back(contours[max_ind]);
+  //   // cv::drawContours(display_image_,contours_to_draw,-1,blue_,2);
 
-    std::stringstream frame_rate_ss;
-    frame_rate_ss << getFrameRate();
-    std::string frame_rate_string = std::string("Frame rate: ") + std::string(frame_rate_ss.str());
-    cv::putText(display_image_,
-                frame_rate_string,
-                frame_rate_position_,
-                cv::FONT_HERSHEY_SIMPLEX,
-                1,
-                yellow_,
-                4);
+  //   std::stringstream frame_rate_ss;
+  //   frame_rate_ss << getFrameRate();
+  //   std::string frame_rate_string = std::string("Frame rate: ") + std::string(frame_rate_ss.str());
+  //   cv::putText(display_image_,
+  //               frame_rate_string,
+  //               frame_rate_position_,
+  //               cv::FONT_HERSHEY_SIMPLEX,
+  //               1,
+  //               yellow_,
+  //               4);
 
-    std::stringstream keypoints_ss;
-    keypoints_ss << keypoints.size();
-    std::string keypoints_string = std::string("Keypoints count: ") + std::string(keypoints_ss.str());
-    cv::putText(display_image_,
-                keypoints_string,
-                keypoints_position_,
-                cv::FONT_HERSHEY_SIMPLEX,
-                1,
-                yellow_,
-                4);
+  //   std::stringstream keypoints_ss;
+  //   keypoints_ss << keypoints.size();
+  //   std::string keypoints_string = std::string("Keypoints count: ") + std::string(keypoints_ss.str());
+  //   cv::putText(display_image_,
+  //               keypoints_string,
+  //               keypoints_position_,
+  //               cv::FONT_HERSHEY_SIMPLEX,
+  //               1,
+  //               yellow_,
+  //               4);
 
-    cv::imshow("Image",display_image_);
-    cv::waitKey(1);
-  }
+  //   cv::imshow("Image",display_image_);
+  //   cv::waitKey(1);
+  // }
 
   return SUCCESS;
 }
