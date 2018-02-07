@@ -21,6 +21,8 @@ ImageProcessor::ImageProcessor()
   // Create Window
   cv::namedWindow("Image",cv::WINDOW_NORMAL);
 
+  kernel_ = cv::getStructuringElement(KERNEL_SHAPE,
+                                      cv::Size(KERNEL_SIZE,KERNEL_SIZE));
   blue_ = cv::Scalar(255,0,0);
   yellow_ = cv::Scalar(0,255,255);
   green_ = cv::Scalar(0,255,0);
@@ -95,8 +97,12 @@ bool ImageProcessor::findBlobLocation(cv::Point & blob_location)
 {
   bool success = false;
 
+  cv::erode(foreground_mask_,
+            processed_image_,
+            kernel_);
+
   std::vector<cv::Point> locations;
-  cv::findNonZero(foreground_mask_,locations);
+  cv::findNonZero(processed_image_,locations);
 
   // Choose one
   // for now arbitrarily pick first, but could take the mean or something

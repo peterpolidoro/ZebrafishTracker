@@ -52,6 +52,11 @@ private:
   cv::Scalar green_;
   cv::Scalar red_;
 
+  cv::Mat processed_image_;
+  cv::Mat kernel_;
+  static const int KERNEL_SHAPE = cv::MORPH_RECT;
+  static const int KERNEL_SIZE = 3;
+
   cv::Mat display_image_;
   static const int DISPLAY_MARKER_RADIUS = 10;
   static const int DISPLAY_MARKER_THICKNESS = 2;
