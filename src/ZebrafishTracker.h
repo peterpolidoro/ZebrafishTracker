@@ -37,8 +37,9 @@ private:
   ImageProcessor image_processor_;
   CoordinateConverter coordinate_converter_;
   StageController stage_controller_;
+  bool paralyzed_;
 
-  volatile static sig_atomic_t enabled_;
+  volatile static sig_atomic_t run_enabled_;
   static void interruptSignalHandler(int sig);
 
   bool connectCamera();

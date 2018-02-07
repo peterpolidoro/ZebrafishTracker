@@ -15,6 +15,14 @@ cd ~/git/ZebrafishTracker
 ./bin/ZebrafishTracker
 ```
 
+```shell
+./bin/ZebrafishTracker --help
+  --help      Print usage and exit.
+  --debug     Print debug.
+  --mouse     Track mouse click location instead of blob.
+  --paralyze  Disable stage so it does not move.
+```
+
 ## Installation
 
 ### Setup Linear Motors

@@ -8,11 +8,11 @@
 #include "ZebrafishTracker.h"
 
 
-volatile sig_atomic_t ZebrafishTracker::enabled_ = 1;
+volatile sig_atomic_t ZebrafishTracker::run_enabled_ = 1;
 
 void ZebrafishTracker::interruptSignalHandler(int sig)
 {
-  enabled_ = 0;
+  run_enabled_ = 0;
 }
 
 // public
@@ -21,6 +21,8 @@ ZebrafishTracker::ZebrafishTracker()
   signal(SIGINT,ZebrafishTracker::interruptSignalHandler);
 
   image_processor_.setMode(ImageProcessor::BLOB);
+
+  paralyzed_ = false;
 }
 
 bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
@@ -30,12 +32,14 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
       HELP,
       DEBUG,
       MOUSE,
+      PARALYZE,
     };
   const option::Descriptor usage[] =
     {
       {HELP, 0,"", "help", option::Arg::None, "  --help  \tPrint usage and exit." },
       {DEBUG, 0,"", "debug", option::Arg::None, "  --debug  \tPrint debug." },
       {MOUSE, 0,"", "mouse", option::Arg::None, "  --mouse  \tTrack mouse click location instead of blob." },
+      {PARALYZE, 0,"", "paralyze", option::Arg::None, "  --paralyze  \tDisable stage so it does not move." },
       {0, 0, 0, 0, 0, 0}
     };
   argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
@@ -60,6 +64,12 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   {
     image_processor_.setMode(ImageProcessor::MOUSE);
     std::cout << "Mouse mode!" << std::endl;
+  }
+
+  if (options[PARALYZE])
+  {
+    paralyzed_ = true;
+    std::cout << "Paralyzed!" << std::endl;
   }
 
   return SUCCESS;
@@ -153,7 +163,7 @@ void ZebrafishTracker::run()
   cv::Point tracked_image_point;
   cv::Point stage_target_position;
   bool success;
-  while(enabled_)
+  while(run_enabled_)
   {
     success = camera_.grabImage(image);
     if (success)
@@ -165,7 +175,7 @@ void ZebrafishTracker::run()
       success = coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
       std::cout << "stage_target_position x: " << stage_target_position.x << ", y: " << stage_target_position.y << std::endl;
     }
-    if (success)
+    if (success && !paralyzed_)
     {
       success = stage_controller_.moveStageTo(stage_target_position.x,stage_target_position.y);
     }
@@ -225,6 +235,11 @@ bool ZebrafishTracker::disconnectCamera()
 
 bool ZebrafishTracker::connectStageController()
 {
+  if (paralyzed_)
+  {
+    return true;
+  }
+
   std::cout << std::endl << "Connecting stage controller." << std::endl;
 
   bool success;
@@ -239,6 +254,11 @@ bool ZebrafishTracker::connectStageController()
 
 bool ZebrafishTracker::disconnectStageController()
 {
+  if (paralyzed_)
+  {
+    return true;
+  }
+
   std::cout << std::endl << "Disconnecting stage controller." << std::endl;
 
   bool success;
