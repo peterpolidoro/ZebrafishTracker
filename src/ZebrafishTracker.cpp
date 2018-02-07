@@ -23,6 +23,7 @@ ZebrafishTracker::ZebrafishTracker()
   image_processor_.setMode(ImageProcessor::BLOB);
 
   paralyzed_ = false;
+  blind_ = false;
 }
 
 bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
@@ -33,13 +34,15 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
       DEBUG,
       MOUSE,
       PARALYZE,
+      BLIND,
     };
   const option::Descriptor usage[] =
     {
       {HELP, 0,"", "help", option::Arg::None, "  --help  \tPrint usage and exit." },
       {DEBUG, 0,"", "debug", option::Arg::None, "  --debug  \tPrint debug." },
       {MOUSE, 0,"", "mouse", option::Arg::None, "  --mouse  \tTrack mouse click location instead of blob." },
-      {PARALYZE, 0,"", "paralyze", option::Arg::None, "  --paralyze  \tDisable stage so it does not move." },
+      {PARALYZE, 0,"", "paralyze", option::Arg::None, "  --paralyze  \tDo not communicate with stage so it does not move." },
+      {BLIND, 0,"", "blind", option::Arg::None, "  --blind  \tDo not communicate with camera." },
       {0, 0, 0, 0, 0, 0}
     };
   argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
@@ -57,19 +60,25 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   if (options[DEBUG])
   {
     stage_controller_.setDebug(true);
-    std::cout << "Debug mode!" << std::endl;
+    std::cout << std::endl << "Debug mode!" << std::endl;
   }
 
   if (options[MOUSE])
   {
     image_processor_.setMode(ImageProcessor::MOUSE);
-    std::cout << "Mouse mode!" << std::endl;
+    std::cout << std::endl << "Mouse mode!" << std::endl;
   }
 
   if (options[PARALYZE])
   {
     paralyzed_ = true;
-    std::cout << "Paralyzed!" << std::endl;
+    std::cout << std::endl << "Paralyzed!" << std::endl;
+  }
+
+  if (options[BLIND])
+  {
+    blind_ = true;
+    std::cout << std::endl << "Blind!" << std::endl;
   }
 
   return SUCCESS;
@@ -165,7 +174,10 @@ void ZebrafishTracker::run()
   bool success;
   while(run_enabled_)
   {
-    success = camera_.grabImage(image);
+    if (!blind_)
+    {
+      success = camera_.grabImage(image);
+    }
     if (success)
     {
       success = image_processor_.updateTrackedImagePoint(image,&tracked_image_point);
@@ -185,6 +197,11 @@ void ZebrafishTracker::run()
 // private
 bool ZebrafishTracker::connectCamera()
 {
+  if (blind_)
+  {
+    return true;
+  }
+
   camera_.printLibraryInfo();
 
   size_t camera_count = camera_.count();
@@ -217,6 +234,11 @@ bool ZebrafishTracker::connectCamera()
 
 bool ZebrafishTracker::disconnectCamera()
 {
+  if (blind_)
+  {
+    return true;
+  }
+
   std::cout << std::endl << "Stopping camera capture." << std::endl;
 
   bool success;
