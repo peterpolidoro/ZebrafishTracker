@@ -14,11 +14,34 @@ Calibrator::Calibrator()
   // homography_image_to_stage_set_ = false;
 }
 
-// void Calibrator::setHomographyImageToStage(cv::Mat homography_image_to_stage)
-// {
-//   homography_image_to_stage_ = homography_image_to_stage;
-//   homography_image_to_stage_set_ = true;
-// }
+bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
+{
+  const bool got_calibration = true;
+  boost::filesystem::path calibration_path("../ZebrafishTrackerCalibration/calibration/calibration.yml");
+
+  try
+  {
+    if (boost::filesystem::exists(calibration_path))
+    {
+      std::cout << std::endl << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
+    }
+    else
+    {
+      std::cerr << std::endl << "zebrafish_tracker_calibration_path: " << calibration_path << " does not exist!" << std::endl;
+      return !got_calibration;
+    }
+  }
+  catch (const boost::filesystem::filesystem_error& ex)
+  {
+    std::cout << std::endl << ex.what() << std::endl;
+    return !got_calibration;
+  }
+
+  cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
+  calibration_fs["homography_image_to_stage"] >> homography_image_to_stage;
+  calibration_fs.release();
+  return got_calibration;
+}
 
 // bool Calibrator::convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point)
 // {

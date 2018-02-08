@@ -126,33 +126,12 @@ bool ZebrafishTracker::disconnectHardware()
 
 bool ZebrafishTracker::findCalibration()
 {
-  boost::filesystem::path calibration_path("../ZebrafishTrackerCalibration/calibration/calibration.yml");
+  bool got_calibration = calibrator_.getHomographyImageToStage(homography_image_to_stage_);
 
-  try
-  {
-    if (boost::filesystem::exists(calibration_path))
-    {
-      std::cout << std::endl << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
-    }
-    else
-    {
-      std::cerr << std::endl << "zebrafish_tracker_calibration_path: " << calibration_path << " does not exist!" << std::endl;
-      return 1;
-    }
-  }
-  catch (const boost::filesystem::filesystem_error& ex)
-  {
-    std::cout << std::endl << ex.what() << std::endl;
-  }
-
-  cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
-  calibration_fs["homography_image_to_stage"] >> homography_image_to_stage_;
-  calibration_fs.release();
-
-  bool got_calibration = true;
   if ((homography_image_to_stage_.rows != 3) || (homography_image_to_stage_.cols != 3))
   {
     got_calibration = false;
+    std::cout << "wrong size????" << std::endl;
   }
 
   if (got_calibration)

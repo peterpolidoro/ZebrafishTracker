@@ -7,8 +7,9 @@
 // ----------------------------------------------------------------------------
 #ifndef _CALIBRATOR_H_
 #define _CALIBRATOR_H_
-// #include <iostream>
-// #include <opencv2/core.hpp>
+#include <iostream>
+#include <opencv2/core.hpp>
+#include <boost/filesystem.hpp>
 
 
 class Calibrator
@@ -16,7 +17,7 @@ class Calibrator
 public:
   Calibrator();
 
-  // void setHomographyImageToStage(cv::Mat homography_image_to_stage);
+  bool getHomographyImageToStage(cv::Mat & homography_image_to_stage);
   // bool convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point);
 
 private:

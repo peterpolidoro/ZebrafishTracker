@@ -9,14 +9,14 @@
 #define _ZEBRAFISH_TRACKER_H_
 #include <iostream>
 #include <signal.h>
-#include <boost/filesystem.hpp>
 #include <opencv2/core.hpp>
 
 #include "optionparser.h"
 #include "Camera.h"
 #include "ImageProcessor.h"
-#include "CoordinateConverter.h"
 #include "StageController.h"
+#include "Calibrator.h"
+#include "CoordinateConverter.h"
 
 
 class ZebrafishTracker
@@ -35,8 +35,9 @@ private:
   cv::Mat homography_image_to_stage_;
   Camera camera_;
   ImageProcessor image_processor_;
-  CoordinateConverter coordinate_converter_;
   StageController stage_controller_;
+  Calibrator calibrator_;
+  CoordinateConverter coordinate_converter_;
   bool paralyzed_;
   bool blind_;
 
