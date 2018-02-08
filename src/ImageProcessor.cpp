@@ -45,7 +45,7 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_
     {
       updateBackground(image);
 
-      success = findBlobLocation(tracked_point);
+      success = findBlobLocation(image,tracked_point);
       break;
     }
     case MOUSE:
@@ -58,8 +58,9 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_
   if (success)
   {
     *tracked_image_point_ptr = tracked_point;
-    displayImage(image,tracked_point);
   }
+
+  displayImage(image,tracked_point,success);
 
   ++image_count_;
 
@@ -85,6 +86,7 @@ void ImageProcessor::updateBackground(cv::Mat & image)
     mog2_ptr_->apply(image,
                      foreground_mask_,
                      BACKGROUND_LEARING_RATE);
+    mog2_ptr_->getBackgroundImage(background_);
   }
 }
 
@@ -93,11 +95,14 @@ double ImageProcessor::getFrameRate()
   return frame_rate_counter_.GetFrameRate();
 }
 
-bool ImageProcessor::findBlobLocation(cv::Point & blob_location)
+bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 {
   bool success = false;
 
-  cv::erode(foreground_mask_,
+  cv::subtract(image,background_,foreground_);
+  cv::threshold(foreground_,threshold_,THRESHOLD_VALUE,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
+
+  cv::erode(threshold_,
             processed_image_,
             kernel_);
 
@@ -108,18 +113,18 @@ bool ImageProcessor::findBlobLocation(cv::Point & blob_location)
   // for now arbitrarily pick first, but could take the mean or something
   if (locations.size() > 0)
   {
-    blob_location = locations[0];
+    location = locations[0];
     success = true;
   }
 
   return success;
 }
 
-bool ImageProcessor::findClickedLocation(cv::Mat & image, cv::Point & clicked_location)
+bool ImageProcessor::findClickedLocation(cv::Mat image, cv::Point & location)
 {
   MouseParams mp;
   mp.image = image;
-  mp.tracked_image_point_ptr = &clicked_location;
+  mp.tracked_image_point_ptr = &location;
   mp.success = false;
   cv::setMouseCallback("Image",onMouse,&mp);
   cv::imshow("Image",image);
@@ -127,18 +132,21 @@ bool ImageProcessor::findClickedLocation(cv::Mat & image, cv::Point & clicked_lo
   return mp.success;
 }
 
-void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point)
+void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point, const bool success)
 {
   // Update display
   if ((image_count_ % DISPLAY_DIVISOR) == 0)
   {
     cv::cvtColor(image,display_image_,CV_GRAY2BGR);
 
-    cv::circle(display_image_,
-               tracked_point,
-               DISPLAY_MARKER_RADIUS,
-               red_,
-               DISPLAY_MARKER_THICKNESS);
+    if (success)
+    {
+      cv::circle(display_image_,
+                 tracked_point,
+                 DISPLAY_MARKER_RADIUS,
+                 red_,
+                 DISPLAY_MARKER_THICKNESS);
+    }
 
     std::stringstream frame_rate_ss;
     frame_rate_ss << getFrameRate();
