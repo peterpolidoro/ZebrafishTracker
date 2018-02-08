@@ -40,16 +40,10 @@ private:
   static const size_t DISPLAY_DIVISOR = 10;
   unsigned long image_count_;
   cv::Point frame_rate_position_;
-  cv::Ptr<cv::BackgroundSubtractor> mog2_ptr_;
-  cv::Mat foreground_mask_;
   cv::Mat background_;
   cv::Mat foreground_;
   cv::Mat threshold_;
   static const size_t BACKGROUND_DIVISOR = 10;
-  static const int BACKGROUND_HISTORY = 100;
-  static const float BACKGROUND_VAR_THRESHOLD = 16;
-  static const double BACKGROUND_LEARING_RATE = 0.01;
-  static const bool BACKGROUND_SHADOW_DETECTION = false;
   static const double THRESHOLD_VALUE = 25;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Scalar blue_;

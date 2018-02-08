@@ -14,10 +14,6 @@ ImageProcessor::ImageProcessor()
   image_count_ = 0;
   frame_rate_position_ = cv::Point(50,50);
 
-  mog2_ptr_ = cv::createBackgroundSubtractorMOG2(BACKGROUND_HISTORY,
-                                                 BACKGROUND_VAR_THRESHOLD,
-                                                 BACKGROUND_SHADOW_DETECTION);
-
   // Create Window
   cv::namedWindow("Image",cv::WINDOW_NORMAL);
   cv::namedWindow("Background",cv::WINDOW_NORMAL);
@@ -87,10 +83,14 @@ void ImageProcessor::updateBackground(cv::Mat & image)
 {
   if ((image_count_ % BACKGROUND_DIVISOR) == 0)
   {
-    mog2_ptr_->apply(image,
-                     foreground_mask_,
-                     BACKGROUND_LEARING_RATE);
-    mog2_ptr_->getBackgroundImage(background_);
+    if (background_.size() == image.size())
+    {
+      cv::max(background_,image,background_);
+    }
+    else
+    {
+      background_ = image;
+    }
   }
 }
 
