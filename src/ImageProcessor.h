@@ -7,9 +7,6 @@
 // ----------------------------------------------------------------------------
 #ifndef _IMAGE_PROCESSOR_H_
 #define _IMAGE_PROCESSOR_H_
-// #include "opencv2/imgcodecs.hpp"
-// #include "opencv2/imgproc.hpp"
-// #include "opencv2/videoio.hpp"
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
 
@@ -43,7 +40,7 @@ private:
   cv::Mat background_;
   cv::Mat foreground_;
   cv::Mat threshold_;
-  static const size_t BACKGROUND_DIVISOR = 10;
+  static const size_t BACKGROUND_DIVISOR = 200;
   static const double THRESHOLD_VALUE = 25;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Scalar blue_;

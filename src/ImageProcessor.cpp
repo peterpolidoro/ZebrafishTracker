@@ -85,7 +85,9 @@ void ImageProcessor::updateBackground(cv::Mat & image)
   {
     if (background_.size() == image.size())
     {
-      cv::max(background_,image,background_);
+      cv::Mat background;
+      cv::max(background_,image,background);
+      background_ = background;
     }
     else
     {
@@ -103,7 +105,7 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 {
   bool success = false;
 
-  cv::subtract(image,background_,foreground_);
+  cv::subtract(background_,image,foreground_);
   cv::threshold(foreground_,threshold_,THRESHOLD_VALUE,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
 
   cv::erode(threshold_,
