@@ -20,6 +20,10 @@ ImageProcessor::ImageProcessor()
 
   // Create Window
   cv::namedWindow("Image",cv::WINDOW_NORMAL);
+  cv::namedWindow("Background",cv::WINDOW_NORMAL);
+  cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
+  cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
+  cv::namedWindow("Processed",cv::WINDOW_NORMAL);
 
   kernel_ = cv::getStructuringElement(KERNEL_SHAPE,
                                       cv::Size(KERNEL_SIZE,KERNEL_SIZE));
@@ -160,6 +164,10 @@ void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point, co
                 4);
 
     cv::imshow("Image",display_image_);
+    cv::imshow("Background",background_);
+    cv::imshow("Foreground",foreground_);
+    cv::imshow("Threshold",threshold_);
+    cv::imshow("Processed",processed_image_);
     cv::waitKey(1);
   }
 }
