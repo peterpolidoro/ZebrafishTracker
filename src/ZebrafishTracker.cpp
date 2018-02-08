@@ -84,46 +84,6 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   return SUCCESS;
 }
 
-bool ZebrafishTracker::importCalibrationData()
-{
-  boost::filesystem::path calibration_path("../ZebrafishTrackerCalibration/calibration/calibration.yml");
-
-  try
-  {
-    if (boost::filesystem::exists(calibration_path))
-    {
-      std::cout << std::endl << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
-    }
-    else
-    {
-      std::cerr << std::endl << "ZEBRAFISH_TRACKER_CALIBRATION_PATH: " << calibration_path << " does not exist!" << std::endl;
-      return 1;
-    }
-  }
-  catch (const boost::filesystem::filesystem_error& ex)
-  {
-    std::cout << std::endl << ex.what() << std::endl;
-  }
-
-  cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
-  calibration_fs["homography_image_to_stage"] >> homography_image_to_stage_;
-  calibration_fs.release();
-
-  bool got_calibration = true;
-  if ((homography_image_to_stage_.rows != 3) || (homography_image_to_stage_.cols != 3))
-  {
-    got_calibration = false;
-  }
-
-  if (got_calibration)
-  {
-    std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage_ << std::endl;
-    coordinate_converter_.setHomographyImageToStage(homography_image_to_stage_);
-  }
-
-  return got_calibration;
-}
-
 bool ZebrafishTracker::connectHardware()
 {
   bool success;
@@ -162,6 +122,46 @@ bool ZebrafishTracker::disconnectHardware()
   }
 
   return success;
+}
+
+bool ZebrafishTracker::findCalibration()
+{
+  boost::filesystem::path calibration_path("../ZebrafishTrackerCalibration/calibration/calibration.yml");
+
+  try
+  {
+    if (boost::filesystem::exists(calibration_path))
+    {
+      std::cout << std::endl << "zebrafish_tracker_calibration_path = " << calibration_path << std::endl;
+    }
+    else
+    {
+      std::cerr << std::endl << "zebrafish_tracker_calibration_path: " << calibration_path << " does not exist!" << std::endl;
+      return 1;
+    }
+  }
+  catch (const boost::filesystem::filesystem_error& ex)
+  {
+    std::cout << std::endl << ex.what() << std::endl;
+  }
+
+  cv::FileStorage calibration_fs(calibration_path.string(), cv::FileStorage::READ);
+  calibration_fs["homography_image_to_stage"] >> homography_image_to_stage_;
+  calibration_fs.release();
+
+  bool got_calibration = true;
+  if ((homography_image_to_stage_.rows != 3) || (homography_image_to_stage_.cols != 3))
+  {
+    got_calibration = false;
+  }
+
+  if (got_calibration)
+  {
+    std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage_ << std::endl;
+    coordinate_converter_.setHomographyImageToStage(homography_image_to_stage_);
+  }
+
+  return got_calibration;
 }
 
 void ZebrafishTracker::run()

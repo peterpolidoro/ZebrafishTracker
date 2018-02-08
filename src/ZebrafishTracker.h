@@ -25,9 +25,9 @@ public:
   ZebrafishTracker();
 
   bool processCommandLineArgs(int argc, char * argv[]);
-  bool importCalibrationData();
   bool connectHardware();
   bool disconnectHardware();
+  bool findCalibration();
   void run();
 
 private:

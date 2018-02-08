@@ -22,17 +22,17 @@ int main(int argc, char * argv[])
     return -1;
   }
 
-  success = zebrafish_tracker.importCalibrationData();
-  if (!success)
-  {
-    std::cerr << std::endl << "Unable to import calibration data." << std::endl << std::endl;
-    return -1;
-  }
-
   success = zebrafish_tracker.connectHardware();
   if (!success)
   {
     std::cerr << std::endl << "Unable to connect all hardware." << std::endl << std::endl;
+    return -1;
+  }
+
+  success = zebrafish_tracker.findCalibration();
+  if (!success)
+  {
+    std::cerr << std::endl << "Unable to find calibration." << std::endl << std::endl;
     return -1;
   }
 
