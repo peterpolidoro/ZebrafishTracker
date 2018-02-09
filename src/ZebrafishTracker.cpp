@@ -177,7 +177,7 @@ void ZebrafishTracker::run()
       else if (stage_homing_)
       {
         stage_homed_ = stage_controller_.stageHomed();
-        stage_homing_ = !stage_homed;
+        stage_homing_ = !stage_homed_;
       }
       else
       {
