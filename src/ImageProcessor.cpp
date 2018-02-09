@@ -75,7 +75,8 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
       cv::namedWindow("Background",cv::WINDOW_NORMAL);
       cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
       cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
-      cv::namedWindow("Processed",cv::WINDOW_NORMAL);
+      cv::namedWindow("Eroded",cv::WINDOW_NORMAL);
+      cv::namedWindow("Dilated",cv::WINDOW_NORMAL);
       break;
     }
     case MOUSE:
@@ -123,17 +124,29 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
   cv::threshold(foreground_,threshold_,THRESHOLD_VALUE,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
 
   cv::erode(threshold_,
-            processed_image_,
+            eroded_,
             kernel_);
 
+  cv::dilate(eroded_,
+             dilated_,
+             kernel_);
+
   std::vector<cv::Point> locations;
-  cv::findNonZero(processed_image_,locations);
+  cv::findNonZero(eroded_,locations);
 
   // Choose one
   // for now arbitrarily pick first, but could take the mean or something
   if (locations.size() > 0)
   {
+    std::cout << "locations[0] = " << locations[0] << std::endl;
+
+    cv::Mat location_mean;
+    cv::reduce(locations, location_mean, 01, CV_REDUCE_AVG);
+    cv::Point mean(location_mean.at<float>(0,0), location_mean.at<float>(0,1));
+    std::cout << "locations_mean = " << location_mean << std::endl;
+
     location = locations[0];
+
     success = true;
   }
 
@@ -188,7 +201,8 @@ void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point, co
         cv::imshow("Background",background_);
         cv::imshow("Foreground",foreground_);
         cv::imshow("Threshold",threshold_);
-        cv::imshow("Processed",processed_image_);
+        cv::imshow("Eroded",eroded_);
+        cv::imshow("Dilated",dilated_);
         break;
       }
       case MOUSE:
