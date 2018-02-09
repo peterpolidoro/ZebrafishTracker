@@ -23,7 +23,7 @@ Camera::Camera()
   config_.exposure = 0.8;
   config_.auto_shutter = false;
   // config_.shutter_speed = 0.0006; // calibration setting
-  config_.shutter_speed = 1.0;
+  config_.shutter_speed = 0.001;
   config_.auto_gain = false;
   config_.gain = 0;
   config_.brightness = 0;
