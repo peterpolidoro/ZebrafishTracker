@@ -14,13 +14,6 @@ ImageProcessor::ImageProcessor()
   image_count_ = 0;
   frame_rate_position_ = cv::Point(50,50);
 
-  // Create Window
-  cv::namedWindow("Image",cv::WINDOW_NORMAL);
-  cv::namedWindow("Background",cv::WINDOW_NORMAL);
-  cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
-  cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
-  cv::namedWindow("Processed",cv::WINDOW_NORMAL);
-
   kernel_ = cv::getStructuringElement(KERNEL_SHAPE,
                                       cv::Size(KERNEL_SIZE,KERNEL_SIZE));
   blue_ = cv::Scalar(255,0,0);
@@ -70,6 +63,27 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
 {
   mode_ = mode;
+
+  cv::destroyAllWindows();
+
+  cv::namedWindow("Image",cv::WINDOW_NORMAL);
+
+  switch (mode_)
+  {
+    case BLOB:
+    {
+      cv::namedWindow("Background",cv::WINDOW_NORMAL);
+      cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
+      cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
+      cv::namedWindow("Processed",cv::WINDOW_NORMAL);
+      break;
+    }
+    case MOUSE:
+    {
+      break;
+    }
+  }
+
 }
 
 // private
@@ -166,10 +180,22 @@ void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point, co
                 4);
 
     cv::imshow("Image",display_image_);
-    cv::imshow("Background",background_);
-    cv::imshow("Foreground",foreground_);
-    cv::imshow("Threshold",threshold_);
-    cv::imshow("Processed",processed_image_);
+
+    switch (mode_)
+    {
+      case BLOB:
+      {
+        cv::imshow("Background",background_);
+        cv::imshow("Foreground",foreground_);
+        cv::imshow("Threshold",threshold_);
+        cv::imshow("Processed",processed_image_);
+        break;
+      }
+      case MOUSE:
+      {
+        break;
+      }
+    }
     cv::waitKey(1);
   }
 }
