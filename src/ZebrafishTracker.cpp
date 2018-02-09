@@ -22,6 +22,8 @@ ZebrafishTracker::ZebrafishTracker()
 
   image_processor_.setMode(ImageProcessor::BLOB);
 
+  stage_homed_ = false;
+  stage_homing_ = false;
   paralyzed_ = false;
   blind_ = false;
 }
@@ -168,7 +170,20 @@ void ZebrafishTracker::run()
     }
     if (success && !paralyzed_)
     {
-      success = stage_controller_.moveStageTo(stage_target_position.x,stage_target_position.y);
+      if (stage_homed_)
+      {
+        success = stage_controller_.moveStageTo(stage_target_position.x,stage_target_position.y);
+      }
+      else if (stage_homing_)
+      {
+        stage_homed_ = stage_controller_.stageHomed();
+        stage_homing_ = !stage_homed;
+      }
+      else
+      {
+        stage_controller_.homeStage();
+        stage_homing_ = true;
+      }
     }
   }
 }
@@ -245,10 +260,6 @@ bool ZebrafishTracker::connectStageController()
 
   bool success;
   success = stage_controller_.connect();
-  if (success)
-  {
-    stage_controller_.homeStage();
-  }
 
   return success;
 }

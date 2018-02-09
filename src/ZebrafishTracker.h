@@ -36,6 +36,8 @@ private:
   Camera camera_;
   ImageProcessor image_processor_;
   StageController stage_controller_;
+  bool stage_homed_;
+  bool stage_homing_;
   Calibrator calibrator_;
   CoordinateConverter coordinate_converter_;
   bool paralyzed_;
