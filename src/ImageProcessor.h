@@ -77,7 +77,7 @@ private:
   };
 
   void updateFrameRateMeasurement();
-  void updateBackground(cv::Mat & image);
+  void updateBackground(cv::Mat image);
   double getFrameRate();
   bool findBlobLocation(cv::Mat image, cv::Point & location);
   bool findClickedLocation(cv::Mat image, cv::Point & location);

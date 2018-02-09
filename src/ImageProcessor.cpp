@@ -94,7 +94,7 @@ void ImageProcessor::updateFrameRateMeasurement()
   frame_rate_counter_.NewFrame();
 }
 
-void ImageProcessor::updateBackground(cv::Mat & image)
+void ImageProcessor::updateBackground(cv::Mat image)
 {
   if ((image_count_ % BACKGROUND_DIVISOR) == 0)
   {
@@ -131,9 +131,21 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
   //            dilated_,
   //            kernel_);
 
-  // std::vector<cv::Point> locations;
-  // cv::findNonZero(eroded_,locations);
-  std::vector<cv::Point2f> locations;
+  // try
+  // {
+  //   cv::Moments moments = cv::moments(threshold_);
+  //   location.x = moments.m10/moments.m00;
+  //   location.y = moments.m01/moments.m00;
+  //   success = true;
+  // }
+  // catch(cv::Exception & e)
+  // {
+  //   const char * err_msg = e.what();
+  //   std::cout << "moments: " << err_msg << std::endl;
+  // }
+
+
+  std::vector<cv::Point> locations;
   cv::findNonZero(threshold_,locations);
 
   // Choose one
@@ -143,14 +155,14 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
     cv::Point2f sum(0,0);
     for (size_t i=0; i<locations.size(); ++i)
     {
-      sum += locations[i];
+      sum = sum + cv::Point2f(locations[i]);
     }
     cv::Point2f mean;
     mean.x = sum.x/locations.size();
     mean.y = sum.y/locations.size();
     location = mean;
-    std::cout << "locations[0] = " << locations[0] << std::endl;
-    std::cout << "location = " << location << std::endl;
+    // std::cout << "locations[0] = " << locations[0] << std::endl;
+    // std::cout << "location = " << location << std::endl;
     // location = locations[0];
 
     success = true;
