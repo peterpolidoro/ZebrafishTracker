@@ -133,23 +133,25 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 
   // std::vector<cv::Point> locations;
   // cv::findNonZero(eroded_,locations);
-  std::vector<cv::Point> locations;
+  std::vector<cv::Point2f> locations;
   cv::findNonZero(threshold_,locations);
 
   // Choose one
   // for now arbitrarily pick first, but could take the mean or something
   if (locations.size() > 0)
   {
-    // std::cout << "locations[0] = " << locations[0] << std::endl;
-
-    // cv::Mat location_mean;
-    // cv::reduce(locations, location_mean, 01, CV_REDUCE_AVG);
-    // cv::Point mean(location_mean.at<float>(0,0), location_mean.at<float>(0,1));
-    // std::cout << "locations[0] = " << locations[0] << std::endl;
-    // std::cout << "location_mean = " << location_mean << std::endl;
-
-    location = locations[0];
-    // location = mean;
+    cv::Point2f sum(0,0);
+    for (size_t i=0; i<locations.size(); ++i)
+    {
+      sum += locations[i];
+    }
+    cv::Point2f mean;
+    mean.x = sum.x/locations.size();
+    mean.y = sum.y/locations.size();
+    location = mean;
+    std::cout << "locations[0] = " << locations[0] << std::endl;
+    std::cout << "location = " << location << std::endl;
+    // location = locations[0];
 
     success = true;
   }
