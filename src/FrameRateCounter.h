@@ -33,7 +33,7 @@ class FrameRateCounter
 {
 public:
   /** Constructor. */
-  FrameRateCounter( unsigned long queueLength = 10 );
+  FrameRateCounter( unsigned long queueLength = 100 );
 
   /** Destructor. */
   virtual ~FrameRateCounter();
