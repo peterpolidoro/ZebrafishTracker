@@ -21,6 +21,7 @@ public:
   // bool convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point);
 
 private:
+  boost::filesystem::path calibration_repository_path_;
   // const static bool SUCCESS = true;
   // cv::Mat homography_image_to_stage_;
   // bool homography_image_to_stage_set_;

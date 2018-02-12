@@ -11,13 +11,16 @@
 // public
 Calibrator::Calibrator()
 {
+  calibration_repository_path_ = boost::filesystem::path("../ZebrafishTrackerCalibration");
   // homography_image_to_stage_set_ = false;
 }
 
 bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
 {
   const bool got_calibration = true;
-  boost::filesystem::path calibration_path("../ZebrafishTrackerCalibration/calibration/calibration.yml");
+
+  boost::filesystem::path calibration_path = calibration_repository_path_;
+  calibration_path /= "calibration/calibration.yml";
 
   try
   {
