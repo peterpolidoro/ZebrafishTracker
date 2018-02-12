@@ -16,11 +16,19 @@ cd ~/git/ZebrafishTracker
 ```
 
 ```shell
-./bin/ZebrafishTracker --help
-  --help      Print usage and exit.
-  --debug     Print debug.
-  --mouse     Track mouse click location instead of blob.
-  --paralyze  Disable stage so it does not move.
+./bin/ZebrafishTracker -h
+Usage: ZebrafishTracker [params]
+
+	-?, -h, --help, --usage (value:true)
+		Print usage and exit.
+	-b, --blind
+		Do not communicate with camera.
+	-d, --debug
+		Print debug info.
+	-m, --mouse
+		Track mouse click location instead of blob.
+	-p, --paralyze
+		Do not communicate with stage so it does not move.
 ```
 
 ## Installation

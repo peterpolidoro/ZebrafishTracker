@@ -11,7 +11,6 @@
 #include <signal.h>
 #include <opencv2/core.hpp>
 
-#include "optionparser.h"
 #include "Camera.h"
 #include "ImageProcessor.h"
 #include "StageController.h"

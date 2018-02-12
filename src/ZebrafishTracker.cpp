@@ -30,54 +30,47 @@ ZebrafishTracker::ZebrafishTracker()
 
 bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
 {
-  enum optionIndex
-    {
-      HELP,
-      DEBUG,
-      MOUSE,
-      PARALYZE,
-      BLIND,
-    };
-  const option::Descriptor usage[] =
-    {
-      {HELP, 0,"", "help", option::Arg::None, "  --help  \tPrint usage and exit." },
-      {DEBUG, 0,"", "debug", option::Arg::None, "  --debug  \tPrint debug." },
-      {MOUSE, 0,"", "mouse", option::Arg::None, "  --mouse  \tTrack mouse click location instead of blob." },
-      {PARALYZE, 0,"", "paralyze", option::Arg::None, "  --paralyze  \tDo not communicate with stage so it does not move." },
-      {BLIND, 0,"", "blind", option::Arg::None, "  --blind  \tDo not communicate with camera." },
-      {0, 0, 0, 0, 0, 0}
-    };
-  argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
-  option::Stats  stats(usage, argc, argv);
-  std::vector<option::Option> options(stats.options_max);
-  std::vector<option::Option> buffer(stats.buffer_max);
-  option::Parser parse(usage, argc, argv, &options[0], &buffer[0]);
+  const cv::String keys =
+    "{help h usage ? |      | Print usage and exit.                              }"
+    "{d debug        |      | Print debug info.                                  }"
+    "{m mouse        |      | Track mouse click location instead of blob.        }"
+    "{p paralyze     |      | Do not communicate with stage so it does not move. }"
+    "{b blind        |      | Do not communicate with camera.                    }"
+    ;
 
-  if (parse.error() || options[HELP])
+  cv::CommandLineParser parser(argc,argv,keys);
+
+  if (!parser.check())
   {
-    option::printUsage(std::cout, usage);
+    parser.printErrors();
     return !SUCCESS;
   }
 
-  if (options[DEBUG])
+  if (parser.has("help"))
+  {
+    parser.printMessage();
+    return !SUCCESS;
+  }
+
+  if (parser.has("debug"))
   {
     stage_controller_.setDebug(true);
     std::cout << std::endl << "Debug mode!" << std::endl;
   }
 
-  if (options[MOUSE])
+  if (parser.has("mouse"))
   {
     image_processor_.setMode(ImageProcessor::MOUSE);
     std::cout << std::endl << "Mouse mode!" << std::endl;
   }
 
-  if (options[PARALYZE])
+  if (parser.has("paralyze"))
   {
     paralyzed_ = true;
     std::cout << std::endl << "Paralyzed!" << std::endl;
   }
 
-  if (options[BLIND])
+  if (parser.has("blind"))
   {
     blind_ = true;
     std::cout << std::endl << "Blind!" << std::endl;
