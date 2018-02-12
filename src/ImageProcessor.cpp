@@ -12,22 +12,27 @@
 ImageProcessor::ImageProcessor()
 {
   image_count_ = 0;
-  frame_rate_position_ = cv::Point(50,50);
+  mode_ = BLOB;
+
+  tracked_image_point_ = cv::Point(0,0);
+  tracked_image_point_is_valid_ = false;
 
   kernel_ = cv::getStructuringElement(KERNEL_SHAPE,
                                       cv::Size(KERNEL_SIZE,KERNEL_SIZE));
+
+  FrameRateCounter frame_rate_counter_(FRAME_RATE_QUEUE_LENGTH);
+  frame_rate_counter_.Reset();
+
   blue_ = cv::Scalar(255,0,0);
   yellow_ = cv::Scalar(0,255,255);
   green_ = cv::Scalar(0,255,0);
   red_ = cv::Scalar(0,0,255);
 
-  FrameRateCounter frame_rate_counter_(FRAME_RATE_QUEUE_LENGTH);
-  frame_rate_counter_.Reset();
+  frame_rate_display_position_ = cv::Point(50,50);
 
-  mode_ = BLOB;
 }
 
-bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_image_point_ptr)
+bool ImageProcessor::updateTrackedImagePoint(cv::Mat image)
 {
   updateFrameRateMeasurement();
   bool success = false;
@@ -50,14 +55,29 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_
 
   if (success)
   {
-    *tracked_image_point_ptr = tracked_point;
+    tracked_image_point_ = tracked_point;
+    tracked_image_point_is_valid_ = true;
+  }
+  else
+  {
+    tracked_image_point_is_valid_ = false;
   }
 
-  displayImage(image,tracked_point,success);
+  displayImage(image);
 
   ++image_count_;
 
   return success;
+}
+
+bool ImageProcessor::getTrackedImagePoint(cv::Point & tracked_image_point)
+{
+  if (tracked_image_point_is_valid_)
+  {
+    tracked_image_point = tracked_image_point_;
+    return true;
+  }
+  return false;
 }
 
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
@@ -183,17 +203,17 @@ bool ImageProcessor::findClickedLocation(cv::Mat image, cv::Point & location)
   return mp.success;
 }
 
-void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point, const bool success)
+void ImageProcessor::displayImage(cv::Mat image)
 {
   // Update display
   if ((image_count_ % DISPLAY_DIVISOR) == 0)
   {
     cv::cvtColor(image,display_image_,CV_GRAY2BGR);
 
-    if (success)
+    if (tracked_image_point_is_valid_)
     {
       cv::circle(display_image_,
-                 tracked_point,
+                 tracked_image_point_,
                  DISPLAY_MARKER_RADIUS,
                  red_,
                  DISPLAY_MARKER_THICKNESS);
@@ -204,7 +224,7 @@ void ImageProcessor::displayImage(cv::Mat & image, cv::Point & tracked_point, co
     std::string frame_rate_string = std::string("Frame rate: ") + std::string(frame_rate_ss.str());
     cv::putText(display_image_,
                 frame_rate_string,
-                frame_rate_position_,
+                frame_rate_display_position_,
                 cv::FONT_HERSHEY_SIMPLEX,
                 1,
                 yellow_,

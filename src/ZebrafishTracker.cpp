@@ -161,7 +161,11 @@ void ZebrafishTracker::run()
     }
     if (success)
     {
-      success = image_processor_.updateTrackedImagePoint(image,&tracked_image_point);
+      success = image_processor_.updateTrackedImagePoint(image);
+    }
+    if (success)
+    {
+      success = image_processor_.getTrackedImagePoint(tracked_image_point);
     }
     if (success)
     {

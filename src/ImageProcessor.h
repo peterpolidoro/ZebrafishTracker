@@ -24,7 +24,6 @@ class ImageProcessor
 public:
   ImageProcessor();
 
-  bool updateTrackedImagePoint(cv::Mat image, cv::Point * tracked_image_point_ptr);
   enum Mode
   {
     BLOB,
@@ -32,21 +31,24 @@ public:
   };
   void setMode(Mode mode);
 
+  bool updateTrackedImagePoint(cv::Mat image);
+  bool getTrackedImagePoint(cv::Point & tracked_image_point);
+
 private:
   const static bool SUCCESS = true;
-  static const size_t DISPLAY_DIVISOR = 10;
+
   unsigned long image_count_;
-  cv::Point frame_rate_position_;
-  cv::Mat background_;
-  cv::Mat foreground_;
-  cv::Mat threshold_;
+  Mode mode_;
+
+  cv::Point tracked_image_point_;
+  bool tracked_image_point_is_valid_;
+
   static const size_t BACKGROUND_DIVISOR = 200;
   static const double THRESHOLD_VALUE = 25;
   static const double MAX_PIXEL_VALUE = 255;
-  cv::Scalar blue_;
-  cv::Scalar yellow_;
-  cv::Scalar green_;
-  cv::Scalar red_;
+  cv::Mat background_;
+  cv::Mat foreground_;
+  cv::Mat threshold_;
 
   cv::Mat eroded_;
   cv::Mat dilated_;
@@ -61,14 +63,22 @@ private:
   static const int KERNEL_SHAPE = cv::MORPH_RECT;
   static const int KERNEL_SIZE = 3;
 
-  cv::Mat display_image_;
-  static const int DISPLAY_MARKER_RADIUS = 10;
-  static const int DISPLAY_MARKER_THICKNESS = 2;
-
   static const size_t FRAME_RATE_QUEUE_LENGTH = 10;
   FrameRateCounter frame_rate_counter_;
 
-  Mode mode_;
+  static const size_t DISPLAY_DIVISOR = 10;
+  static const int DISPLAY_MARKER_RADIUS = 10;
+  static const int DISPLAY_MARKER_THICKNESS = 2;
+
+  cv::Scalar blue_;
+  cv::Scalar yellow_;
+  cv::Scalar green_;
+  cv::Scalar red_;
+
+  cv::Point frame_rate_display_position_;
+
+  cv::Mat display_image_;
+
   struct MouseParams
   {
     cv::Mat image;
@@ -81,7 +91,7 @@ private:
   double getFrameRate();
   bool findBlobLocation(cv::Mat image, cv::Point & location);
   bool findClickedLocation(cv::Mat image, cv::Point & location);
-  void displayImage(cv::Mat & image, cv::Point & tracked_point, const bool success);
+  void displayImage(cv::Mat image);
   static void onMouse(int event, int x, int y, int flags, void * userdata);
 };
 
