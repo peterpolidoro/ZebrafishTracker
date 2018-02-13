@@ -12,7 +12,12 @@
 Calibrator::Calibrator()
 {
   calibration_repository_path_ = boost::filesystem::path("../ZebrafishTrackerCalibration");
-  // homography_image_to_stage_set_ = false;
+  recalibrate_ = false;
+}
+
+void Calibrator::recalibrate()
+{
+  recalibrate_ = true;
 }
 
 bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)

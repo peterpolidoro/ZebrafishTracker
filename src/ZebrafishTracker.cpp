@@ -26,6 +26,7 @@ ZebrafishTracker::ZebrafishTracker()
   stage_homing_ = false;
   paralyzed_ = false;
   blind_ = false;
+  recalibrate_ = false;
 }
 
 bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
@@ -36,6 +37,7 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
     "{m mouse        |      | Track mouse click location instead of blob.        }"
     "{p paralyze     |      | Do not communicate with stage so it does not move. }"
     "{b blind        |      | Do not communicate with camera.                    }"
+    "{r recalibrate  |      | Recalibrate with chessboard before running.        }"
     ;
 
   cv::CommandLineParser parser(argc,argv,keys);
@@ -74,6 +76,12 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   {
     blind_ = true;
     std::cout << std::endl << "Blind!" << std::endl;
+  }
+
+  if (parser.has("recalibrate"))
+  {
+    recalibrate_ = true;
+    std::cout << std::endl << "Recalibrate!" << std::endl;
   }
 
   return SUCCESS;

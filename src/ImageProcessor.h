@@ -63,7 +63,7 @@ private:
   static const int KERNEL_SHAPE = cv::MORPH_RECT;
   static const int KERNEL_SIZE = 3;
 
-  static const size_t FRAME_RATE_QUEUE_LENGTH = 10;
+  static const size_t FRAME_RATE_QUEUE_LENGTH = 100;
   FrameRateCounter frame_rate_counter_;
 
   static const size_t DISPLAY_DIVISOR = 10;

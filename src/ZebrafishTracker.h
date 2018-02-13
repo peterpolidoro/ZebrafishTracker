@@ -41,6 +41,7 @@ private:
   CoordinateConverter coordinate_converter_;
   bool paralyzed_;
   bool blind_;
+  bool recalibrate_;
 
   volatile static sig_atomic_t run_enabled_;
   static void interruptSignalHandler(int sig);
