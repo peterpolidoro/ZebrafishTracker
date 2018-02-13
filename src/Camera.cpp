@@ -18,11 +18,11 @@ Camera::Camera()
   FlyCapture2::Image raw_image_;
   FlyCapture2::Image rgb_image_;
 
-  config_.frame_rate = 163;
+  config_.frame_rate = 177;
   config_.auto_exposure = false;
   config_.exposure = 0.8;
   config_.auto_shutter = false;
-  // config_.shutter_speed = 0.0006; // calibration setting
+  // config_.shutter_speed = 0.005; // calibration setting
   config_.shutter_speed = 0.001;
   config_.auto_gain = false;
   config_.gain = 0;
