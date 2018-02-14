@@ -22,8 +22,6 @@ Camera::Camera()
   config_.auto_exposure = false;
   config_.exposure = 0.8;
   config_.auto_shutter = false;
-  // config_.shutter_speed = 0.005; // calibration setting
-  config_.shutter_speed = 0.001;
   config_.auto_gain = false;
   config_.gain = 0;
   config_.brightness = 0;
@@ -33,6 +31,7 @@ Camera::Camera()
   config_.saturation = 0;
   config_.gamma = 1.3;
 
+  setNormalShutterSpeed();
 }
 
 void Camera::printLibraryInfo()
@@ -84,7 +83,7 @@ bool Camera::connect()
   {
     return !success;
   }
-  success = configure();
+  success = reconfigure();
   return success;
 }
 
@@ -167,22 +166,17 @@ float Camera::getCameraTemperature()
   return property.valueA / 10.0f - 273.15f;  // It returns values of 10 * K
 }
 
-// private
-bool Camera::error()
+void Camera::setNormalShutterSpeed()
 {
-  bool error = (error_ != FlyCapture2::PGRERROR_OK);
-  if (error)
-  {
-    printError();}
-  return error;
+  config_.shutter_speed = 0.001;
 }
 
-void Camera::printError()
+void Camera::setRecalibrationShutterSpeed()
 {
-  error_.PrintErrorTrace();
+  config_.shutter_speed = 0.005;
 }
 
-bool Camera::configure()
+bool Camera::reconfigure()
 {
   bool success = true;
   error_ = camera_.GetCameraInfo(&camera_info_);
@@ -232,6 +226,21 @@ bool Camera::configure()
   success &= setProperty(FlyCapture2::GAMMA, false, config_.gamma);
 
   return success;
+}
+
+// private
+bool Camera::error()
+{
+  bool error = (error_ != FlyCapture2::PGRERROR_OK);
+  if (error)
+  {
+    printError();}
+  return error;
+}
+
+void Camera::printError()
+{
+  error_.PrintErrorTrace();
 }
 
 bool Camera::setProperty(const FlyCapture2::PropertyType &type,

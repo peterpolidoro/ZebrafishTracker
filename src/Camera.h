@@ -30,6 +30,10 @@ public:
   bool stop();
   bool disconnect();
   float getCameraTemperature();
+  void setNormalShutterSpeed();
+  void setRecalibrationShutterSpeed();
+  bool reconfigure();
+
 private:
   FlyCapture2::Error error_;
   FlyCapture2::BusManager bus_mgr_;
@@ -61,7 +65,6 @@ private:
 
   bool error();
   void printError();
-  bool configure();
   bool setProperty(const FlyCapture2::PropertyType &type,
                    const bool &auto_set,
                    unsigned int &value_a,

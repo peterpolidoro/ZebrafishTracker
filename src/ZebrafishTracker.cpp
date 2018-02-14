@@ -129,6 +129,13 @@ bool ZebrafishTracker::disconnectHardware()
 
 bool ZebrafishTracker::findCalibration()
 {
+  if (recalibrate_)
+  {
+    camera_.setRecalibrationShutterSpeed();
+    camera_.reconfigure();
+    calibrator_.recalibrate();
+  }
+
   bool got_calibration = calibrator_.getHomographyImageToStage(homography_image_to_stage_);
 
   if ((homography_image_to_stage_.rows != 3) || (homography_image_to_stage_.cols != 3))
@@ -141,6 +148,12 @@ bool ZebrafishTracker::findCalibration()
   {
     std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage_ << std::endl;
     coordinate_converter_.setHomographyImageToStage(homography_image_to_stage_);
+  }
+
+  if (recalibrate_)
+  {
+    camera_.setNormalShutterSpeed();
+    camera_.reconfigure();
   }
 
   return got_calibration;
