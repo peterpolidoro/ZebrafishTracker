@@ -12,6 +12,7 @@
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
+#include <math.h>
 
 #include "TimeoutSerial.h"
 
@@ -38,9 +39,12 @@ private:
   const static long TIMEOUT = 1;
   const static size_t READ_ATTEMPTS_MAX = 10;
   const static size_t WRITE_READ_DELAY = 5;
+  const static long DEADBAND = 4000;
 
   TimeoutSerial serial_;
   bool debug_;
+  long x_prev_;
+  long y_prev_;
 
   bool isOpen();
   void writeRequest(const char * request);

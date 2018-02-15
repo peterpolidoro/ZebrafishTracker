@@ -78,6 +78,8 @@ void StageController::setDebug(const bool debug)
 
 bool StageController::homeStage()
 {
+  x_prev_ = 0;
+  y_prev_ = 0;
   return writeRequestReadBoolResponse("[homeStage]");
 }
 
@@ -88,6 +90,13 @@ bool StageController::stageHomed()
 
 bool StageController::moveStageTo(const long x, const long y)
 {
+  double dist = sqrt(pow((x - x_prev_),2) + pow((y - y_prev_),2));
+  if (dist < (DEADBAND/2))
+  {
+    return false;
+  }
+  x_prev_ = x;
+  y_prev_ = y;
   std::stringstream request;
   return writeRequestReadBoolResponse(request.str());
 }
