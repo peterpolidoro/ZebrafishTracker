@@ -45,8 +45,8 @@ private:
   static const size_t BACKGROUND_HISTORY = 200;
   static const size_t BACKGROUND_VAR_THRESHOLD = 16;
   static const bool BACKGROUND_DETECT_SHADOWS = false;
-  static const double BACKGROUND_LEARNING_RATE = 0.5;
-  static const size_t BACKGROUND_DIVISOR = 200;
+  static const double BACKGROUND_LEARNING_RATE = 0.15;
+  static const size_t BACKGROUND_DIVISOR = 400;
   static const double THRESHOLD_VALUE = 25;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Mat background_;
@@ -72,7 +72,7 @@ private:
   double frame_rate_;
   double frame_tick_count_prev_;
 
-  static const size_t DISPLAY_DIVISOR = 10;
+  static const size_t DISPLAY_DIVISOR = 15;
   static const int DISPLAY_MARKER_RADIUS = 10;
   static const int DISPLAY_MARKER_THICKNESS = 2;
 

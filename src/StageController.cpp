@@ -98,6 +98,7 @@ bool StageController::moveStageTo(const long x, const long y)
   x_prev_ = x;
   y_prev_ = y;
   std::stringstream request;
+  request << "[moveStageTo [" << x << "," << y << "]]";
   return writeRequestReadBoolResponse(request.str());
 }
 

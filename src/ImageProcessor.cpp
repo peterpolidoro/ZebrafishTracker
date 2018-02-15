@@ -102,9 +102,9 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
   {
     case BLOB:
     {
-      cv::namedWindow("Background",cv::WINDOW_NORMAL);
-      cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
-      cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
+      // cv::namedWindow("Background",cv::WINDOW_NORMAL);
+      // cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
+      // cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
       // cv::namedWindow("Eroded",cv::WINDOW_NORMAL);
       // cv::namedWindow("Dilated",cv::WINDOW_NORMAL);
       break;
@@ -240,9 +240,9 @@ void ImageProcessor::displayImage(cv::Mat image)
     {
       case BLOB:
       {
-        cv::imshow("Background",background_);
-        cv::imshow("Foreground",foreground_);
-        cv::imshow("Threshold",threshold_);
+        // cv::imshow("Background",background_);
+        // cv::imshow("Foreground",foreground_);
+        // cv::imshow("Threshold",threshold_);
         // cv::imshow("Eroded",eroded_);
         // cv::imshow("Dilated",dilated_);
         break;
