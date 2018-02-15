@@ -29,6 +29,9 @@ Usage: ZebrafishTracker [params]
 		Track mouse click location instead of blob.
 	-p, --paralyze
 		Do not communicate with stage so it does not move.
+	-r, --recalibrate
+		Recalibrate with chessboard before running.
+
 ```
 
 ## Installation
@@ -54,7 +57,7 @@ sudo apt-get install libboost-all-dev
 mkdir ~/git
 cd ~/git
 git clone https://github.com/janelia-experimental-technology/ZebrafishTracker.git
-git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerCalibration.git
+git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerConfiguration.git
 ```
 
 ### Compile

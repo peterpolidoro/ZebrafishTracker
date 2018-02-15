@@ -11,8 +11,12 @@
 // public
 Calibrator::Calibrator()
 {
-  calibration_repository_path_ = boost::filesystem::path("../ZebrafishTrackerCalibration");
   recalibrate_ = false;
+}
+
+void Calibrator::setConfigurationRepositoryPath(boost::filesystem::path path)
+{
+  configuration_repository_path_ = path;
 }
 
 void Calibrator::recalibrate()
@@ -24,7 +28,7 @@ bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
 {
   const bool got_calibration = true;
 
-  boost::filesystem::path calibration_path = calibration_repository_path_;
+  boost::filesystem::path calibration_path = configuration_repository_path_;
   calibration_path /= "calibration/calibration.yml";
 
   try
@@ -64,7 +68,7 @@ bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
 
 bool Calibrator::calibrate(const boost::filesystem::path calibration_path)
 {
-  boost::filesystem::path chessboard_path = calibration_repository_path_;
+  boost::filesystem::path chessboard_path = configuration_repository_path_;
   chessboard_path /= "images/chessboard.png";
 
   //////
@@ -117,7 +121,7 @@ bool Calibrator::calibrate(const boost::filesystem::path calibration_path)
   }
   std::vector<cv::Point2i> image_points_i;
   cv::Mat(image_points).copyTo(image_points_i);
-  boost::filesystem::path image_points_path = calibration_repository_path_;
+  boost::filesystem::path image_points_path = configuration_repository_path_;
   image_points_path /= "calibration/image_points.yml";
   cv::FileStorage image_points_fs(image_points_path.string(), cv::FileStorage::WRITE);
   image_points_fs << "image_points" << image_points_i;
@@ -154,11 +158,11 @@ bool Calibrator::calibrate(const boost::filesystem::path calibration_path)
                 font_thickness);
     ++index;
   }
-  boost::filesystem::path chessboard_image_points_path = calibration_repository_path_;
+  boost::filesystem::path chessboard_image_points_path = configuration_repository_path_;
   chessboard_image_points_path /= "images/chessboard_image_points.png";
   cv::imwrite(chessboard_image_points_path.string(),chessboard_image_points);
 
-  boost::filesystem::path stage_points_path = calibration_repository_path_;
+  boost::filesystem::path stage_points_path = configuration_repository_path_;
   stage_points_path /= "calibration/stage_points.yml";
   cv::FileStorage stage_points_fs(stage_points_path.string(), cv::FileStorage::READ);
   std::vector<cv::Point2f> stage_points;
@@ -194,7 +198,7 @@ bool Calibrator::calibrate(const boost::filesystem::path calibration_path)
                 cv::Scalar(0,0,255),
                 font_thickness);
   }
-  boost::filesystem::path chessboard_stage_points_path = calibration_repository_path_;
+  boost::filesystem::path chessboard_stage_points_path = configuration_repository_path_;
   chessboard_stage_points_path /= "images/chessboard_stage_points.png";
   cv::imwrite(chessboard_stage_points_path.string(),chessboard_stage_points);
 
@@ -291,7 +295,7 @@ bool Calibrator::calibrate(const boost::filesystem::path calibration_path)
               cv::Scalar(0,0,255),
               font_thickness);
 
-  boost::filesystem::path calibrated_path = calibration_repository_path_;
+  boost::filesystem::path calibrated_path = configuration_repository_path_;
   calibrated_path /= "images/calibrated.png";
   cv::imwrite(calibrated_path.string(),calibrated);
 

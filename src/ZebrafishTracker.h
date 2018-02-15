@@ -10,6 +10,7 @@
 #include <iostream>
 #include <signal.h>
 #include <opencv2/core.hpp>
+#include <boost/filesystem.hpp>
 
 #include "Camera.h"
 #include "ImageProcessor.h"
@@ -31,6 +32,7 @@ public:
 
 private:
   const static bool SUCCESS = true;
+  boost::filesystem::path configuration_repository_path_;
   cv::Mat homography_image_to_stage_;
   Camera camera_;
   ImageProcessor image_processor_;

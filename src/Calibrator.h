@@ -19,11 +19,12 @@ class Calibrator
 public:
   Calibrator();
 
+  void setConfigurationRepositoryPath(boost::filesystem::path path);
   void recalibrate();
   bool getHomographyImageToStage(cv::Mat & homography_image_to_stage);
 
 private:
-  boost::filesystem::path calibration_repository_path_;
+  boost::filesystem::path configuration_repository_path_;
   bool recalibrate_;
 
   bool calibrate(const boost::filesystem::path calibration_path);

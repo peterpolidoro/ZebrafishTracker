@@ -20,6 +20,9 @@ ZebrafishTracker::ZebrafishTracker()
 {
   signal(SIGINT,ZebrafishTracker::interruptSignalHandler);
 
+  configuration_repository_path_ = boost::filesystem::path("../ZebrafishTrackerConfiguration");
+
+  calibrator_.setConfigurationRepositoryPath(configuration_repository_path_);
   image_processor_.setMode(ImageProcessor::BLOB);
 
   stage_homed_ = false;
