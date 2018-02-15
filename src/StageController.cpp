@@ -89,7 +89,6 @@ bool StageController::stageHomed()
 bool StageController::moveStageTo(const long x, const long y)
 {
   std::stringstream request;
-  request << "[moveStageTo [" << x << "," << y << "]]";
   return writeRequestReadBoolResponse(request.str());
 }
 

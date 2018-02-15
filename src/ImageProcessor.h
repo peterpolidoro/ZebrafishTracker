@@ -16,8 +16,6 @@
 #include <iostream>
 #include <sstream>
 
-#include "FrameRateCounter.h"
-
 
 class ImageProcessor
 {
@@ -40,13 +38,19 @@ private:
   unsigned long image_count_;
   Mode mode_;
 
-  cv::Point tracked_image_point_;
-  bool tracked_image_point_is_valid_;
+  static cv::Point tracked_image_point_;
+  static bool tracked_image_point_is_valid_;
 
+  cv::Ptr<cv::BackgroundSubtractorMOG2> bg_sub_ptr_;
+  static const size_t BACKGROUND_HISTORY = 200;
+  static const size_t BACKGROUND_VAR_THRESHOLD = 16;
+  static const bool BACKGROUND_DETECT_SHADOWS = false;
+  static const double BACKGROUND_LEARNING_RATE = 0.5;
   static const size_t BACKGROUND_DIVISOR = 200;
   static const double THRESHOLD_VALUE = 25;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Mat background_;
+  cv::Mat foreground_mask_;
   cv::Mat foreground_;
   cv::Mat threshold_;
 
@@ -63,8 +67,10 @@ private:
   static const int KERNEL_SHAPE = cv::MORPH_RECT;
   static const int KERNEL_SIZE = 3;
 
-  static const size_t FRAME_RATE_QUEUE_LENGTH = 100;
-  FrameRateCounter frame_rate_counter_;
+  // static const size_t FRAME_RATE_QUEUE_LENGTH = 100;
+  // FrameRateCounter frame_rate_counter_;
+  double frame_rate_;
+  double frame_tick_count_prev_;
 
   static const size_t DISPLAY_DIVISOR = 10;
   static const int DISPLAY_MARKER_RADIUS = 10;
@@ -78,13 +84,6 @@ private:
   cv::Point frame_rate_display_position_;
 
   cv::Mat display_image_;
-
-  struct MouseParams
-  {
-    cv::Mat image;
-    cv::Point * tracked_image_point_ptr;
-    bool success;
-  };
 
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat image);

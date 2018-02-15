@@ -8,6 +8,9 @@
 #include "ImageProcessor.h"
 
 
+cv::Point ImageProcessor::tracked_image_point_;
+bool ImageProcessor::tracked_image_point_is_valid_;
+
 // public
 ImageProcessor::ImageProcessor()
 {
@@ -17,11 +20,18 @@ ImageProcessor::ImageProcessor()
   tracked_image_point_ = cv::Point(0,0);
   tracked_image_point_is_valid_ = false;
 
+  bg_sub_ptr_ = cv::createBackgroundSubtractorMOG2();
+  bg_sub_ptr_->setHistory(BACKGROUND_HISTORY);
+  bg_sub_ptr_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
+  bg_sub_ptr_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
+
   kernel_ = cv::getStructuringElement(KERNEL_SHAPE,
                                       cv::Size(KERNEL_SIZE,KERNEL_SIZE));
 
-  FrameRateCounter frame_rate_counter_(FRAME_RATE_QUEUE_LENGTH);
-  frame_rate_counter_.Reset();
+  // FrameRateCounter frame_rate_counter_(FRAME_RATE_QUEUE_LENGTH);
+  // frame_rate_counter_.Reset();
+  frame_rate_ = 0;
+  frame_tick_count_prev_ = 0;
 
   blue_ = cv::Scalar(255,0,0);
   yellow_ = cv::Scalar(0,255,255);
@@ -101,6 +111,7 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
     }
     case MOUSE:
     {
+      cv::setMouseCallback("Image",onMouse);
       break;
     }
   }
@@ -111,29 +122,33 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
 
 void ImageProcessor::updateFrameRateMeasurement()
 {
-  frame_rate_counter_.NewFrame();
+  double frame_tick_count = cv::getTickCount();
+  frame_rate_ = cv::getTickFrequency()/(frame_tick_count - frame_tick_count_prev_);
+  frame_tick_count_prev_ = frame_tick_count;
 }
 
 void ImageProcessor::updateBackground(cv::Mat image)
 {
   if ((image_count_ % BACKGROUND_DIVISOR) == 0)
   {
-    if (background_.size() == image.size())
-    {
-      cv::Mat background;
-      cv::max(background_,image,background);
-      background_ = background;
-    }
-    else
-    {
-      background_ = image;
-    }
+    bg_sub_ptr_->apply(image,foreground_mask_,BACKGROUND_LEARNING_RATE);
+    bg_sub_ptr_->getBackgroundImage(background_);
+    // if (background_.size() == image.size())
+    // {
+    //   cv::Mat background;
+    //   cv::max(background_,image,background);
+    //   background_ = background;
+    // }
+    // else
+    // {
+    //   background_ = image;
+    // }
   }
 }
 
 double ImageProcessor::getFrameRate()
 {
-  return frame_rate_counter_.GetFrameRate();
+  return frame_rate_;
 }
 
 bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
@@ -169,7 +184,6 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
   cv::findNonZero(threshold_,locations);
 
   // Choose one
-  // for now arbitrarily pick first, but could take the mean or something
   if (locations.size() > 0)
   {
     cv::Point2f sum(0,0);
@@ -181,9 +195,6 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
     mean.x = sum.x/locations.size();
     mean.y = sum.y/locations.size();
     location = mean;
-    // std::cout << "locations[0] = " << locations[0] << std::endl;
-    // std::cout << "location = " << location << std::endl;
-    // location = locations[0];
 
     success = true;
   }
@@ -193,14 +204,7 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 
 bool ImageProcessor::findClickedLocation(cv::Mat image, cv::Point & location)
 {
-  MouseParams mp;
-  mp.image = image;
-  mp.tracked_image_point_ptr = &location;
-  mp.success = false;
-  cv::setMouseCallback("Image",onMouse,&mp);
-  cv::imshow("Image",image);
-  cv::waitKey(1);
-  return mp.success;
+  return true;
 }
 
 void ImageProcessor::displayImage(cv::Mat image)
@@ -254,15 +258,12 @@ void ImageProcessor::displayImage(cv::Mat image)
 
 void ImageProcessor::onMouse(int event, int x, int y, int flags, void * userdata)
 {
-  MouseParams * mp_ptr = (MouseParams *)userdata;
   if(event != cv::EVENT_LBUTTONDOWN)
   {
-    mp_ptr->success = false;
     return;
   }
-  mp_ptr->tracked_image_point_ptr->x = x;
-  mp_ptr->tracked_image_point_ptr->y = y;
-  mp_ptr-> success = true;
+  tracked_image_point_.x = x;
+  tracked_image_point_.y = y;
 
   std::cout << "Clicked point x: " << x << ", y: " << y << std::endl;
 }

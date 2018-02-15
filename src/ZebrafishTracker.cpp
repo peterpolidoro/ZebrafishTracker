@@ -187,7 +187,6 @@ void ZebrafishTracker::run()
     if (success)
     {
       success = coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
-      // std::cout << "stage_target_position x: " << stage_target_position.x << ", y: " << stage_target_position.y << std::endl;
     }
     if (success && !paralyzed_)
     {
