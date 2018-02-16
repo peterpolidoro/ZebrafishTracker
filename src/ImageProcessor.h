@@ -47,7 +47,7 @@ private:
   static const bool BACKGROUND_DETECT_SHADOWS = false;
   static const double BACKGROUND_LEARNING_RATE = 0.15;
   static const size_t BACKGROUND_DIVISOR = 400;
-  static const int THRESHOLD_VALUE_DEFAULT = 25;
+  static const int THRESHOLD_VALUE_DEFAULT = 10;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Mat background_;
   cv::Mat foreground_mask_;
