@@ -90,8 +90,7 @@ bool StageController::stageHomed()
 
 bool StageController::moveStageTo(const long x, const long y)
 {
-  double dist = sqrt(pow((x - x_prev_),2) + pow((y - y_prev_),2));
-  if (dist < (DEADBAND/2))
+  if (insideDeadband(x,y))
   {
     return false;
   }
@@ -99,6 +98,19 @@ bool StageController::moveStageTo(const long x, const long y)
   y_prev_ = y;
   std::stringstream request;
   request << "[moveStageTo [" << x << "," << y << "]]";
+  return writeRequestReadBoolResponse(request.str());
+}
+
+bool StageController::moveStageSoftlyTo(const long x, const long y)
+{
+  if (insideDeadband(x,y))
+  {
+    return false;
+  }
+  x_prev_ = x;
+  y_prev_ = y;
+  std::stringstream request;
+  request << "[moveStageSoftlyTo [" << x << "," << y << "]]";
   return writeRequestReadBoolResponse(request.str());
 }
 
@@ -179,4 +191,14 @@ bool StageController::writeRequestReadBoolResponse(const std::string & request)
   writeRequest(request);
   boost::this_thread::sleep(boost::posix_time::milliseconds(WRITE_READ_DELAY));
   return readBoolResponse();
+}
+
+bool StageController::insideDeadband(const long x, const long y)
+{
+  double dist = sqrt(pow((x - x_prev_),2) + pow((y - y_prev_),2));
+  if (dist < (DEADBAND/2))
+  {
+    return true;
+  }
+  return false;
 }

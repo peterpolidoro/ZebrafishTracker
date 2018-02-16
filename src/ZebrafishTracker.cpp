@@ -192,7 +192,7 @@ void ZebrafishTracker::run()
     {
       if (stage_homed_)
       {
-        success = stage_controller_.moveStageTo(stage_target_position.x,stage_target_position.y);
+        success = stage_controller_.moveStageSoftlyTo(stage_target_position.x,stage_target_position.y);
       }
       else if (stage_homing_)
       {

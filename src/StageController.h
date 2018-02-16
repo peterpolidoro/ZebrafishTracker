@@ -31,6 +31,7 @@ public:
   bool homeStage();
   bool stageHomed();
   bool moveStageTo(const long x, const long y);
+  bool moveStageSoftlyTo(const long x, const long y);
 
 private:
   const static std::string DEVICE_NAME;
@@ -53,6 +54,7 @@ private:
   bool readBoolResponse();
   std::string writeRequestReadResponse(const std::string & request);
   bool writeRequestReadBoolResponse(const std::string & request);
+  bool insideDeadband(const long x, const long y);
 };
 
 #endif
