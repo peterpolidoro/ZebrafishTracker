@@ -53,10 +53,8 @@ private:
   cv::Mat foreground_;
   cv::Mat threshold_;
 
-  // static const int THRESHOLD_VALUE_DEFAULT = 10;
-  // static int threshold_value_;
-  static const int THRESHOLD_BLOCK_SIZE = 11;
-  static const int THRESHOLD_C = 2;
+  static const int THRESHOLD_VALUE_DEFAULT = 10;
+  static int threshold_value_;
 
   static const double FRAME_RATE_ALPHA = 0.5;
   double frame_rate_;

@@ -10,7 +10,7 @@
 
 cv::Point ImageProcessor::tracked_image_point_;
 bool ImageProcessor::tracked_image_point_is_valid_;
-// int ImageProcessor::threshold_value_;
+int ImageProcessor::threshold_value_;
 
 // public
 ImageProcessor::ImageProcessor()
@@ -26,7 +26,7 @@ ImageProcessor::ImageProcessor()
   bg_sub_ptr_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
   bg_sub_ptr_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
 
-  // threshold_value_ = THRESHOLD_VALUE_DEFAULT;
+  threshold_value_ = THRESHOLD_VALUE_DEFAULT;
 
   frame_rate_ = 0;
   frame_tick_count_prev_ = 0;
@@ -103,13 +103,13 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
       cv::namedWindow("Background",cv::WINDOW_NORMAL);
       cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
       cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
-      // char TrackbarName[50];
-      // sprintf(TrackbarName, "threshold_value");
-      // cv::createTrackbar(TrackbarName,
-      //                    "Threshold",
-      //                    &threshold_value_,
-      //                    MAX_PIXEL_VALUE,
-      //                    trackbarThresholdHandler);
+      char TrackbarName[50];
+      sprintf(TrackbarName, "threshold_value");
+      cv::createTrackbar(TrackbarName,
+                         "Threshold",
+                         &threshold_value_,
+                         MAX_PIXEL_VALUE,
+                         trackbarThresholdHandler);
       break;
     }
     case MOUSE:
@@ -150,14 +150,7 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
   bool success = false;
 
   cv::subtract(background_,image,foreground_);
-  // cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
-  cv::adaptiveThreshold(foreground_,
-                        threshold_,
-                        MAX_PIXEL_VALUE,
-                        cv::ADAPTIVE_THRESH_GAUSSIAN_C,
-                        cv::THRESH_BINARY,
-                        THRESHOLD_BLOCK_SIZE,
-                        THRESHOLD_C);
+  cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
 
   std::vector<cv::Point> locations;
   cv::findNonZero(threshold_,locations);
