@@ -47,12 +47,14 @@ private:
   static const bool BACKGROUND_DETECT_SHADOWS = false;
   static const double BACKGROUND_LEARNING_RATE = 0.15;
   static const size_t BACKGROUND_DIVISOR = 400;
-  static const double THRESHOLD_VALUE = 25;
+  static const int THRESHOLD_VALUE_DEFAULT = 25;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Mat background_;
   cv::Mat foreground_mask_;
   cv::Mat foreground_;
   cv::Mat threshold_;
+
+  static int threshold_value_;
 
   static const double FRAME_RATE_ALPHA = 0.5;
   double frame_rate_;
@@ -77,7 +79,8 @@ private:
   bool findBlobLocation(cv::Mat image, cv::Point & location);
   bool findClickedLocation(cv::Mat image, cv::Point & location);
   void displayImage(cv::Mat image);
-  static void onMouse(int event, int x, int y, int flags, void * userdata);
+  static void trackbarThresholdHandler(int value, void * userdata);
+  static void mouseClickHandler(int event, int x, int y, int flags, void * userdata);
 };
 
 #endif
