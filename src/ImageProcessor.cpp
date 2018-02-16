@@ -25,11 +25,6 @@ ImageProcessor::ImageProcessor()
   bg_sub_ptr_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
   bg_sub_ptr_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
 
-  kernel_ = cv::getStructuringElement(KERNEL_SHAPE,
-                                      cv::Size(KERNEL_SIZE,KERNEL_SIZE));
-
-  // FrameRateCounter frame_rate_counter_(FRAME_RATE_QUEUE_LENGTH);
-  // frame_rate_counter_.Reset();
   frame_rate_ = 0;
   frame_tick_count_prev_ = 0;
 
@@ -102,11 +97,9 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
   {
     case BLOB:
     {
-      // cv::namedWindow("Background",cv::WINDOW_NORMAL);
-      // cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
-      // cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
-      // cv::namedWindow("Eroded",cv::WINDOW_NORMAL);
-      // cv::namedWindow("Dilated",cv::WINDOW_NORMAL);
+      cv::namedWindow("Background",cv::WINDOW_NORMAL);
+      cv::namedWindow("Foreground",cv::WINDOW_NORMAL);
+      cv::namedWindow("Threshold",cv::WINDOW_NORMAL);
       break;
     }
     case MOUSE:
@@ -123,7 +116,8 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
 void ImageProcessor::updateFrameRateMeasurement()
 {
   double frame_tick_count = cv::getTickCount();
-  frame_rate_ = cv::getTickFrequency()/(frame_tick_count - frame_tick_count_prev_);
+  double frame_rate = cv::getTickFrequency()/(frame_tick_count - frame_tick_count_prev_);
+  frame_rate_ = (FRAME_RATE_ALPHA*frame_rate) + (1.0 - FRAME_RATE_ALPHA)*frame_rate_;
   frame_tick_count_prev_ = frame_tick_count;
 }
 
@@ -133,16 +127,6 @@ void ImageProcessor::updateBackground(cv::Mat image)
   {
     bg_sub_ptr_->apply(image,foreground_mask_,BACKGROUND_LEARNING_RATE);
     bg_sub_ptr_->getBackgroundImage(background_);
-    // if (background_.size() == image.size())
-    // {
-    //   cv::Mat background;
-    //   cv::max(background_,image,background);
-    //   background_ = background;
-    // }
-    // else
-    // {
-    //   background_ = image;
-    // }
   }
 }
 
@@ -157,28 +141,6 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 
   cv::subtract(background_,image,foreground_);
   cv::threshold(foreground_,threshold_,THRESHOLD_VALUE,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
-
-  // cv::erode(threshold_,
-  //           eroded_,
-  //           kernel_);
-
-  // cv::dilate(eroded_,
-  //            dilated_,
-  //            kernel_);
-
-  // try
-  // {
-  //   cv::Moments moments = cv::moments(threshold_);
-  //   location.x = moments.m10/moments.m00;
-  //   location.y = moments.m01/moments.m00;
-  //   success = true;
-  // }
-  // catch(cv::Exception & e)
-  // {
-  //   const char * err_msg = e.what();
-  //   std::cout << "moments: " << err_msg << std::endl;
-  // }
-
 
   std::vector<cv::Point> locations;
   cv::findNonZero(threshold_,locations);
@@ -240,11 +202,9 @@ void ImageProcessor::displayImage(cv::Mat image)
     {
       case BLOB:
       {
-        // cv::imshow("Background",background_);
-        // cv::imshow("Foreground",foreground_);
-        // cv::imshow("Threshold",threshold_);
-        // cv::imshow("Eroded",eroded_);
-        // cv::imshow("Dilated",dilated_);
+        cv::imshow("Background",background_);
+        cv::imshow("Foreground",foreground_);
+        cv::imshow("Threshold",threshold_);
         break;
       }
       case MOUSE:

@@ -54,21 +54,7 @@ private:
   cv::Mat foreground_;
   cv::Mat threshold_;
 
-  cv::Mat eroded_;
-  cv::Mat dilated_;
-  cv::Mat kernel_;
-  // int erosion_elem_;
-  // int erosion_size_;
-  // int dilation_elem_;
-  // int dilation_size_;
-  static const int MAX_KERNEL_ELEM = 2;
-  static const int MAX_KERNEL_SIZE = 21;
-
-  static const int KERNEL_SHAPE = cv::MORPH_RECT;
-  static const int KERNEL_SIZE = 3;
-
-  // static const size_t FRAME_RATE_QUEUE_LENGTH = 100;
-  // FrameRateCounter frame_rate_counter_;
+  static const double FRAME_RATE_ALPHA = 0.5;
   double frame_rate_;
   double frame_tick_count_prev_;
 
