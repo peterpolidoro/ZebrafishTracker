@@ -47,14 +47,16 @@ private:
   static const bool BACKGROUND_DETECT_SHADOWS = false;
   static const double BACKGROUND_LEARNING_RATE = 0.15;
   static const size_t BACKGROUND_DIVISOR = 400;
-  static const int THRESHOLD_VALUE_DEFAULT = 10;
   static const double MAX_PIXEL_VALUE = 255;
   cv::Mat background_;
   cv::Mat foreground_mask_;
   cv::Mat foreground_;
   cv::Mat threshold_;
 
-  static int threshold_value_;
+  // static const int THRESHOLD_VALUE_DEFAULT = 10;
+  // static int threshold_value_;
+  static const int THRESHOLD_BLOCK_SIZE = 11;
+  static const int THRESHOLD_C = 2;
 
   static const double FRAME_RATE_ALPHA = 0.5;
   double frame_rate_;
