@@ -190,9 +190,15 @@ bool Camera::reconfigure()
   {
     return !success;
   }
-  camera_config.numBuffers = buffer_count_;
-  camera_config.grabMode = FlyCapture2::BUFFER_FRAMES;
-  camera_config.highPerformanceRetrieveBuffer = true;
+
+  // buffer mode
+  // camera_config.numBuffers = buffer_count_;
+  // camera_config.grabMode = FlyCapture2::BUFFER_FRAMES;
+  // camera_config.highPerformanceRetrieveBuffer = true;
+
+  // stream mode
+  camera_config.grabMode = FlyCapture2::DROP_FRAMES;
+
   error_ = camera_.SetConfiguration(&camera_config);
   if (error())
   {
