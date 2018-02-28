@@ -40,7 +40,7 @@ private:
   const static long TIMEOUT = 1;
   const static size_t READ_ATTEMPTS_MAX = 10;
   const static size_t WRITE_READ_DELAY = 5;
-  const static long DEADBAND = 4000;
+  const static long DEADBAND = 1000;
 
   TimeoutSerial serial_;
   bool debug_;
