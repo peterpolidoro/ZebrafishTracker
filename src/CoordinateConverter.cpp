@@ -14,10 +14,16 @@ CoordinateConverter::CoordinateConverter()
   homography_image_to_stage_set_ = false;
 }
 
-void CoordinateConverter::setHomographyImageToStage(cv::Mat homography_image_to_stage)
+bool CoordinateConverter::updateHomographyImageToStage()
 {
-  homography_image_to_stage_ = homography_image_to_stage;
+  bool success = configuration_.readHomographyImageToStage(homography_image_to_stage_);
+  if (!success)
+  {
+    return success;
+  }
+
   homography_image_to_stage_set_ = true;
+  return success;
 }
 
 bool CoordinateConverter::convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point)

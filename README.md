@@ -23,6 +23,8 @@ Usage: ZebrafishTracker [params]
 		Print usage and exit.
 	-b, --blind
 		Do not communicate with camera.
+	-c, --configuration (value:../ZebrafishTrackerConfiguration)
+		Configuration repository path.
 	-d, --debug
 		Print debug info.
 	-m, --mouse

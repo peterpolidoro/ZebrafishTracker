@@ -10,8 +10,8 @@
 #include <iostream>
 #include <signal.h>
 #include <opencv2/core.hpp>
-#include <boost/filesystem.hpp>
 
+#include "Configuration.h"
 #include "Camera.h"
 #include "ImageProcessor.h"
 #include "StageController.h"
@@ -32,14 +32,13 @@ public:
 
 private:
   const static bool SUCCESS = true;
-  boost::filesystem::path configuration_repository_path_;
-  cv::Mat homography_image_to_stage_;
+  Configuration configuration_;
   Camera camera_;
   ImageProcessor image_processor_;
   StageController stage_controller_;
   bool stage_homed_;
   bool stage_homing_;
-  Calibration calibrator_;
+  Calibration calibration_;
   CoordinateConverter coordinate_converter_;
   bool paralyzed_;
   bool blind_;

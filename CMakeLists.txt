@@ -19,6 +19,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_executable(ZebrafishTracker
   ${PROJECT_SOURCE_DIR}/src/Main.cpp
   ${PROJECT_SOURCE_DIR}/src/ZebrafishTracker.cpp
+  ${PROJECT_SOURCE_DIR}/src/Configuration.cpp
   ${PROJECT_SOURCE_DIR}/src/Camera.cpp
   ${PROJECT_SOURCE_DIR}/src/ImageProcessor.cpp
   ${PROJECT_SOURCE_DIR}/src/Calibration.cpp

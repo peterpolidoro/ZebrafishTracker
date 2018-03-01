@@ -20,9 +20,6 @@ ZebrafishTracker::ZebrafishTracker()
 {
   signal(SIGINT,ZebrafishTracker::interruptSignalHandler);
 
-  configuration_repository_path_ = boost::filesystem::path("../ZebrafishTrackerConfiguration");
-
-  calibrator_.setConfigurationRepositoryPath(configuration_repository_path_);
   image_processor_.setMode(ImageProcessor::BLOB);
 
   stage_homed_ = false;
@@ -35,12 +32,13 @@ ZebrafishTracker::ZebrafishTracker()
 bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
 {
   const cv::String keys =
-    "{help h usage ? |      | Print usage and exit.                              }"
-    "{d debug        |      | Print debug info.                                  }"
-    "{m mouse        |      | Track mouse click location instead of blob.        }"
-    "{p paralyze     |      | Do not communicate with stage so it does not move. }"
-    "{b blind        |      | Do not communicate with camera.                    }"
-    "{r recalibrate  |      | Recalibrate with chessboard before running.        }"
+    "{help h usage ?  |                                   | Print usage and exit.                              }"
+    "{c configuration |  ../ZebrafishTrackerConfiguration | Configuration repository path.                     }"
+    "{d debug         |                                   | Print debug info.                                  }"
+    "{m mouse         |                                   | Track mouse click location instead of blob.        }"
+    "{p paralyze      |                                   | Do not communicate with stage so it does not move. }"
+    "{b blind         |                                   | Do not communicate with camera.                    }"
+    "{r recalibrate   |                                   | Recalibrate with chessboard before running.        }"
     ;
 
   cv::CommandLineParser parser(argc,argv,keys);
@@ -56,6 +54,9 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
     parser.printMessage();
     return !SUCCESS;
   }
+
+  cv::String configuration_path = parser.get<cv::String>("configuration");
+  configuration_.setConfigurationRepositoryPath(configuration_path);
 
   if (parser.has("debug"))
   {
@@ -132,34 +133,23 @@ bool ZebrafishTracker::disconnectHardware()
 
 bool ZebrafishTracker::findCalibration()
 {
+  bool success = true;
   if (recalibrate_)
   {
     camera_.setRecalibrationShutterSpeed();
     camera_.reconfigure();
-    calibrator_.recalibrate();
-  }
-
-  bool got_calibration = calibrator_.getHomographyImageToStage(homography_image_to_stage_);
-
-  if ((homography_image_to_stage_.rows != 3) || (homography_image_to_stage_.cols != 3))
-  {
-    got_calibration = false;
-    std::cout << "wrong size????" << std::endl;
-  }
-
-  if (got_calibration)
-  {
-    std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage_ << std::endl;
-    coordinate_converter_.setHomographyImageToStage(homography_image_to_stage_);
-  }
-
-  if (recalibrate_)
-  {
+    success = calibration_.recalibrate();
     camera_.setNormalShutterSpeed();
     camera_.reconfigure();
+    if (!success)
+    {
+      return false;
+    }
   }
 
-  return got_calibration;
+  success = coordinate_converter_.updateHomographyImageToStage();
+
+  return success;
 }
 
 void ZebrafishTracker::run()
