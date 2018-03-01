@@ -21,7 +21,7 @@ add_executable(ZebrafishTracker
   ${PROJECT_SOURCE_DIR}/src/ZebrafishTracker.cpp
   ${PROJECT_SOURCE_DIR}/src/Camera.cpp
   ${PROJECT_SOURCE_DIR}/src/ImageProcessor.cpp
-  ${PROJECT_SOURCE_DIR}/src/Calibrator.cpp
+  ${PROJECT_SOURCE_DIR}/src/Calibration.cpp
   ${PROJECT_SOURCE_DIR}/src/CoordinateConverter.cpp
   ${PROJECT_SOURCE_DIR}/src/TimeoutSerial.cpp
   ${PROJECT_SOURCE_DIR}/src/StageController.cpp

@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Calibrator.h
+// Calibration.h
 //
 //
 // Authors:
@@ -14,10 +14,10 @@
 #include <boost/filesystem.hpp>
 
 
-class Calibrator
+class Calibration
 {
 public:
-  Calibrator();
+  Calibration();
 
   void setConfigurationRepositoryPath(boost::filesystem::path path);
   void recalibrate();

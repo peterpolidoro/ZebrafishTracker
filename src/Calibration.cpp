@@ -1,30 +1,30 @@
 // ----------------------------------------------------------------------------
-// Calibrator.cpp
+// Calibration.cpp
 //
 //
 // Authors:
 // Peter Polidoro polidorop@janelia.hhmi.org
 // ----------------------------------------------------------------------------
-#include "Calibrator.h"
+#include "Calibration.h"
 
 
 // public
-Calibrator::Calibrator()
+Calibration::Calibration()
 {
   recalibrate_ = false;
 }
 
-void Calibrator::setConfigurationRepositoryPath(boost::filesystem::path path)
+void Calibration::setConfigurationRepositoryPath(boost::filesystem::path path)
 {
   configuration_repository_path_ = path;
 }
 
-void Calibrator::recalibrate()
+void Calibration::recalibrate()
 {
   recalibrate_ = true;
 }
 
-bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
+bool Calibration::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
 {
   const bool got_calibration = true;
 
@@ -66,7 +66,7 @@ bool Calibrator::getHomographyImageToStage(cv::Mat & homography_image_to_stage)
 
 // private
 
-bool Calibrator::calibrate(const boost::filesystem::path calibration_path)
+bool Calibration::calibrate(const boost::filesystem::path calibration_path)
 {
   boost::filesystem::path chessboard_path = configuration_repository_path_;
   chessboard_path /= "images/chessboard.png";

@@ -15,7 +15,7 @@
 #include "Camera.h"
 #include "ImageProcessor.h"
 #include "StageController.h"
-#include "Calibrator.h"
+#include "Calibration.h"
 #include "CoordinateConverter.h"
 
 
@@ -39,7 +39,7 @@ private:
   StageController stage_controller_;
   bool stage_homed_;
   bool stage_homing_;
-  Calibrator calibrator_;
+  Calibration calibrator_;
   CoordinateConverter coordinate_converter_;
   bool paralyzed_;
   bool blind_;
