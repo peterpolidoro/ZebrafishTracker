@@ -22,13 +22,13 @@ StageController::~StageController()
   disconnect();
 }
 
-bool StageController::connect()
+void StageController::connect()
 {
   boost::filesystem::path com_port_path(DEVICE_NAME);
   if (!boost::filesystem::exists(com_port_path))
   {
     std::cout << std::endl << DEVICE_NAME << " does not exist! Is the stage_controller attached?" << std::endl;
-    return false;
+    throw std::runtime_error("Stage controller com port path does not exist.");
   }
   std::cout << std::endl << DEVICE_NAME << " exists." << std::endl;
 
@@ -52,23 +52,23 @@ bool StageController::connect()
       std::cout << response << std::endl;
       std::cout << std::endl << device_name << " not found in device_id response!" << std::endl;
       std::cout << "Is the stage_controller attached to " << DEVICE_NAME << "?" << std::endl;
-      return false;
+      throw std::runtime_error("Stage controller not found on com port.");
     }
 
     std::cout << std::endl << "stage_controller device_id = " << std::endl << response << std::endl;
   }
-
-  return is_open;
+  else
+  {
+    throw std::runtime_error("Stage controller com port not open.");
+  }
 }
 
-bool StageController::disconnect()
+void StageController::disconnect()
 {
   if (isOpen())
   {
     serial_.close();
   }
-
-  return !isOpen();
 }
 
 void StageController::setDebug(const bool debug)

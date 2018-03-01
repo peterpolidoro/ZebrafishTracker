@@ -14,39 +14,63 @@ int main(int argc, char * argv[])
 {
   ZebrafishTracker zebrafish_tracker;
 
-  bool success;
-
-  success = zebrafish_tracker.processCommandLineArgs(argc,argv);
-  if (!success)
+  try
   {
-    return -1;
+    zebrafish_tracker.processCommandLineArgs(argc,argv);
+  }
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << std::endl;
+    std::cerr << std::endl << "Unable to process command line arguments." << std::endl << std::endl;
+    return EXIT_FAILURE;
   }
 
-  success = zebrafish_tracker.connectHardware();
-  if (!success)
+  try
   {
+    zebrafish_tracker.connectHardware();
+  }
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << std::endl;
     std::cerr << std::endl << "Unable to connect all hardware." << std::endl << std::endl;
-    return -1;
+    return EXIT_FAILURE;
   }
 
-  success = zebrafish_tracker.findCalibration();
-  if (!success)
+  try
   {
+    zebrafish_tracker.findCalibration();
+  }
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << std::endl;
     std::cerr << std::endl << "Unable to find calibration." << std::endl << std::endl;
-    return -1;
+    return EXIT_FAILURE;
   }
 
   // blocks until user presses ctrl-c
-  zebrafish_tracker.run();
-
-  success = zebrafish_tracker.disconnectHardware();
-  if (!success)
+  try
   {
+    zebrafish_tracker.run();
+  }
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << std::endl;
+    std::cerr << std::endl << "Exception occurred while running." << std::endl << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  try
+  {
+    zebrafish_tracker.disconnectHardware();
+  }
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << std::endl;
     std::cerr << std::endl << "Unable to disconnect all hardware." << std::endl << std::endl;
-    return -1;
+    return EXIT_FAILURE;
   }
 
   std::cout << std::endl << "Goodbye!" << std::endl << std::endl;
 
-  return 0;
+  return EXIT_SUCCESS;
 }

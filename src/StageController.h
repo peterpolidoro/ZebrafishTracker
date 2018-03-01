@@ -23,8 +23,8 @@ public:
   StageController();
   ~StageController();
 
-  bool connect();
-  bool disconnect();
+  void connect();
+  void disconnect();
 
   void setDebug(const bool debug);
 

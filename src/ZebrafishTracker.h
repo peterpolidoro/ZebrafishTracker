@@ -24,14 +24,13 @@ class ZebrafishTracker
 public:
   ZebrafishTracker();
 
-  bool processCommandLineArgs(int argc, char * argv[]);
-  bool connectHardware();
-  bool disconnectHardware();
-  bool findCalibration();
+  void processCommandLineArgs(int argc, char * argv[]);
+  void connectHardware();
+  void disconnectHardware();
+  void findCalibration();
   void run();
 
 private:
-  const static bool SUCCESS = true;
   Configuration configuration_;
   Camera camera_;
   ImageProcessor image_processor_;
@@ -47,10 +46,10 @@ private:
   volatile static sig_atomic_t run_enabled_;
   static void interruptSignalHandler(int sig);
 
-  bool connectCamera();
-  bool disconnectCamera();
-  bool connectStageController();
-  bool disconnectStageController();
+  void connectCamera();
+  void disconnectCamera();
+  void connectStageController();
+  void disconnectStageController();
 };
 
 #endif

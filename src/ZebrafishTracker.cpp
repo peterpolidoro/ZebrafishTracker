@@ -29,7 +29,7 @@ ZebrafishTracker::ZebrafishTracker()
   recalibrate_ = false;
 }
 
-bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
+void ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
 {
   const cv::String keys =
     "{help h usage ?  |                                   | Print usage and exit.                              }"
@@ -46,13 +46,13 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   if (!parser.check())
   {
     parser.printErrors();
-    return !SUCCESS;
+    throw std::runtime_error("Command line parser error.");
   }
 
   if (parser.has("help"))
   {
     parser.printMessage();
-    return !SUCCESS;
+    return;
   }
 
   cv::String configuration_path = parser.get<cv::String>("configuration");
@@ -87,69 +87,32 @@ bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
     recalibrate_ = true;
     std::cout << std::endl << "Recalibrate!" << std::endl;
   }
-
-  return SUCCESS;
 }
 
-bool ZebrafishTracker::connectHardware()
+void ZebrafishTracker::connectHardware()
 {
-  bool success;
-  success = connectStageController();
-  if (!success)
-  {
-    std::cerr << std::endl << "Unable to connect stage controller." << std::endl;
-    return !SUCCESS;
-  }
-
-  success = connectCamera();
-  if (!success)
-  {
-    std::cerr << std::endl << "Unable to connect camera." << std::endl;
-    return !SUCCESS;
-  }
-
-  return success;
+  connectStageController();
+  connectCamera();
 }
 
-bool ZebrafishTracker::disconnectHardware()
+void ZebrafishTracker::disconnectHardware()
 {
-  bool success;
-  success = disconnectCamera();
-  if (!success)
-  {
-    std::cerr << std::endl << "Unable to disconnect camera." << std::endl;
-    return !SUCCESS;
-  }
-
-  success = disconnectStageController();
-  if (!success)
-  {
-    std::cerr << std::endl << "Unable to disconnect stage controller." << std::endl;
-    return !SUCCESS;
-  }
-
-  return success;
+  disconnectCamera();
+  disconnectStageController();
 }
 
-bool ZebrafishTracker::findCalibration()
+void ZebrafishTracker::findCalibration()
 {
-  bool success = true;
   if (recalibrate_)
   {
     camera_.setRecalibrationShutterSpeed();
     camera_.reconfigure();
-    success = calibration_.recalibrate();
+    calibration_.recalibrate();
     camera_.setNormalShutterSpeed();
     camera_.reconfigure();
-    if (!success)
-    {
-      return false;
-    }
   }
 
-  success = coordinate_converter_.updateHomographyImageToStage();
-
-  return success;
+  coordinate_converter_.updateHomographyImageToStage();
 }
 
 void ZebrafishTracker::run()
@@ -159,30 +122,17 @@ void ZebrafishTracker::run()
   cv::Mat image;
   cv::Point tracked_image_point;
   cv::Point stage_target_position;
-  bool success;
-  while(run_enabled_)
+  while(run_enabled_ && !blind_)
   {
-    if (!blind_)
-    {
-      success = camera_.grabImage(image);
-    }
-    if (success)
-    {
-      success = image_processor_.updateTrackedImagePoint(image);
-    }
-    if (success)
-    {
-      success = image_processor_.getTrackedImagePoint(tracked_image_point);
-    }
-    if (success)
-    {
-      success = coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
-    }
-    if (success && !paralyzed_)
+    camera_.grabImage(image);
+    image_processor_.updateTrackedImagePoint(image);
+    image_processor_.getTrackedImagePoint(tracked_image_point);
+    coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
+    if (!paralyzed_)
     {
       if (stage_homed_)
       {
-        success = stage_controller_.moveStageTo(stage_target_position.x,stage_target_position.y);
+        stage_controller_.moveStageTo(stage_target_position.x,stage_target_position.y);
       }
       else if (stage_homing_)
       {
@@ -199,11 +149,11 @@ void ZebrafishTracker::run()
 }
 
 // private
-bool ZebrafishTracker::connectCamera()
+void ZebrafishTracker::connectCamera()
 {
   if (blind_)
   {
-    return true;
+    return;
   }
 
   camera_.printLibraryInfo();
@@ -211,80 +161,48 @@ bool ZebrafishTracker::connectCamera()
   size_t camera_count = camera_.count();
   std::cout << std::endl << "Number of cameras detected: " << camera_count << std::endl;
 
-  if (camera_count != 1)
-  {
-    return !SUCCESS;
-  }
-
   size_t camera_index = 0;
-  bool success = camera_.setDesiredCameraIndex(camera_index);
-  if (!success)
-  {
-    return !SUCCESS;
-  }
+  camera_.setDesiredCameraIndex(camera_index);
 
-  success = camera_.connect();
-  if (!success)
-  {
-    return !SUCCESS;
-  }
+  camera_.connect();
 
   camera_.printCameraInfo();
 
-  success = camera_.start();
-
-  return success;
+  camera_.start();
 }
 
-bool ZebrafishTracker::disconnectCamera()
+void ZebrafishTracker::disconnectCamera()
 {
   if (blind_)
   {
-    return true;
+    return;
   }
 
   std::cout << std::endl << "Stopping camera capture." << std::endl;
-
-  bool success;
-  success = camera_.stop();
-  if (!success)
-  {
-    return !SUCCESS;
-  }
+  camera_.stop();
 
   std::cout << std::endl << "Disconnecting camera." << std::endl;
-
-  success = camera_.disconnect();
-
-  return success;
+  camera_.disconnect();
 }
 
-bool ZebrafishTracker::connectStageController()
+void ZebrafishTracker::connectStageController()
 {
   if (paralyzed_)
   {
-    return true;
+    return;
   }
 
   std::cout << std::endl << "Connecting stage controller." << std::endl;
-
-  bool success;
-  success = stage_controller_.connect();
-
-  return success;
+  stage_controller_.connect();
 }
 
-bool ZebrafishTracker::disconnectStageController()
+void ZebrafishTracker::disconnectStageController()
 {
   if (paralyzed_)
   {
-    return true;
+    return;
   }
 
   std::cout << std::endl << "Disconnecting stage controller." << std::endl;
-
-  bool success;
-  success = stage_controller_.disconnect();
-
-  return success;
+  stage_controller_.disconnect();
 }
