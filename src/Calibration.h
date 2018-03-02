@@ -20,7 +20,7 @@ class Calibration
 public:
   Calibration();
 
-  bool recalibrate();
+  void recalibrate();
 
 private:
   Configuration configuration_;

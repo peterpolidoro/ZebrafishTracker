@@ -18,11 +18,10 @@ class CoordinateConverter
 public:
   CoordinateConverter();
 
-  bool updateHomographyImageToStage();
-  bool convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point);
+  void updateHomographyImageToStage();
+  void convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point);
 
 private:
-  const static bool SUCCESS = true;
   Configuration configuration_;
   cv::Mat homography_image_to_stage_;
   bool homography_image_to_stage_set_;

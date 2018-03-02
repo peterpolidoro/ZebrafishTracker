@@ -29,17 +29,14 @@ public:
   };
   void setMode(Mode mode);
 
-  bool updateTrackedImagePoint(cv::Mat image);
-  bool getTrackedImagePoint(cv::Point & tracked_image_point);
+  void updateTrackedImagePoint(cv::Mat image);
+  void getTrackedImagePoint(cv::Point & tracked_image_point);
 
 private:
-  const static bool SUCCESS = true;
-
   unsigned long image_count_;
   Mode mode_;
 
   static cv::Point tracked_image_point_;
-  static bool tracked_image_point_is_valid_;
 
   cv::Ptr<cv::BackgroundSubtractorMOG2> bg_sub_ptr_;
   static const size_t BACKGROUND_HISTORY = 200;
@@ -76,8 +73,8 @@ private:
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat image);
   double getFrameRate();
-  bool findBlobLocation(cv::Mat image, cv::Point & location);
-  bool findClickedLocation(cv::Mat image, cv::Point & location);
+  void findBlobLocation(cv::Mat image, cv::Point & location);
+  void findClickedLocation(cv::Mat image, cv::Point & location);
   void displayImage(cv::Mat image);
   static void trackbarThresholdHandler(int value, void * userdata);
   static void mouseClickHandler(int event, int x, int y, int flags, void * userdata);

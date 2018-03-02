@@ -22,17 +22,17 @@ public:
 
   void printLibraryInfo();
   size_t count();
-  bool setDesiredCameraIndex(const size_t camera_index);
-  bool connect();
+  void setDesiredCameraIndex(const size_t camera_index);
+  void connect();
   void printCameraInfo();
-  bool start();
-  bool grabImage(cv::Mat & image);
-  bool stop();
-  bool disconnect();
+  void start();
+  void grabImage(cv::Mat & image);
+  void stop();
+  void disconnect();
   float getCameraTemperature();
   void setNormalShutterSpeed();
   void setRecalibrationShutterSpeed();
-  bool reconfigure();
+  void reconfigure();
 
 private:
   FlyCapture2::Error error_;
@@ -65,11 +65,11 @@ private:
 
   bool error();
   void printError();
-  bool setProperty(const FlyCapture2::PropertyType &type,
+  void setProperty(const FlyCapture2::PropertyType &type,
                    const bool &auto_set,
                    unsigned int &value_a,
                    unsigned int &value_b);
-  bool setProperty(const FlyCapture2::PropertyType &type,
+  void setProperty(const FlyCapture2::PropertyType &type,
                    const bool &auto_set,
                    double &value);
 };

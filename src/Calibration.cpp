@@ -13,7 +13,7 @@ Calibration::Calibration()
 {
 }
 
-bool Calibration::recalibrate()
+void Calibration::recalibrate()
 {
   // boost::filesystem::path chessboard_path = configuration_repository_path_;
   // chessboard_path /= "images/chessboard.png";
@@ -245,8 +245,6 @@ bool Calibration::recalibrate()
   // boost::filesystem::path calibrated_path = configuration_repository_path_;
   // calibrated_path /= "images/calibrated.png";
   // cv::imwrite(calibrated_path.string(),calibrated);
-
-  return true;
 }
 
 // private

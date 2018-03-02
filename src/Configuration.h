@@ -20,7 +20,7 @@ public:
   void setConfigurationRepositoryPath(cv::String path);
 
   bool checkCalibrationPath();
-  bool readHomographyImageToStage(cv::Mat & homography_image_to_stage);
+  void readHomographyImageToStage(cv::Mat & homography_image_to_stage);
 
 private:
   static boost::filesystem::path configuration_repository_path_;

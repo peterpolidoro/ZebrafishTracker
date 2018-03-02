@@ -41,13 +41,11 @@ bool Configuration::checkCalibrationPath()
   return false;
 }
 
-bool Configuration::readHomographyImageToStage(cv::Mat & homography_image_to_stage)
+void Configuration::readHomographyImageToStage(cv::Mat & homography_image_to_stage)
 {
-  const bool got_calibration = true;
-
   if (!checkCalibrationPath())
   {
-    return !got_calibration;
+    return;
   }
 
   cv::FileStorage calibration_fs(calibration_path_.string(), cv::FileStorage::READ);
@@ -57,14 +55,12 @@ bool Configuration::readHomographyImageToStage(cv::Mat & homography_image_to_sta
   if ((homography_image_to_stage.rows != 3) || (homography_image_to_stage.cols != 3))
   {
     std::cout << "homography_image_to_stage is not a 3x3 matrix." << std::endl;
-    return !got_calibration;
+    return;
   }
   else
   {
     std::cout << std::endl << "homography_image_to_stage = " << std::endl << homography_image_to_stage << std::endl;
   }
-
-  return got_calibration;
 }
 
 // private

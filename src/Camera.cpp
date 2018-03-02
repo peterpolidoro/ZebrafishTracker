@@ -63,28 +63,22 @@ size_t Camera::count()
   return camera_count;
 }
 
-bool Camera::setDesiredCameraIndex(const size_t camera_index)
+void Camera::setDesiredCameraIndex(const size_t camera_index)
 {
-  bool success = true;
   camera_index_ = camera_index;
   error_ = bus_mgr_.GetCameraFromIndex(camera_index_, &guid_);
   if (error())
   {
-    return !success;
   }
-  return success;
 }
 
-bool Camera::connect()
+void Camera::connect()
 {
-  bool success = true;
   error_ = camera_.Connect(&guid_);
   if (error())
   {
-    return !success;
   }
-  success = reconfigure();
-  return success;
+  reconfigure();
 }
 
 void Camera::printCameraInfo()
@@ -102,56 +96,43 @@ void Camera::printCameraInfo()
 
 }
 
-bool Camera::start()
+void Camera::start()
 {
-  bool success = true;
   error_ = camera_.StartCapture();
   if (error())
   {
-    return !success;
   }
-  return success;
 }
 
-bool Camera::grabImage(cv::Mat & image)
+void Camera::grabImage(cv::Mat & image)
 {
-  bool success = true;
   error_ = camera_.RetrieveBuffer(&raw_image_);
   if (error())
   {
-    return !success;
   }
   error_ = raw_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
   if (error())
   {
-    return !success;
   }
   size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
   cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
   cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
-  return success;
 }
 
-bool Camera::stop()
+void Camera::stop()
 {
-  bool success = true;
   error_ = camera_.StopCapture();
   if (error())
   {
-    return !success;
   }
-  return success;
 }
 
-bool Camera::disconnect()
+void Camera::disconnect()
 {
-  bool success = true;
   error_ = camera_.Disconnect();
   if (error())
   {
-    return !success;
   }
-  return success;
 }
 
 float Camera::getCameraTemperature()
@@ -176,19 +157,16 @@ void Camera::setRecalibrationShutterSpeed()
   config_.shutter_speed = 0.005;
 }
 
-bool Camera::reconfigure()
+void Camera::reconfigure()
 {
-  bool success = true;
   error_ = camera_.GetCameraInfo(&camera_info_);
   if (error())
   {
-    return !success;
   }
   FlyCapture2::FC2Config camera_config;
   error_ = camera_.GetConfiguration(&camera_config);
   if (error())
   {
-    return !success;
   }
 
   // buffer mode
@@ -202,36 +180,33 @@ bool Camera::reconfigure()
   error_ = camera_.SetConfiguration(&camera_config);
   if (error())
   {
-    return !success;
   }
 
   // Set frame rate
-  success &= setProperty(FlyCapture2::FRAME_RATE, false, config_.frame_rate);
+  setProperty(FlyCapture2::FRAME_RATE, false, config_.frame_rate);
 
   // Set exposure
-  success &= setProperty(FlyCapture2::AUTO_EXPOSURE, config_.auto_exposure, config_.exposure);
+  setProperty(FlyCapture2::AUTO_EXPOSURE, config_.auto_exposure, config_.exposure);
 
   // // Set sharpness
-  // success &= setProperty(FlyCapture2::SHARPNESS, config_.auto_sharpness, config_.sharpness);
+  // setProperty(FlyCapture2::SHARPNESS, config_.auto_sharpness, config_.sharpness);
 
   // Set saturation
-  success &= setProperty(FlyCapture2::SATURATION, config_.auto_saturation, config_.saturation);
+  setProperty(FlyCapture2::SATURATION, config_.auto_saturation, config_.saturation);
 
   // Set shutter time
   double shutter = 1000.0 * config_.shutter_speed; // Needs to be in milliseconds
-  success &= setProperty(FlyCapture2::SHUTTER, config_.auto_shutter, shutter);
+  setProperty(FlyCapture2::SHUTTER, config_.auto_shutter, shutter);
   config_.shutter_speed = shutter / 1000.0; // Needs to be in seconds
 
   // Set gain
-  success &= setProperty(FlyCapture2::GAIN, config_.auto_gain, config_.gain);
+  setProperty(FlyCapture2::GAIN, config_.auto_gain, config_.gain);
 
   // Set brightness
-  success &= setProperty(FlyCapture2::BRIGHTNESS, false, config_.brightness);
+  setProperty(FlyCapture2::BRIGHTNESS, false, config_.brightness);
 
   // Set gamma
-  success &= setProperty(FlyCapture2::GAMMA, false, config_.gamma);
-
-  return success;
+  setProperty(FlyCapture2::GAMMA, false, config_.gamma);
 }
 
 // private
@@ -240,7 +215,8 @@ bool Camera::error()
   bool error = (error_ != FlyCapture2::PGRERROR_OK);
   if (error)
   {
-    printError();}
+    printError();
+  }
   return error;
 }
 
@@ -249,20 +225,16 @@ void Camera::printError()
   error_.PrintErrorTrace();
 }
 
-bool Camera::setProperty(const FlyCapture2::PropertyType &type,
+void Camera::setProperty(const FlyCapture2::PropertyType &type,
                          const bool &auto_set,
                          unsigned int &value_a,
                          unsigned int &value_b)
 {
-  // return true if we can set values as desired.
-  bool success = true;
-
   FlyCapture2::PropertyInfo property_info;
   property_info.type = type;
   error_ = camera_.GetPropertyInfo(&property_info);
   if (error())
   {
-    return false;
   }
 
   if(property_info.present)
@@ -276,36 +248,30 @@ bool Camera::setProperty(const FlyCapture2::PropertyType &type,
     if(value_a < property_info.min)
     {
       value_a = property_info.min;
-      success &= false;
     }
     else if(value_a > property_info.max)
     {
       value_a = property_info.max;
-      success &= false;
     }
     if(value_b < property_info.min)
     {
       value_b = property_info.min;
-      success &= false;
     }
     else if(value_b > property_info.max)
     {
       value_b = property_info.max;
-      success &= false;
     }
     property.valueA = value_a;
     property.valueB = value_b;
     error_ = camera_.SetProperty(&property);
     if (error())
     {
-      return false;
     }
 
     // Read back setting to confirm
     error_ = camera_.GetProperty(&property);
     if (error())
     {
-      return false;
     }
     if(!property.autoManualMode)
     {
@@ -318,23 +284,17 @@ bool Camera::setProperty(const FlyCapture2::PropertyType &type,
     value_a = 0;
     value_b = 0;
   }
-
-  return success;
 }
 
-bool Camera::setProperty(const FlyCapture2::PropertyType &type,
+void Camera::setProperty(const FlyCapture2::PropertyType &type,
                          const bool &auto_set,
                          double &value)
 {
-  // return true if we can set values as desired.
-  bool success = true;
-
   FlyCapture2::PropertyInfo property_info;
   property_info.type = type;
   error_ = camera_.GetPropertyInfo(&property_info);
   if (error())
   {
-    return false;
   }
 
   if(property_info.present)
@@ -348,25 +308,21 @@ bool Camera::setProperty(const FlyCapture2::PropertyType &type,
     if(value < property_info.absMin)
     {
       value = property_info.absMin;
-      success &= false;
     }
     else if(value > property_info.absMax)
     {
       value = property_info.absMax;
-      success &= false;
     }
     property.absValue = value;
     error_ = camera_.SetProperty(&property);
     if (error())
     {
-      return false;
     }
 
     // Read back setting to confirm
     error_ = camera_.GetProperty(&property);
     if (error())
     {
-      return false;
     }
     if(!property.autoManualMode)
     {
@@ -377,5 +333,4 @@ bool Camera::setProperty(const FlyCapture2::PropertyType &type,
   {
     value = 0.0;
   }
-  return success;
 }

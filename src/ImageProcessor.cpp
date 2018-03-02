@@ -9,7 +9,6 @@
 
 
 cv::Point ImageProcessor::tracked_image_point_;
-bool ImageProcessor::tracked_image_point_is_valid_;
 int ImageProcessor::threshold_value_;
 
 // public
@@ -19,7 +18,6 @@ ImageProcessor::ImageProcessor()
   mode_ = BLOB;
 
   tracked_image_point_ = cv::Point(0,0);
-  tracked_image_point_is_valid_ = false;
 
   bg_sub_ptr_ = cv::createBackgroundSubtractorMOG2();
   bg_sub_ptr_->setHistory(BACKGROUND_HISTORY);
@@ -37,13 +35,11 @@ ImageProcessor::ImageProcessor()
   red_ = cv::Scalar(0,0,255);
 
   frame_rate_display_position_ = cv::Point(50,50);
-
 }
 
-bool ImageProcessor::updateTrackedImagePoint(cv::Mat image)
+void ImageProcessor::updateTrackedImagePoint(cv::Mat image)
 {
   updateFrameRateMeasurement();
-  bool success = false;
   cv::Point tracked_point = cv::Point(0,0);
   switch (mode_)
   {
@@ -51,41 +47,26 @@ bool ImageProcessor::updateTrackedImagePoint(cv::Mat image)
     {
       updateBackground(image);
 
-      success = findBlobLocation(image,tracked_point);
+      findBlobLocation(image,tracked_point);
       break;
     }
     case MOUSE:
     {
-      success = findClickedLocation(image,tracked_point);
+      findClickedLocation(image,tracked_point);
       break;
     }
   }
 
-  if (success)
-  {
-    tracked_image_point_ = tracked_point;
-    tracked_image_point_is_valid_ = true;
-  }
-  else
-  {
-    tracked_image_point_is_valid_ = false;
-  }
+  tracked_image_point_ = tracked_point;
 
   displayImage(image);
 
   ++image_count_;
-
-  return success;
 }
 
-bool ImageProcessor::getTrackedImagePoint(cv::Point & tracked_image_point)
+void ImageProcessor::getTrackedImagePoint(cv::Point & tracked_image_point)
 {
-  if (tracked_image_point_is_valid_)
-  {
-    tracked_image_point = tracked_image_point_;
-    return true;
-  }
-  return false;
+  tracked_image_point = tracked_image_point_;
 }
 
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
@@ -118,7 +99,6 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
       break;
     }
   }
-
 }
 
 // private
@@ -145,10 +125,8 @@ double ImageProcessor::getFrameRate()
   return frame_rate_;
 }
 
-bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
+void ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 {
-  bool success = false;
-
   cv::subtract(background_,image,foreground_);
   cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
 
@@ -167,16 +145,11 @@ bool ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
     mean.x = sum.x/locations.size();
     mean.y = sum.y/locations.size();
     location = mean;
-
-    success = true;
   }
-
-  return success;
 }
 
-bool ImageProcessor::findClickedLocation(cv::Mat image, cv::Point & location)
+void ImageProcessor::findClickedLocation(cv::Mat image, cv::Point & location)
 {
-  return true;
 }
 
 void ImageProcessor::displayImage(cv::Mat image)
@@ -186,14 +159,11 @@ void ImageProcessor::displayImage(cv::Mat image)
   {
     cv::cvtColor(image,display_image_,CV_GRAY2BGR);
 
-    if (tracked_image_point_is_valid_)
-    {
-      cv::circle(display_image_,
-                 tracked_image_point_,
-                 DISPLAY_MARKER_RADIUS,
-                 red_,
-                 DISPLAY_MARKER_THICKNESS);
-    }
+    cv::circle(display_image_,
+               tracked_image_point_,
+               DISPLAY_MARKER_RADIUS,
+               red_,
+               DISPLAY_MARKER_THICKNESS);
 
     std::stringstream frame_rate_ss;
     frame_rate_ss << getFrameRate();

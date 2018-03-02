@@ -14,19 +14,13 @@ CoordinateConverter::CoordinateConverter()
   homography_image_to_stage_set_ = false;
 }
 
-bool CoordinateConverter::updateHomographyImageToStage()
+void CoordinateConverter::updateHomographyImageToStage()
 {
-  bool success = configuration_.readHomographyImageToStage(homography_image_to_stage_);
-  if (!success)
-  {
-    return success;
-  }
-
+  configuration_.readHomographyImageToStage(homography_image_to_stage_);
   homography_image_to_stage_set_ = true;
-  return success;
 }
 
-bool CoordinateConverter::convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point)
+void CoordinateConverter::convertImagePointToStagePoint(cv::Point & image_point, cv::Point & stage_point)
 {
   if (homography_image_to_stage_set_)
   {
@@ -36,7 +30,6 @@ bool CoordinateConverter::convertImagePointToStagePoint(cv::Point & image_point,
     cv::perspectiveTransform(image_points,stage_points,homography_image_to_stage_);
     stage_point = stage_points[0];
   }
-  return homography_image_to_stage_set_;
 }
 
 // private
