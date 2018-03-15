@@ -35,6 +35,10 @@ ImageProcessor::ImageProcessor()
   red_ = cv::Scalar(0,0,255);
 
   frame_rate_display_position_ = cv::Point(50,50);
+
+  cuda_device_count_ = cv::cuda::getCudaEnabledDeviceCount();
+  std::cout << "cuda device count: " << cuda_device_count_ << std::endl;
+
 }
 
 void ImageProcessor::updateTrackedImagePoint(cv::Mat image)

@@ -9,6 +9,7 @@
 #define _IMAGE_PROCESSOR_H_
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
+#include <opencv2/cuda.hpp>
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
@@ -69,6 +70,8 @@ private:
   cv::Point frame_rate_display_position_;
 
   cv::Mat display_image_;
+
+  int cuda_device_count_;
 
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat image);
