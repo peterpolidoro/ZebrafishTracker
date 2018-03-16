@@ -115,14 +115,17 @@ void Camera::allocateMemory()
 {
   FlyCapture2::Image image;
   error_ = camera_.RetrieveBuffer(&image);
+  FlyCapture2::PixelFormat pixel_format = image.GetPixelFormat();
   unsigned int rows = image.GetRows();
   unsigned int cols = image.GetCols();
   unsigned int stride = image.GetStride();
   unsigned int data_size = image.GetDataSize();
-  std::cout << std::endl << "rows: " << rows << std::endl;
-  std::cout << std::endl << "cols: " << cols << std::endl;
-  std::cout << std::endl << "stride: " << stride << std::endl;
-  std::cout << std::endl << "data_size: " << data_size << std::endl;
+  std::cout << std::endl;
+  std::cout << "pixel_format == PIXEL_FORMAT_MONO8: " << (pixel_format == FlyCapture2::PIXEL_FORMAT_MONO8) << std::endl;
+  std::cout << "rows: " << rows << std::endl;
+  std::cout << "cols: " << cols << std::endl;
+  std::cout << "stride: " << stride << std::endl;
+  std::cout << "data_size: " << data_size << std::endl;
 
 }
 
