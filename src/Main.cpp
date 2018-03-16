@@ -47,6 +47,17 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
+  try
+  {
+    zebrafish_tracker.allocateMemory();
+  }
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << std::endl;
+    std::cerr << std::endl << "Unable to allocate memory." << std::endl << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // blocks until user presses ctrl-c
   try
   {

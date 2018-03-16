@@ -35,6 +35,9 @@ public:
   };
   void setMode(Mode mode);
 
+  void enableGpu();
+  void allocateMemory();
+
   void updateTrackedImagePoint(cv::Mat image);
   void getTrackedImagePoint(cv::Point & tracked_image_point);
 
@@ -56,6 +59,13 @@ private:
   cv::Mat foreground_;
   cv::Mat threshold_;
 
+  bool gpu_enabled_;
+
+  cv::cuda::GpuMat background_g_;
+  cv::cuda::GpuMat foreground_mask_g_;
+  cv::cuda::GpuMat foreground_g_;
+  cv::cuda::GpuMat threshold_g_;
+
   static const int THRESHOLD_VALUE_DEFAULT = 10;
   static int threshold_value_;
 
@@ -75,8 +85,6 @@ private:
   cv::Point frame_rate_display_position_;
 
   cv::Mat display_image_;
-
-  int cuda_device_count_;
 
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat image);

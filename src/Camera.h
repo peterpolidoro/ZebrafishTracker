@@ -26,6 +26,8 @@ public:
   void connect();
   void printCameraInfo();
   void start();
+  void enableGpu();
+  void allocateMemory();
   void grabImage(cv::Mat & image);
   void stop();
   void disconnect();
@@ -44,6 +46,8 @@ private:
   // static const size_t buffer_count_=3;
   FlyCapture2::Image raw_image_;
   FlyCapture2::Image rgb_image_;
+
+  bool gpu_enabled_;
 
   struct Config
   {

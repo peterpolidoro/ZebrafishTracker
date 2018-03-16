@@ -36,41 +36,6 @@ ImageProcessor::ImageProcessor()
 
   frame_rate_display_position_ = cv::Point(50,50);
 
-  cuda_device_count_ = cv::cuda::getCudaEnabledDeviceCount();
-  std::cout << "cuda device count: " << cuda_device_count_ << std::endl;
-
-}
-
-void ImageProcessor::updateTrackedImagePoint(cv::Mat image)
-{
-  updateFrameRateMeasurement();
-  cv::Point tracked_point = cv::Point(0,0);
-  switch (mode_)
-  {
-    case BLOB:
-    {
-      updateBackground(image);
-
-      findBlobLocation(image,tracked_point);
-      break;
-    }
-    case MOUSE:
-    {
-      findClickedLocation(image,tracked_point);
-      break;
-    }
-  }
-
-  tracked_image_point_ = tracked_point;
-
-  displayImage(image);
-
-  ++image_count_;
-}
-
-void ImageProcessor::getTrackedImagePoint(cv::Point & tracked_image_point)
-{
-  tracked_image_point = tracked_image_point_;
 }
 
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
@@ -103,6 +68,47 @@ void ImageProcessor::setMode(ImageProcessor::Mode mode)
       break;
     }
   }
+}
+
+void ImageProcessor::enableGpu()
+{
+  gpu_enabled_ = true;
+}
+
+void ImageProcessor::allocateMemory()
+{
+}
+
+void ImageProcessor::updateTrackedImagePoint(cv::Mat image)
+{
+  updateFrameRateMeasurement();
+  cv::Point tracked_point = cv::Point(0,0);
+  switch (mode_)
+  {
+    case BLOB:
+    {
+      updateBackground(image);
+
+      findBlobLocation(image,tracked_point);
+      break;
+    }
+    case MOUSE:
+    {
+      findClickedLocation(image,tracked_point);
+      break;
+    }
+  }
+
+  tracked_image_point_ = tracked_point;
+
+  displayImage(image);
+
+  ++image_count_;
+}
+
+void ImageProcessor::getTrackedImagePoint(cv::Point & tracked_image_point)
+{
+  tracked_image_point = tracked_image_point_;
 }
 
 // private

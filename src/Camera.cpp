@@ -32,6 +32,8 @@ Camera::Camera()
   config_.gamma = 1.3;
 
   setNormalShutterSpeed();
+
+  gpu_enabled_ = false;
 }
 
 void Camera::printLibraryInfo()
@@ -102,6 +104,26 @@ void Camera::start()
   if (error())
   {
   }
+}
+
+void Camera::enableGpu()
+{
+  gpu_enabled_ = true;
+}
+
+void Camera::allocateMemory()
+{
+  FlyCapture2::Image image;
+  error_ = camera_.RetrieveBuffer(&image);
+  unsigned int rows = image.GetRows();
+  unsigned int cols = image.GetCols();
+  unsigned int stride = image.GetStride();
+  unsigned int data_size = image.GetDataSize();
+  std::cout << std::endl << "rows: " << rows << std::endl;
+  std::cout << std::endl << "cols: " << cols << std::endl;
+  std::cout << std::endl << "stride: " << stride << std::endl;
+  std::cout << std::endl << "data_size: " << data_size << std::endl;
+
 }
 
 void Camera::grabImage(cv::Mat & image)

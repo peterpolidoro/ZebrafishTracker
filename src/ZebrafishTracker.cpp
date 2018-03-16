@@ -101,6 +101,27 @@ void ZebrafishTracker::disconnectHardware()
   disconnectStageController();
 }
 
+void ZebrafishTracker::allocateMemory()
+{
+  int cuda_device_count = cv::cuda::getCudaEnabledDeviceCount();
+
+  gpu_enabled_ = (cuda_device_count > 0);
+  std::cout << std::endl << "gpu enabled: " << gpu_enabled_ << std::endl;
+
+  if (blind_)
+  {
+    return;
+  }
+
+  if (gpu_enabled_)
+  {
+    camera_.enableGpu();
+    image_processor_.enableGpu();
+  }
+  camera_.allocateMemory();
+  image_processor_.allocateMemory();
+}
+
 void ZebrafishTracker::findCalibration()
 {
   if (recalibrate_)
