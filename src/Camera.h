@@ -14,11 +14,17 @@
 
 #include <FlyCapture2.h>
 
+#ifdef __CUDACC__
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+#endif
+
 
 class Camera
 {
 public:
   Camera();
+  ~Camera();
 
   void printLibraryInfo();
   size_t count();
@@ -45,9 +51,14 @@ private:
   FlyCapture2::CameraInfo camera_info_;
   // static const size_t buffer_count_=3;
   FlyCapture2::Image raw_image_;
-  FlyCapture2::Image rgb_image_;
 
   bool gpu_enabled_;
+  FlyCapture2::PixelFormat pixel_format_;
+  unsigned int rows_;
+  unsigned int cols_;
+  unsigned int stride_;
+  unsigned int data_size_;
+  unsigned char * data_ptr_;
 
   struct Config
   {

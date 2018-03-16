@@ -15,8 +15,6 @@ Camera::Camera()
   FlyCapture2::BusManager bus_mgr_;
   FlyCapture2::Camera camera_;
   FlyCapture2::CameraInfo camera_info_;
-  FlyCapture2::Image raw_image_;
-  FlyCapture2::Image rgb_image_;
 
   config_.frame_rate = 177;
   config_.auto_exposure = false;
@@ -34,6 +32,12 @@ Camera::Camera()
   setNormalShutterSpeed();
 
   gpu_enabled_ = false;
+  data_ptr_ = NULL;
+}
+
+Camera::~Camera()
+{
+  free(data_ptr_);
 }
 
 void Camera::printLibraryInfo()
@@ -115,18 +119,22 @@ void Camera::allocateMemory()
 {
   FlyCapture2::Image image;
   error_ = camera_.RetrieveBuffer(&image);
-  FlyCapture2::PixelFormat pixel_format = image.GetPixelFormat();
-  unsigned int rows = image.GetRows();
-  unsigned int cols = image.GetCols();
-  unsigned int stride = image.GetStride();
-  unsigned int data_size = image.GetDataSize();
+  pixel_format_ = image.GetPixelFormat();
+  rows_ = image.GetRows();
+  cols_ = image.GetCols();
+  stride_ = image.GetStride();
+  data_size_ = image.GetDataSize();
   std::cout << std::endl;
-  std::cout << "pixel_format == PIXEL_FORMAT_MONO8: " << (pixel_format == FlyCapture2::PIXEL_FORMAT_MONO8) << std::endl;
-  std::cout << "rows: " << rows << std::endl;
-  std::cout << "cols: " << cols << std::endl;
-  std::cout << "stride: " << stride << std::endl;
-  std::cout << "data_size: " << data_size << std::endl;
-
+  std::cout << "pixel_format == PIXEL_FORMAT_RAW8: " << (pixel_format_ == FlyCapture2::PIXEL_FORMAT_RAW8) << std::endl;
+  std::cout << "rows: " << rows_ << std::endl;
+  std::cout << "cols: " << cols_ << std::endl;
+  std::cout << "stride: " << stride_ << std::endl;
+  std::cout << "data_size: " << data_size_ << std::endl;
+  std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
+  data_ptr_ = (unsigned char *)malloc(data_size_);
+  // cudaMallocManaged(data_ptr_,data_size_);
+  std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
+  FlyCapture2::Image raw_image_(data_ptr_,data_size_);
 }
 
 void Camera::grabImage(cv::Mat & image)
@@ -135,13 +143,14 @@ void Camera::grabImage(cv::Mat & image)
   if (error())
   {
   }
-  error_ = raw_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
-  if (error())
-  {
-  }
-  size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
-  cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
-  cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
+  // error_ = raw_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
+  // if (error())
+  // {
+  // }
+  // size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
+  // cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
+  // cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
+  image = cv::Mat(rows_,cols_,CV_8UC1,raw_image_.GetData(),stride_);
 }
 
 void Camera::stop()
