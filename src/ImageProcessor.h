@@ -11,6 +11,11 @@
 #include <opencv2/video.hpp>
 #include <opencv2/core/cuda.hpp>
 
+#ifdef __CUDACC__
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+#endif
+
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
 
