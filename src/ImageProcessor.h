@@ -11,10 +11,10 @@
 #include <opencv2/video.hpp>
 #include <opencv2/core/cuda.hpp>
 
-#ifdef __CUDACC__
+// #if CUDA_FOUND
 #include <cuda_runtime_api.h>
 #include <cuda.h>
-#endif
+// #endif
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>

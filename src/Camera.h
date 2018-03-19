@@ -14,10 +14,10 @@
 
 #include <FlyCapture2.h>
 
-#ifdef __CUDACC__
+// #if CUDA_FOUND
 #include <cuda_runtime_api.h>
 #include <cuda.h>
-#endif
+// #endif
 
 
 class Camera

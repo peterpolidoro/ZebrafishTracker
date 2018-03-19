@@ -101,23 +101,29 @@ void ZebrafishTracker::disconnectHardware()
   disconnectStageController();
 }
 
-void ZebrafishTracker::allocateMemory()
+void ZebrafishTracker::enableGpu()
 {
-  int cuda_device_count = cv::cuda::getCudaEnabledDeviceCount();
+  int cuda_enabled_device_count = cv::cuda::getCudaEnabledDeviceCount();
+  int cuda_device_count;
+  cudaGetDeviceCount(&cuda_device_count);
 
-  gpu_enabled_ = (cuda_device_count > 0);
+  gpu_enabled_ = ((cuda_enabled_device_count > 0) && (cuda_device_count > 0));
   std::cout << std::endl << "gpu enabled: " << gpu_enabled_ << std::endl;
-
-  if (blind_)
-  {
-    return;
-  }
 
   if (gpu_enabled_)
   {
     camera_.enableGpu();
     image_processor_.enableGpu();
   }
+}
+
+void ZebrafishTracker::allocateMemory()
+{
+  if (blind_)
+  {
+    return;
+  }
+
   camera_.allocateMemory();
   image_processor_.allocateMemory();
 }
@@ -181,6 +187,11 @@ void ZebrafishTracker::connectCamera()
 
   size_t camera_count = camera_.count();
   std::cout << std::endl << "Number of cameras detected: " << camera_count << std::endl;
+
+  if (camera_count == 0)
+  {
+    throw std::runtime_error("At least one camera needs to be connected when not running blind.");
+  }
 
   size_t camera_index = 0;
   camera_.setDesiredCameraIndex(camera_index);

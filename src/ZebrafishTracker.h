@@ -12,6 +12,11 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/cuda.hpp>
 
+// #if CUDA_FOUND
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+// #endif
+
 #include "Configuration.h"
 #include "Camera.h"
 #include "ImageProcessor.h"
@@ -28,6 +33,7 @@ public:
   void processCommandLineArgs(int argc, char * argv[]);
   void connectHardware();
   void disconnectHardware();
+  void enableGpu();
   void allocateMemory();
   void findCalibration();
   void run();
