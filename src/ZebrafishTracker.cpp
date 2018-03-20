@@ -112,6 +112,7 @@ void ZebrafishTracker::enableGpu()
 
   if (gpu_enabled_)
   {
+    cudaSetDeviceFlags(cudaDeviceMapHost); //Support for mapped pinned allocations
     camera_.enableGpu();
     image_processor_.enableGpu();
   }

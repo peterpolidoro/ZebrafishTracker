@@ -124,17 +124,18 @@ void Camera::allocateMemory()
   cols_ = image.GetCols();
   stride_ = image.GetStride();
   data_size_ = image.GetDataSize();
-  std::cout << std::endl;
-  std::cout << "pixel_format == PIXEL_FORMAT_RAW8: " << (pixel_format_ == FlyCapture2::PIXEL_FORMAT_RAW8) << std::endl;
-  std::cout << "rows: " << rows_ << std::endl;
-  std::cout << "cols: " << cols_ << std::endl;
-  std::cout << "stride: " << stride_ << std::endl;
-  std::cout << "data_size: " << data_size_ << std::endl;
+  // std::cout << std::endl;
+  // std::cout << "pixel_format == PIXEL_FORMAT_RAW8: " << (pixel_format_ == FlyCapture2::PIXEL_FORMAT_RAW8) << std::endl;
+  // std::cout << "rows: " << rows_ << std::endl;
+  // std::cout << "cols: " << cols_ << std::endl;
+  // std::cout << "stride: " << stride_ << std::endl;
+  // std::cout << "data_size: " << data_size_ << std::endl;
+  // std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
+  // data_ptr_ = (unsigned char *)malloc(data_size_);
+  cudaMallocManaged((void**)&data_ptr_,data_size_);
   std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
-  data_ptr_ = (unsigned char *)malloc(data_size_);
-  // cudaMallocManaged(data_ptr_,data_size_);
-  std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
-  FlyCapture2::Image raw_image_(data_ptr_,data_size_);
+  camera_.SetUserBuffers(data_ptr_,data_size_,1);
+  // FlyCapture2::Image raw_image_(data_ptr_,data_size_);
 }
 
 void Camera::grabImage(cv::Mat & image)
@@ -151,6 +152,10 @@ void Camera::grabImage(cv::Mat & image)
   // cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
   // cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
   image = cv::Mat(rows_,cols_,CV_8UC1,raw_image_.GetData(),stride_);
+  std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
+  std::cout << "raw_image_.GetData(): " << (long)raw_image_.GetData() << std::endl;
+  std::cout << "image.data: " << (long)image.data << std::endl;
+  // image = cv::Mat(rows_,cols_,CV_8UC1,data_ptr_,stride_);
 }
 
 void Camera::stop()
