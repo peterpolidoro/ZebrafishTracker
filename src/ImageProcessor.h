@@ -54,6 +54,8 @@ private:
   static const double BACKGROUND_LEARNING_RATE = 0.15;
   static const size_t BACKGROUND_DIVISOR = 400;
   static const double MAX_PIXEL_VALUE = 255;
+  unsigned char * background_data_ptr_;
+
   cv::Mat background_;
   cv::Mat foreground_mask_;
   cv::Mat foreground_;

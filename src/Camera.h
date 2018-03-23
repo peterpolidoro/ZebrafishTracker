@@ -34,6 +34,7 @@ public:
   void start();
   void enableGpu();
   void allocateMemory();
+  unsigned int getImageDataSize();
   void grabImage(cv::Mat & image);
   void stop();
   void disconnect();
@@ -49,16 +50,17 @@ private:
   FlyCapture2::PGRGuid guid_;
   FlyCapture2::Camera camera_;
   FlyCapture2::CameraInfo camera_info_;
-  // static const size_t buffer_count_=3;
-  FlyCapture2::Image raw_image_;
+  static const size_t buffer_count_ = 1;
+  FlyCapture2::Image retrieved_image_;
+  FlyCapture2::Image unified_image_;
 
   bool gpu_enabled_;
   FlyCapture2::PixelFormat pixel_format_;
   unsigned int rows_;
   unsigned int cols_;
   unsigned int stride_;
-  unsigned int data_size_;
-  unsigned char * data_ptr_;
+  unsigned int image_data_size_;
+  unsigned char * image_data_ptr_;
 
   struct Config
   {

@@ -77,6 +77,7 @@ void ImageProcessor::enableGpu()
 
 void ImageProcessor::allocateMemory()
 {
+  cudaMallocManaged((void**)&background_data_ptr_,data_size_);
 }
 
 void ImageProcessor::updateTrackedImagePoint(cv::Mat image)

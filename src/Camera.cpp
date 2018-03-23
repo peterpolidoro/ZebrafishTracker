@@ -32,12 +32,12 @@ Camera::Camera()
   setNormalShutterSpeed();
 
   gpu_enabled_ = false;
-  data_ptr_ = NULL;
+  image_data_ptr_ = NULL;
 }
 
 Camera::~Camera()
 {
-  free(data_ptr_);
+  free(image_data_ptr_);
 }
 
 void Camera::printLibraryInfo()
@@ -123,39 +123,57 @@ void Camera::allocateMemory()
   rows_ = image.GetRows();
   cols_ = image.GetCols();
   stride_ = image.GetStride();
-  data_size_ = image.GetDataSize();
+  image_data_size_ = image.GetDataSize();
   // std::cout << std::endl;
   // std::cout << "pixel_format == PIXEL_FORMAT_RAW8: " << (pixel_format_ == FlyCapture2::PIXEL_FORMAT_RAW8) << std::endl;
   // std::cout << "rows: " << rows_ << std::endl;
   // std::cout << "cols: " << cols_ << std::endl;
   // std::cout << "stride: " << stride_ << std::endl;
-  // std::cout << "data_size: " << data_size_ << std::endl;
-  // std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
-  // data_ptr_ = (unsigned char *)malloc(data_size_);
-  cudaMallocManaged((void**)&data_ptr_,data_size_);
-  std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
-  camera_.SetUserBuffers(data_ptr_,data_size_,1);
-  // FlyCapture2::Image raw_image_(data_ptr_,data_size_);
+  // std::cout << "data_size: " << image_data_size_ << std::endl;
+  // std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
+  // image_data_ptr_ = (unsigned char *)malloc(image_data_size_);
+  cudaMallocManaged((void**)&image_data_ptr_,image_data_size_);
+  std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
+  // error_ = camera_.SetUserBuffers(image_data_ptr_,image_data_size_,buffer_count_);
+  // if (error())
+  // {
+  // }
+  FlyCapture2::Image unified_image_(image_data_ptr_,image_data_size_);
+}
+
+unsigned int Camera::getImageDataSize()
+{
+  return image_data_size_;
 }
 
 void Camera::grabImage(cv::Mat & image)
 {
-  error_ = camera_.RetrieveBuffer(&raw_image_);
+  // error_ = camera_.RetrieveBuffer(&unified_image_);
+  // if (error())
+  // {
+  // }
+  error_ = camera_.RetrieveBuffer(&retrieved_image_);
   if (error())
   {
   }
-  // error_ = raw_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
+  // is there a way to eliminate this copy??
+  error_ = unified_image_.DeepCopy(&retrieved_image_);
+  if (error())
+  {
+  }
+  // error_ = unified_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
   // if (error())
   // {
   // }
   // size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
   // cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
   // cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
-  image = cv::Mat(rows_,cols_,CV_8UC1,raw_image_.GetData(),stride_);
-  std::cout << "data_ptr_: " << (long)data_ptr_ << std::endl;
-  std::cout << "raw_image_.GetData(): " << (long)raw_image_.GetData() << std::endl;
+  image = cv::Mat(rows_,cols_,CV_8UC1,unified_image_.GetData(),stride_);
+  std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
+  std::cout << "retrieved_image_.GetData(): " << (long)retrieved_image_.GetData() << std::endl;
+  std::cout << "unified_image_.GetData(): " << (long)unified_image_.GetData() << std::endl;
   std::cout << "image.data: " << (long)image.data << std::endl;
-  // image = cv::Mat(rows_,cols_,CV_8UC1,data_ptr_,stride_);
+  // image = cv::Mat(rows_,cols_,CV_8UC1,image_data_ptr_,stride_);
 }
 
 void Camera::stop()
