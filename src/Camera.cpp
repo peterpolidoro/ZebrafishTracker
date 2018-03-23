@@ -37,7 +37,7 @@ Camera::Camera()
 
 Camera::~Camera()
 {
-  free(image_data_ptr_);
+  cudaFree(image_data_ptr_);
 }
 
 void Camera::printLibraryInfo()
@@ -119,11 +119,14 @@ void Camera::allocateMemory()
 {
   FlyCapture2::Image image;
   error_ = camera_.RetrieveBuffer(&image);
-  pixel_format_ = image.GetPixelFormat();
   rows_ = image.GetRows();
   cols_ = image.GetCols();
+  image_size_ = cv::Size(cols_,rows_);
+  pixel_format_ = image.GetPixelFormat();
+  image_type_ = CV_8UC1;
   stride_ = image.GetStride();
   image_data_size_ = image.GetDataSize();
+
   // std::cout << std::endl;
   // std::cout << "pixel_format == PIXEL_FORMAT_RAW8: " << (pixel_format_ == FlyCapture2::PIXEL_FORMAT_RAW8) << std::endl;
   // std::cout << "rows: " << rows_ << std::endl;
@@ -138,7 +141,25 @@ void Camera::allocateMemory()
   // if (error())
   // {
   // }
-  FlyCapture2::Image unified_image_(image_data_ptr_,image_data_size_);
+  unified_image_ = cv::Mat(image_size_,image_type_,image_data_ptr_);
+  std::cout << "unified_image_.data: " << (long)unified_image_.data << std::endl;
+  // FlyCapture2::Image unified_image_(image_data_ptr_,image_data_size_);
+  // std::cout << "unified_image_.GetData(): " << (long)unified_image_.GetData() << std::endl;
+}
+
+unsigned char * Camera::getImageDataPointer()
+{
+  return image_data_ptr_;
+}
+
+cv::Size Camera::getImageSize()
+{
+  return image_size_;
+}
+
+int Camera::getImageType()
+{
+  return image_type_;
 }
 
 unsigned int Camera::getImageDataSize()
@@ -152,15 +173,19 @@ void Camera::grabImage(cv::Mat & image)
   // if (error())
   // {
   // }
-  error_ = camera_.RetrieveBuffer(&retrieved_image_);
+  error_ = camera_.RetrieveBuffer(&retrieved_camera_image_);
   if (error())
   {
   }
   // is there a way to eliminate this copy??
-  error_ = unified_image_.DeepCopy(&retrieved_image_);
-  if (error())
-  {
-  }
+  retrieved_image_ = cv::Mat(image_size_,CV_8UC1,retrieved_camera_image_.GetData(),stride_);
+  retrieved_image_.copyTo(unified_image_);
+
+  image = unified_image_;
+  // error_ = unified_image_.DeepCopy(&retrieved_image_);
+  // if (error())
+  // {
+  // }
   // error_ = unified_image_.Convert(FlyCapture2::PIXEL_FORMAT_BGR, &rgb_image_);
   // if (error())
   // {
@@ -168,11 +193,16 @@ void Camera::grabImage(cv::Mat & image)
   // size_t row_bytes = (double)rgb_image_.GetReceivedDataSize()/(double)rgb_image_.GetRows();
   // cv::Mat rgb_cv = cv::Mat(rgb_image_.GetRows(), rgb_image_.GetCols(), CV_8UC3, rgb_image_.GetData(),row_bytes);
   // cv::cvtColor(rgb_cv, image, CV_BGR2GRAY);
-  image = cv::Mat(rows_,cols_,CV_8UC1,unified_image_.GetData(),stride_);
-  std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
-  std::cout << "retrieved_image_.GetData(): " << (long)retrieved_image_.GetData() << std::endl;
-  std::cout << "unified_image_.GetData(): " << (long)unified_image_.GetData() << std::endl;
-  std::cout << "image.data: " << (long)image.data << std::endl;
+
+  // if (pixel_format_ == FlyCapture2::PIXEL_FORMAT_RAW8)
+  // {
+    // image = cv::Mat(image_size_,CV_8UC1,unified_image_.GetData(),stride_);
+  // }
+
+  // std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
+  // std::cout << "retrieved_image_.data: " << (long)retrieved_image_.data << std::endl;
+  // std::cout << "unified_image_.data: " << (long)unified_image_.data << std::endl;
+  // std::cout << "image.data: " << (long)image.data << std::endl;
   // image = cv::Mat(rows_,cols_,CV_8UC1,image_data_ptr_,stride_);
 }
 

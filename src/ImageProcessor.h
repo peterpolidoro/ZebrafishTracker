@@ -10,6 +10,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
 #include <opencv2/core/cuda.hpp>
+#include <opencv2/cudabgsegm.hpp>
+#include <opencv2/cudaarithm.hpp>
 
 // #if CUDA_FOUND
 #include <cuda_runtime_api.h>
@@ -34,27 +36,39 @@ public:
     MOUSE,
   };
   void setMode(Mode mode);
+  void show();
+  void hide();
 
   void enableGpu();
-  void allocateMemory();
+  void allocateMemory(unsigned char * const image_data_ptr,
+                      const cv::Size image_size,
+                      const int image_type,
+                      const unsigned int image_data_size);
 
-  void updateTrackedImagePoint(cv::Mat image);
+  void update(cv::Mat image);
   void getTrackedImagePoint(cv::Point & tracked_image_point);
 
 private:
   unsigned long image_count_;
   Mode mode_;
+  bool show_;
+  bool windows_;
 
   static cv::Point tracked_image_point_;
 
   cv::Ptr<cv::BackgroundSubtractorMOG2> bg_sub_ptr_;
+  cv::Ptr<cv::cuda::BackgroundSubtractorMOG2> bg_sub_ptr_g_;
   static const size_t BACKGROUND_HISTORY = 200;
   static const size_t BACKGROUND_VAR_THRESHOLD = 16;
   static const bool BACKGROUND_DETECT_SHADOWS = false;
   static const double BACKGROUND_LEARNING_RATE = 0.15;
   static const size_t BACKGROUND_DIVISOR = 400;
   static const double MAX_PIXEL_VALUE = 255;
-  unsigned char * background_data_ptr_;
+
+  unsigned char * image_data_ptr_;
+  cv::Size image_size_;
+  int image_type_;
+  unsigned int image_data_size_;
 
   cv::Mat background_;
   cv::Mat foreground_mask_;
@@ -63,6 +77,12 @@ private:
 
   bool gpu_enabled_;
 
+  unsigned char * background_data_ptr_;
+  unsigned char * foreground_data_ptr_;
+  unsigned char * foreground_mask_data_ptr_;
+  unsigned char * threshold_data_ptr_;
+
+  cv::cuda::GpuMat image_g_;
   cv::cuda::GpuMat background_g_;
   cv::cuda::GpuMat foreground_mask_g_;
   cv::cuda::GpuMat foreground_g_;
@@ -72,8 +92,9 @@ private:
   static int threshold_value_;
 
   static const double FRAME_RATE_ALPHA = 0.5;
+  static const size_t FRAME_RATE_FRAME_COUNT = 100;
   double frame_rate_;
-  double frame_tick_count_prev_;
+  int64 frame_tick_count_prev_;
 
   static const size_t DISPLAY_DIVISOR = 15;
   static const int DISPLAY_MARKER_RADIUS = 10;
@@ -88,6 +109,8 @@ private:
 
   cv::Mat display_image_;
 
+  void createWindows();
+  void destroyWindows();
   void updateFrameRateMeasurement();
   void updateBackground(cv::Mat image);
   double getFrameRate();

@@ -34,6 +34,9 @@ public:
   void start();
   void enableGpu();
   void allocateMemory();
+  unsigned char * getImageDataPointer();
+  cv::Size getImageSize();
+  int getImageType();
   unsigned int getImageDataSize();
   void grabImage(cv::Mat & image);
   void stop();
@@ -51,13 +54,18 @@ private:
   FlyCapture2::Camera camera_;
   FlyCapture2::CameraInfo camera_info_;
   static const size_t buffer_count_ = 1;
-  FlyCapture2::Image retrieved_image_;
-  FlyCapture2::Image unified_image_;
+  static const size_t usb3_packet_size_ = 1024;
+  unsigned int image_buffer_size_;
+  FlyCapture2::Image retrieved_camera_image_;
+  cv::Mat retrieved_image_;
+  cv::Mat unified_image_;
 
   bool gpu_enabled_;
-  FlyCapture2::PixelFormat pixel_format_;
   unsigned int rows_;
   unsigned int cols_;
+  cv::Size image_size_;
+  FlyCapture2::PixelFormat pixel_format_;
+  int image_type_;
   unsigned int stride_;
   unsigned int image_data_size_;
   unsigned char * image_data_ptr_;

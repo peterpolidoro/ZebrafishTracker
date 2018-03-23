@@ -20,8 +20,6 @@ ZebrafishTracker::ZebrafishTracker()
 {
   signal(SIGINT,ZebrafishTracker::interruptSignalHandler);
 
-  image_processor_.setMode(ImageProcessor::BLOB);
-
   stage_homed_ = false;
   stage_homing_ = false;
   paralyzed_ = false;
@@ -39,6 +37,7 @@ void ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
     "{p paralyze      |                                   | Do not communicate with stage so it does not move. }"
     "{b blind         |                                   | Do not communicate with camera.                    }"
     "{r recalibrate   |                                   | Recalibrate with chessboard before running.        }"
+    "{hide            |                                   | Do not display images.                             }"
     ;
 
   cv::CommandLineParser parser(argc,argv,keys);
@@ -63,11 +62,19 @@ void ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
     stage_controller_.setDebug(true);
     std::cout << std::endl << "Debug mode!" << std::endl;
   }
+  if (parser.has("hide"))
+  {
+    image_processor_.hide();
+  }
 
   if (parser.has("mouse"))
   {
     image_processor_.setMode(ImageProcessor::MOUSE);
     std::cout << std::endl << "Mouse mode!" << std::endl;
+  }
+  else
+  {
+    image_processor_.setMode(ImageProcessor::BLOB);
   }
 
   if (parser.has("paralyze"))
@@ -126,7 +133,11 @@ void ZebrafishTracker::allocateMemory()
   }
 
   camera_.allocateMemory();
-  image_processor_.allocateMemory();
+  unsigned char * image_data_ptr = camera_.getImageDataPointer();
+  cv::Size image_size = camera_.getImageSize();
+  int image_type = camera_.getImageType();
+  unsigned int image_data_size = camera_.getImageDataSize();
+  image_processor_.allocateMemory(image_data_ptr,image_size,image_type,image_data_size);
 }
 
 void ZebrafishTracker::findCalibration()
@@ -153,7 +164,7 @@ void ZebrafishTracker::run()
   while(run_enabled_ && !blind_)
   {
     camera_.grabImage(image);
-    image_processor_.updateTrackedImagePoint(image);
+    image_processor_.update(image);
     image_processor_.getTrackedImagePoint(tracked_image_point);
     coordinate_converter_.convertImagePointToStagePoint(tracked_image_point,stage_target_position);
     if (!paralyzed_)
