@@ -10,8 +10,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
 #include <opencv2/core/cuda.hpp>
-#include <opencv2/cudabgsegm.hpp>
-#include <opencv2/cudaarithm.hpp>
+// #include <opencv2/cudabgsegm.hpp>
+// #include <opencv2/cudaarithm.hpp>
 
 // #if CUDA_FOUND
 #include <cuda_runtime_api.h>
@@ -57,7 +57,7 @@ private:
   static cv::Point tracked_image_point_;
 
   cv::Ptr<cv::BackgroundSubtractorMOG2> bg_sub_ptr_;
-  cv::Ptr<cv::cuda::BackgroundSubtractorMOG2> bg_sub_ptr_g_;
+  // cv::Ptr<cv::cuda::BackgroundSubtractorMOG2> bg_sub_ptr_g_;
   static const size_t BACKGROUND_HISTORY = 200;
   static const size_t BACKGROUND_VAR_THRESHOLD = 16;
   static const bool BACKGROUND_DETECT_SHADOWS = false;
@@ -117,6 +117,7 @@ private:
   void findBlobLocation(cv::Mat image, cv::Point & location);
   void findClickedLocation(cv::Mat image, cv::Point & location);
   void displayImage(cv::Mat image);
+  void showImageInWindow(const cv::String & winname, cv::Mat mat);
   static void trackbarThresholdHandler(int value, void * userdata);
   static void mouseClickHandler(int event, int x, int y, int flags, void * userdata);
 };

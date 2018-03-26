@@ -33,6 +33,7 @@ ImageProcessor::ImageProcessor()
 
   frame_rate_display_position_ = cv::Point(50,50);
 
+  gpu_enabled_ = false;
 }
 
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
@@ -73,28 +74,28 @@ void ImageProcessor::allocateMemory(unsigned char * const image_data_ptr,
 
   if (gpu_enabled_)
   {
-    image_g_ = cv::cuda::GpuMat(image_size_,image_type_,image_data_ptr_);
+    // image_g_ = cv::cuda::GpuMat(image_size_,image_type_,image_data_ptr_);
 
-    bg_sub_ptr_g_ = cv::cuda::createBackgroundSubtractorMOG2();
-    bg_sub_ptr_g_->setHistory(BACKGROUND_HISTORY);
-    bg_sub_ptr_g_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
-    bg_sub_ptr_g_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
+    // bg_sub_ptr_g_ = cv::cuda::createBackgroundSubtractorMOG2();
+    // bg_sub_ptr_g_->setHistory(BACKGROUND_HISTORY);
+    // bg_sub_ptr_g_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
+    // bg_sub_ptr_g_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
 
-    cudaMallocManaged((void**)&background_data_ptr_,image_data_size_);
-    background_ = cv::Mat(image_size_,image_type_,background_data_ptr_);
-    background_g_ = cv::cuda::GpuMat(image_size_,image_type_,background_data_ptr_);
+    // cudaMallocManaged((void**)&background_data_ptr_,image_data_size_);
+    // background_ = cv::Mat(image_size_,image_type_,background_data_ptr_);
+    // background_g_ = cv::cuda::GpuMat(image_size_,image_type_,background_data_ptr_);
 
-    cudaMallocManaged((void**)&foreground_data_ptr_,image_data_size_);
-    foreground_ = cv::Mat(image_size_,image_type_,foreground_data_ptr_);
-    foreground_g_ = cv::cuda::GpuMat(image_size_,image_type_,foreground_data_ptr_);
+    // cudaMallocManaged((void**)&foreground_data_ptr_,image_data_size_);
+    // foreground_ = cv::Mat(image_size_,image_type_,foreground_data_ptr_);
+    // foreground_g_ = cv::cuda::GpuMat(image_size_,image_type_,foreground_data_ptr_);
 
-    cudaMallocManaged((void**)&foreground_mask_data_ptr_,image_data_size_);
-    foreground_mask_ = cv::Mat(image_size_,image_type_,foreground_mask_data_ptr_);
-    foreground_mask_g_ = cv::cuda::GpuMat(image_size_,image_type_,foreground_mask_data_ptr_);
+    // cudaMallocManaged((void**)&foreground_mask_data_ptr_,image_data_size_);
+    // foreground_mask_ = cv::Mat(image_size_,image_type_,foreground_mask_data_ptr_);
+    // foreground_mask_g_ = cv::cuda::GpuMat(image_size_,image_type_,foreground_mask_data_ptr_);
 
-    cudaMallocManaged((void**)&threshold_data_ptr_,image_data_size_);
-    threshold_ = cv::Mat(image_size_,image_type_,threshold_data_ptr_);
-    threshold_g_ = cv::cuda::GpuMat(image_size_,image_type_,threshold_data_ptr_);
+    // cudaMallocManaged((void**)&threshold_data_ptr_,image_data_size_);
+    // threshold_ = cv::Mat(image_size_,image_type_,threshold_data_ptr_);
+    // threshold_g_ = cv::cuda::GpuMat(image_size_,image_type_,threshold_data_ptr_);
 
   }
 }
@@ -195,8 +196,8 @@ void ImageProcessor::updateBackground(cv::Mat image)
   {
     if (gpu_enabled_)
     {
-      bg_sub_ptr_g_->apply(image_g_,foreground_mask_g_,BACKGROUND_LEARNING_RATE);
-      bg_sub_ptr_g_->getBackgroundImage(background_g_);
+      // bg_sub_ptr_g_->apply(image_g_,foreground_mask_g_,BACKGROUND_LEARNING_RATE);
+      // bg_sub_ptr_g_->getBackgroundImage(background_g_);
     }
     else
     {
@@ -217,8 +218,8 @@ void ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 {
   if (gpu_enabled_)
   {
-    cv::cuda::subtract(background_g_,image_g_,foreground_g_);
-    cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
+    // cv::cuda::subtract(background_g_,image_g_,foreground_g_);
+    // cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
     // cv::cuda::threshold(foreground_g_,threshold_g_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
 
     // std::vector<cv::Point> locations;
@@ -280,15 +281,15 @@ void ImageProcessor::displayImage(cv::Mat image)
                 yellow_,
                 4);
 
-    cv::imshow("Image",display_image_);
+    showImageInWindow("Image",display_image_);
 
     switch (mode_)
     {
       case BLOB:
       {
-        cv::imshow("Background",background_);
-        cv::imshow("Foreground",foreground_);
-        cv::imshow("Threshold",threshold_);
+        showImageInWindow("Background",background_);
+        showImageInWindow("Foreground",foreground_);
+        showImageInWindow("Threshold",threshold_);
         break;
       }
       case MOUSE:
@@ -297,6 +298,14 @@ void ImageProcessor::displayImage(cv::Mat image)
       }
     }
     cv::waitKey(1);
+  }
+}
+
+void ImageProcessor::showImageInWindow(const cv::String & winname, cv::Mat mat)
+{
+  if ((mat.cols != 0) && (mat.rows != 0))
+  {
+    cv::imshow(winname,mat);
   }
 }
 
