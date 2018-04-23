@@ -17,20 +17,22 @@
     ./bin/ZebrafishTracker -h
     Usage: ZebrafishTracker [params]
 
-    -?, -h, --help, --usage (value:true)
-    Print usage and exit.
-    -b, --blind
-    Do not communicate with camera.
-    -c, --configuration (value:../ZebrafishTrackerConfiguration)
-    Configuration repository path.
-    -d, --debug
-    Print debug info.
-    -m, --mouse
-    Track mouse click location instead of blob.
-    -p, --paralyze
-    Do not communicate with stage so it does not move.
-    -r, --recalibrate
-    Recalibrate with chessboard before running.
+      -?, -h, --help, --usage (value:true)
+        Print usage and exit.
+      -b, --blind
+        Do not communicate with camera.
+      -c, --configuration (value:../ZebrafishTrackerConfiguration)
+        Configuration repository path.
+      -d, --debug
+        Print debug info.
+      --hide
+        Do not display images.
+      -m, --mouse
+        Track mouse click location instead of blob.
+      -p, --paralyze
+        Do not communicate with stage so it does not move.
+      -r, --recalibrate
+        Recalibrate with chessboard before running.
   #+END_SRC
 
 * Installation
