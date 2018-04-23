@@ -108,24 +108,6 @@ void ZebrafishTracker::disconnectHardware()
   disconnectStageController();
 }
 
-void ZebrafishTracker::enableGpu()
-{
-  int cuda_enabled_device_count = cv::cuda::getCudaEnabledDeviceCount();
-  int cuda_device_count;
-  cudaGetDeviceCount(&cuda_device_count);
-
-  gpu_enabled_ = ((cuda_enabled_device_count > 0) && (cuda_device_count > 0));
-  std::cout << std::endl << "gpu enabled: " << gpu_enabled_ << std::endl;
-
-  if (gpu_enabled_)
-  {
-    cudaSetDeviceFlags(cudaDeviceMapHost); //Support for mapped pinned allocations
-    cv::cuda::setDevice(0);
-    camera_.enableGpu();
-    image_processor_.enableGpu();
-  }
-}
-
 void ZebrafishTracker::allocateMemory()
 {
   if (blind_)

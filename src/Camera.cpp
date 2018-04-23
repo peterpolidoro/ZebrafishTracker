@@ -31,13 +31,11 @@ Camera::Camera()
 
   setNormalShutterSpeed();
 
-  gpu_enabled_ = false;
   image_data_ptr_ = NULL;
 }
 
 Camera::~Camera()
 {
-  cudaFree(image_data_ptr_);
 }
 
 void Camera::printLibraryInfo()
@@ -110,11 +108,6 @@ void Camera::start()
   }
 }
 
-void Camera::enableGpu()
-{
-  gpu_enabled_ = true;
-}
-
 void Camera::allocateMemory()
 {
   FlyCapture2::Image image;
@@ -134,8 +127,7 @@ void Camera::allocateMemory()
   // std::cout << "stride: " << stride_ << std::endl;
   // std::cout << "data_size: " << image_data_size_ << std::endl;
   // std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
-  // image_data_ptr_ = (unsigned char *)malloc(image_data_size_);
-  cudaMallocManaged((void**)&image_data_ptr_,image_data_size_);
+  image_data_ptr_ = (unsigned char *)malloc(image_data_size_);
   std::cout << "image_data_ptr_: " << (long)image_data_ptr_ << std::endl;
   // error_ = camera_.SetUserBuffers(image_data_ptr_,image_data_size_,buffer_count_);
   // if (error())

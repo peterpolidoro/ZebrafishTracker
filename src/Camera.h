@@ -14,11 +14,6 @@
 
 #include <FlyCapture2.h>
 
-// #if CUDA_FOUND
-#include <cuda_runtime_api.h>
-#include <cuda.h>
-// #endif
-
 
 class Camera
 {
@@ -32,7 +27,6 @@ public:
   void connect();
   void printCameraInfo();
   void start();
-  void enableGpu();
   void allocateMemory();
   unsigned char * getImageDataPointer();
   cv::Size getImageSize();
@@ -60,7 +54,6 @@ private:
   cv::Mat retrieved_image_;
   cv::Mat unified_image_;
 
-  bool gpu_enabled_;
   unsigned int rows_;
   unsigned int cols_;
   cv::Size image_size_;

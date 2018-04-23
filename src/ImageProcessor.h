@@ -9,14 +9,6 @@
 #define _IMAGE_PROCESSOR_H_
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
-#include <opencv2/core/cuda.hpp>
-// #include <opencv2/cudabgsegm.hpp>
-// #include <opencv2/cudaarithm.hpp>
-
-// #if CUDA_FOUND
-#include <cuda_runtime_api.h>
-#include <cuda.h>
-// #endif
 
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
@@ -39,7 +31,6 @@ public:
   void show();
   void hide();
 
-  void enableGpu();
   void allocateMemory(unsigned char * const image_data_ptr,
                       const cv::Size image_size,
                       const int image_type,
@@ -57,7 +48,6 @@ private:
   static cv::Point tracked_image_point_;
 
   cv::Ptr<cv::BackgroundSubtractorMOG2> bg_sub_ptr_;
-  // cv::Ptr<cv::cuda::BackgroundSubtractorMOG2> bg_sub_ptr_g_;
   static const size_t BACKGROUND_HISTORY = 200;
   static const size_t BACKGROUND_VAR_THRESHOLD = 16;
   static const bool BACKGROUND_DETECT_SHADOWS = false;
@@ -75,18 +65,10 @@ private:
   cv::Mat foreground_;
   cv::Mat threshold_;
 
-  bool gpu_enabled_;
-
   unsigned char * background_data_ptr_;
   unsigned char * foreground_data_ptr_;
   unsigned char * foreground_mask_data_ptr_;
   unsigned char * threshold_data_ptr_;
-
-  cv::cuda::GpuMat image_g_;
-  cv::cuda::GpuMat background_g_;
-  cv::cuda::GpuMat foreground_mask_g_;
-  cv::cuda::GpuMat foreground_g_;
-  cv::cuda::GpuMat threshold_g_;
 
   static const int THRESHOLD_VALUE_DEFAULT = 10;
   static int threshold_value_;

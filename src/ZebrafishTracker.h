@@ -10,12 +10,6 @@
 #include <iostream>
 #include <signal.h>
 #include <opencv2/core.hpp>
-#include <opencv2/core/cuda.hpp>
-
-// #if CUDA_FOUND
-#include <cuda_runtime_api.h>
-#include <cuda.h>
-// #endif
 
 #include "Configuration.h"
 #include "Camera.h"
@@ -33,7 +27,6 @@ public:
   void processCommandLineArgs(int argc, char * argv[]);
   void connectHardware();
   void disconnectHardware();
-  void enableGpu();
   void allocateMemory();
   void findCalibration();
   void run();
@@ -50,7 +43,6 @@ private:
   bool paralyzed_;
   bool blind_;
   bool recalibrate_;
-  bool gpu_enabled_;
 
   volatile static sig_atomic_t run_enabled_;
   static void interruptSignalHandler(int sig);

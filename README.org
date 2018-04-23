@@ -9,29 +9,28 @@
 * Example Usage
 
   #+BEGIN_SRC sh
-cd ~/git/ZebrafishTracker
-./bin/ZebrafishTracker
+    cd ~/git/ZebrafishTracker
+    ./bin/ZebrafishTracker
   #+END_SRC
 
   #+BEGIN_SRC sh
-./bin/ZebrafishTracker -h
-Usage: ZebrafishTracker [params]
+    ./bin/ZebrafishTracker -h
+    Usage: ZebrafishTracker [params]
 
-  -?, -h, --help, --usage (value:true)
+    -?, -h, --help, --usage (value:true)
     Print usage and exit.
-  -b, --blind
+    -b, --blind
     Do not communicate with camera.
-  -c, --configuration (value:../ZebrafishTrackerConfiguration)
+    -c, --configuration (value:../ZebrafishTrackerConfiguration)
     Configuration repository path.
-  -d, --debug
+    -d, --debug
     Print debug info.
-  -m, --mouse
+    -m, --mouse
     Track mouse click location instead of blob.
-  -p, --paralyze
+    -p, --paralyze
     Do not communicate with stage so it does not move.
-  -r, --recalibrate
+    -r, --recalibrate
     Recalibrate with chessboard before running.
-
   #+END_SRC
 
 * Installation
@@ -47,25 +46,25 @@ Usage: ZebrafishTracker [params]
 ** Install Dependencies
 
    #+BEGIN_SRC sh
-sudo apt-get install cmake
-sudo apt-get install libboost-all-dev
+     sudo apt-get install cmake
+     sudo apt-get install libboost-all-dev
    #+END_SRC
 
    # Checkout Git Repositories
 
    #+BEGIN_SRC sh
-mkdir ~/git
-cd ~/git
-git clone https://github.com/janelia-experimental-technology/ZebrafishTracker.git
-git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerConfiguration.git
+     mkdir ~/git
+     cd ~/git
+     git clone https://github.com/janelia-experimental-technology/ZebrafishTracker.git
+     git clone https://github.com/janelia-experimental-technology/ZebrafishTrackerConfiguration.git
    #+END_SRC
 
 ** Compile
 
    #+BEGIN_SRC sh
-cd ~/git/ZebrafishTracker
-mkdir build
-cd build
-cmake ..
-make
+     cd ~/git/ZebrafishTracker
+     mkdir build
+     cd build
+     cmake ..
+     make
    #+END_SRC

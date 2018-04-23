@@ -33,7 +33,6 @@ ImageProcessor::ImageProcessor()
 
   frame_rate_display_position_ = cv::Point(50,50);
 
-  gpu_enabled_ = false;
 }
 
 void ImageProcessor::setMode(ImageProcessor::Mode mode)
@@ -51,11 +50,6 @@ void ImageProcessor::hide()
   show_ = false;
 }
 
-void ImageProcessor::enableGpu()
-{
-  gpu_enabled_ = true;
-}
-
 void ImageProcessor::allocateMemory(unsigned char * const image_data_ptr,
                                     const cv::Size image_size,
                                     const int image_type,
@@ -71,33 +65,6 @@ void ImageProcessor::allocateMemory(unsigned char * const image_data_ptr,
   bg_sub_ptr_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
   bg_sub_ptr_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
 
-
-  if (gpu_enabled_)
-  {
-    // image_g_ = cv::cuda::GpuMat(image_size_,image_type_,image_data_ptr_);
-
-    // bg_sub_ptr_g_ = cv::cuda::createBackgroundSubtractorMOG2();
-    // bg_sub_ptr_g_->setHistory(BACKGROUND_HISTORY);
-    // bg_sub_ptr_g_->setVarThreshold(BACKGROUND_VAR_THRESHOLD);
-    // bg_sub_ptr_g_->setDetectShadows(BACKGROUND_DETECT_SHADOWS);
-
-    // cudaMallocManaged((void**)&background_data_ptr_,image_data_size_);
-    // background_ = cv::Mat(image_size_,image_type_,background_data_ptr_);
-    // background_g_ = cv::cuda::GpuMat(image_size_,image_type_,background_data_ptr_);
-
-    // cudaMallocManaged((void**)&foreground_data_ptr_,image_data_size_);
-    // foreground_ = cv::Mat(image_size_,image_type_,foreground_data_ptr_);
-    // foreground_g_ = cv::cuda::GpuMat(image_size_,image_type_,foreground_data_ptr_);
-
-    // cudaMallocManaged((void**)&foreground_mask_data_ptr_,image_data_size_);
-    // foreground_mask_ = cv::Mat(image_size_,image_type_,foreground_mask_data_ptr_);
-    // foreground_mask_g_ = cv::cuda::GpuMat(image_size_,image_type_,foreground_mask_data_ptr_);
-
-    // cudaMallocManaged((void**)&threshold_data_ptr_,image_data_size_);
-    // threshold_ = cv::Mat(image_size_,image_type_,threshold_data_ptr_);
-    // threshold_g_ = cv::cuda::GpuMat(image_size_,image_type_,threshold_data_ptr_);
-
-  }
 }
 
 void ImageProcessor::update(cv::Mat image)
@@ -194,16 +161,8 @@ void ImageProcessor::updateBackground(cv::Mat image)
 {
   if ((image_count_ % BACKGROUND_DIVISOR) == 0)
   {
-    if (gpu_enabled_)
-    {
-      // bg_sub_ptr_g_->apply(image_g_,foreground_mask_g_,BACKGROUND_LEARNING_RATE);
-      // bg_sub_ptr_g_->getBackgroundImage(background_g_);
-    }
-    else
-    {
-      bg_sub_ptr_->apply(image,foreground_mask_,BACKGROUND_LEARNING_RATE);
-      bg_sub_ptr_->getBackgroundImage(background_);
-    }
+    bg_sub_ptr_->apply(image,foreground_mask_,BACKGROUND_LEARNING_RATE);
+    bg_sub_ptr_->getBackgroundImage(background_);
     // std::cout << "image.data: " << (long)image.data << std::endl;
     // std::cout << "image_g_.data: " << (long)image_g_.data << std::endl;
   }
@@ -216,36 +175,24 @@ double ImageProcessor::getFrameRate()
 
 void ImageProcessor::findBlobLocation(cv::Mat image, cv::Point & location)
 {
-  if (gpu_enabled_)
+  cv::subtract(background_,image,foreground_);
+  cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
+
+  std::vector<cv::Point> locations;
+  cv::findNonZero(threshold_,locations);
+
+  // Choose one
+  if (locations.size() > 0)
   {
-    // cv::cuda::subtract(background_g_,image_g_,foreground_g_);
-    // cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
-    // cv::cuda::threshold(foreground_g_,threshold_g_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
-
-    // std::vector<cv::Point> locations;
-    // cv::cuda::findNonZero(threshold_g_,locations);
-  }
-  else
-  {
-    cv::subtract(background_,image,foreground_);
-    cv::threshold(foreground_,threshold_,threshold_value_,MAX_PIXEL_VALUE,cv::THRESH_BINARY);
-
-    std::vector<cv::Point> locations;
-    cv::findNonZero(threshold_,locations);
-
-    // Choose one
-    // if (locations.size() > 0)
-    // {
-    //   cv::Point2f sum(0,0);
-    //   for (size_t i=0; i<locations.size(); ++i)
-    //   {
-    //     sum = sum + cv::Point2f(locations[i]);
-    //   }
-    //   cv::Point2f mean;
-    //   mean.x = sum.x/locations.size();
-    //   mean.y = sum.y/locations.size();
-    //   location = mean;
-    // }
+    cv::Point2f sum(0,0);
+    for (size_t i=0; i<locations.size(); ++i)
+    {
+      sum = sum + cv::Point2f(locations[i]);
+    }
+    cv::Point2f mean;
+    mean.x = sum.x/locations.size();
+    mean.y = sum.y/locations.size();
+    location = mean;
   }
 }
 

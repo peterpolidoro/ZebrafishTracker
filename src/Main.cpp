@@ -49,17 +49,6 @@ int main(int argc, char * argv[])
 
   try
   {
-    zebrafish_tracker.enableGpu();
-  }
-  catch (const std::exception & e)
-  {
-    std::cerr << e.what() << std::endl;
-    std::cerr << std::endl << "Unable to enable GPU." << std::endl << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  try
-  {
     zebrafish_tracker.allocateMemory();
   }
   catch (const std::exception & e)
