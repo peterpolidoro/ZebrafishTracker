@@ -27,8 +27,9 @@ ZebrafishTracker::ZebrafishTracker()
   recalibrate_ = false;
 }
 
-void ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
+bool ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
 {
+  const bool help = true;
   const cv::String keys =
     "{help h usage ?  |                                   | Print usage and exit.                              }"
     "{c configuration |  ../ZebrafishTrackerConfiguration | Configuration repository path.                     }"
@@ -51,7 +52,7 @@ void ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
   if (parser.has("help"))
   {
     parser.printMessage();
-    return;
+    return help;
   }
 
   cv::String configuration_path = parser.get<cv::String>("configuration");
@@ -94,6 +95,7 @@ void ZebrafishTracker::processCommandLineArgs(int argc, char * argv[])
     recalibrate_ = true;
     std::cout << std::endl << "Recalibrate!" << std::endl;
   }
+  return !help;
 }
 
 void ZebrafishTracker::connectHardware()

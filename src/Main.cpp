@@ -16,7 +16,11 @@ int main(int argc, char * argv[])
 
   try
   {
-    zebrafish_tracker.processCommandLineArgs(argc,argv);
+    bool help = zebrafish_tracker.processCommandLineArgs(argc,argv);
+    if (help)
+    {
+      return EXIT_SUCCESS;
+    }
   }
   catch (const std::exception & e)
   {

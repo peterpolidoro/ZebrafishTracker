@@ -24,7 +24,7 @@ class ZebrafishTracker
 public:
   ZebrafishTracker();
 
-  void processCommandLineArgs(int argc, char * argv[]);
+  bool processCommandLineArgs(int argc, char * argv[]);
   void connectHardware();
   void disconnectHardware();
   void allocateMemory();
